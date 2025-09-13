@@ -13,9 +13,9 @@
       "heater_mode": {
         "default": "mdi:thermostat",
         "state": {
-          "winter": "mdi:snowflake",
-          "summer": "mdi:weather-sunny",
-          "auto": "mdi:thermostat-auto"
+          "Winter": "mdi:snowflake",
+          "Summer": "mdi:weather-sunny",
+          "Auto": "mdi:thermostat-auto"
         }
       }
     },

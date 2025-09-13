@@ -352,9 +352,9 @@ SELECT_KEY_STATE: dict[str, str] = {
 # Select entity value mappings (numeric value -> option name)
 SELECT_KEY_VALUES: dict[str, dict[int, str]] = {
     "heaterMode": {
-        0: "winter",
-        1: "summer",
-        2: "auto",
+        0: "Winter",
+        1: "Summer",
+        2: "Auto",
     },
     # Add more select entities here as they are created
     # "pumpMode": {

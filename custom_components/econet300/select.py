@@ -307,12 +307,12 @@ def get_select_option_value(select_key: str, option_name: str) -> int | None:
 # Legacy functions for backward compatibility
 def get_heater_mode_name(numeric_value: int) -> str | None:
     """Convert numeric heater mode value to option name."""
-    return get_select_option_name("heater_mode", numeric_value)
+    return get_select_option_name("heaterMode", numeric_value)
 
 
 def get_heater_mode_value(option_name: str) -> int | None:
     """Convert option name to numeric heater mode value for API."""
-    return get_select_option_value("heater_mode", option_name)
+    return get_select_option_value("heaterMode", option_name)
 
 
 async def async_setup_entry(

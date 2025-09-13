@@ -28,9 +28,9 @@
       "heater_mode": {
         "name": "Режим опалення",
         "options": {
-          "winter": "Зима",
-          "summer": "Літо",
-          "auto": "Авто"
+          "Winter": "Зима",
+          "Summer": "Літо",
+          "Auto": "Авто"
         }
       }
     },

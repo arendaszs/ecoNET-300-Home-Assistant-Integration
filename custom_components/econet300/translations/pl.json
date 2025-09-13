@@ -28,9 +28,9 @@
       "heater_mode": {
         "name": "Tryb grzania",
         "options": {
-          "winter": "Zima",
-          "summer": "Lato",
-          "auto": "Auto"
+          "Winter": "Zima",
+          "Summer": "Lato",
+          "Auto": "Auto"
         }
       }
     },

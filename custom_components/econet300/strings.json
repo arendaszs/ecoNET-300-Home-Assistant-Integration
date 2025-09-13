@@ -28,9 +28,9 @@
       "heater_mode": {
         "name": "Heater Mode",
         "options": {
-          "winter": "Winter",
-          "summer": "Summer", 
-          "auto": "Auto"
+          "Winter": "Winter",
+          "Summer": "Summer", 
+          "Auto": "Auto"
         }
       }
     },

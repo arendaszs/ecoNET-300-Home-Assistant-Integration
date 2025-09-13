@@ -28,9 +28,9 @@
       "heater_mode": {
         "name": "Mode de chauffage",
         "options": {
-          "winter": "Hiver",
-          "summer": "Été",
-          "auto": "Auto"
+          "Winter": "Hiver",
+          "Summer": "Été",
+          "Auto": "Auto"
         }
       }
     },
