@@ -330,25 +330,47 @@ NUMBER_MAP = {
 }
 
 # =============================================================================
-# HEATER SUMMER/WINTER/AUTO MODE MAPPINGS
+# SELECT ENTITY MAPPINGS
 # =============================================================================
-# HEATER SUMMER/WINTER/AUTO MODE MAPPINGS
-# =============================================================================
-# Note: Display names are now handled by the translation system
-# Numeric keys with option names for Home Assistant select entities
 
-HEATER_MODE_VALUES = {
-    0: "winter",
-    1: "summer",
-    2: "auto",
+# Select entity parameter mappings (for writing settings)
+SELECT_KEY_SET: dict[str, str] = {
+    "heaterMode": "55",  # Heater mode winter/summer/auto
+    # Add more select entities here as they are created
+    # "pumpMode": "56",
+    # "fanMode": "57",
 }
 
+# Select entity current state mappings (for reading current state)
+SELECT_KEY_STATE: dict[str, str] = {
+    "heaterMode": "2049",  # Heater mode current state
+    # Add more select entities here as they are created
+    # "pumpMode": "2050",
+    # "fanMode": "2051",
+}
 
-# Heater mode winter/summer/auto parameter index (API parameter 55) - for writing settings
-HEATER_MODE_PARAM_INDEX = "55"
+# Select entity value mappings (numeric value -> option name)
+SELECT_KEY_VALUES: dict[str, dict[int, str]] = {
+    "heaterMode": {
+        0: "winter",
+        1: "summer",
+        2: "auto",
+    },
+    # Add more select entities here as they are created
+    # "pumpMode": {
+    #     0: "off",
+    #     1: "on",
+    #     2: "auto",
+    # },
+}
 
-# Heater mode winter/summer/auto current state parameter (API parameter 2049) - for reading current state
-HEATER_MODE_CURRENT_STATE_PARAM = "2049"
+# Note: Icon mappings are handled by icons.json file
+# No need to duplicate icon information in const.py
+
+# Legacy constants for backward compatibility
+HEATER_MODE_VALUES = SELECT_KEY_VALUES["heaterMode"]
+HEATER_MODE_PARAM_INDEX = SELECT_KEY_SET["heaterMode"]
+HEATER_MODE_CURRENT_STATE_PARAM = SELECT_KEY_STATE["heaterMode"]
 
 # =============================================================================
 # PARAMETER ENDPOINT MAPPINGS

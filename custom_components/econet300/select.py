@@ -1,4 +1,8 @@
-"""Select entities for ecoNET300 integration."""
+"""Select entities for ecoNET300 integration.
+
+This module implements select entities for the ecoNET300 integration.
+Uses Home Assistant icon translation system via icons.json.
+"""
 
 import logging
 from typing import Any
@@ -11,11 +15,12 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
+from .common_functions import camel_to_snake
 from .const import (
     DOMAIN,
-    HEATER_MODE_CURRENT_STATE_PARAM,
-    HEATER_MODE_PARAM_INDEX,
-    HEATER_MODE_VALUES,
+    SELECT_KEY_SET,
+    SELECT_KEY_STATE,
+    SELECT_KEY_VALUES,
     SERVICE_API,
     SERVICE_COORDINATOR,
 )
@@ -32,23 +37,41 @@ class EconetSelect(EconetEntity, SelectEntity):
     """Represents an ecoNET select entity."""
 
     entity_description: SelectEntityDescription
+    select_key: str
 
     def __init__(
         self,
         entity_description: SelectEntityDescription,
         coordinator: EconetDataCoordinator,
         api: Econet300Api,
+        select_key: str,
     ):
         """Initialize a new ecoNET select entity."""
         self.entity_description = entity_description
         self.api = api
+        self.select_key = select_key
         self._attr_current_option = None
         super().__init__(coordinator, api)
 
     @property
     def options(self) -> list[str]:
         """Return the available options."""
-        return list(HEATER_MODE_VALUES.values())
+        # Convert camelCase select_key to snake_case for dictionary lookup
+        snake_key = camel_to_snake(self.select_key)
+        values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+        return list(values_dict.values())
+
+    @property
+    def icon(self) -> str | None:
+        """Return the icon for the entity.
+
+        Home Assistant will automatically handle icon translations using:
+        - entity.select.{translation_key} in icons.json
+        - State-specific icons based on current_option
+        """
+        # Let Home Assistant handle icon translations via icons.json
+        # The icon will be automatically selected based on the current_option
+        return None
 
     @property
     def current_option(self) -> str | None:
@@ -79,14 +102,16 @@ class EconetSelect(EconetEntity, SelectEntity):
         current_state_value = None
         if self.coordinator.data is not None:
             reg_params_data = self.coordinator.data.get("regParamsData", {})
-            current_state_value = reg_params_data.get(HEATER_MODE_CURRENT_STATE_PARAM)
+            snake_key = camel_to_snake(self.select_key)
+            current_state_value = reg_params_data.get(SELECT_KEY_STATE[self.select_key])
 
+        values_dict = SELECT_KEY_VALUES.get(snake_key, {})
         return {
             "heater_mode_value": heater_mode_value,
             "current_state_value": current_state_value,
-            "available_options": list(HEATER_MODE_VALUES.values()),
-            "setting_parameter": HEATER_MODE_PARAM_INDEX,
-            "current_state_parameter": HEATER_MODE_CURRENT_STATE_PARAM,
+            "available_options": list(values_dict.values()),
+            "setting_parameter": SELECT_KEY_SET.get(self.select_key, "unknown"),
+            "current_state_parameter": SELECT_KEY_STATE.get(self.select_key, "unknown"),
         }
 
     async def async_added_to_hass(self):
@@ -104,7 +129,9 @@ class EconetSelect(EconetEntity, SelectEntity):
                 _LOGGER.debug("📋 regParamsData keys: %s", list(reg_params_data.keys()))
                 _LOGGER.debug("📋 regParamsData type: %s", type(reg_params_data))
 
-                heater_mode_value = reg_params_data.get(HEATER_MODE_CURRENT_STATE_PARAM)
+                heater_mode_value = reg_params_data.get(
+                    SELECT_KEY_STATE.get(self.select_key, "unknown")
+                )
                 _LOGGER.debug(
                     "🎯 Heater mode current state (2049): %s (type: %s)",
                     heater_mode_value,
@@ -112,8 +139,10 @@ class EconetSelect(EconetEntity, SelectEntity):
                 )
 
                 if heater_mode_value is not None:
-                    if heater_mode_value in HEATER_MODE_VALUES:
-                        current_option = HEATER_MODE_VALUES[heater_mode_value]
+                    snake_key = camel_to_snake(self.select_key)
+                    values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+                    if heater_mode_value in values_dict:
+                        current_option = values_dict[heater_mode_value]
                         _LOGGER.debug("✅ Found valid heater mode: %s", current_option)
                         self._attr_available = True
                         self._sync_state(current_option)
@@ -121,7 +150,7 @@ class EconetSelect(EconetEntity, SelectEntity):
                         _LOGGER.warning(
                             "❌ Unknown heater mode value: %s (valid values: %s)",
                             heater_mode_value,
-                            list(HEATER_MODE_VALUES.keys()),
+                            list(values_dict.keys()),
                         )
                         self._attr_available = False
                         self._sync_state(None)
@@ -158,7 +187,9 @@ class EconetSelect(EconetEntity, SelectEntity):
             _LOGGER.debug("📋 regParamsData keys: %s", list(reg_params_data.keys()))
             _LOGGER.debug("📋 regParamsData type: %s", type(reg_params_data))
 
-            heater_mode_value = reg_params_data.get(HEATER_MODE_CURRENT_STATE_PARAM)
+            heater_mode_value = reg_params_data.get(
+                SELECT_KEY_STATE.get(self.select_key, "unknown")
+            )
             _LOGGER.debug(
                 "🎯 Heater mode current state (2049): %s (type: %s)",
                 heater_mode_value,
@@ -167,8 +198,10 @@ class EconetSelect(EconetEntity, SelectEntity):
 
             if heater_mode_value is not None:
                 # Map numeric value to option name
-                if heater_mode_value in HEATER_MODE_VALUES:
-                    current_option = HEATER_MODE_VALUES[heater_mode_value]
+                snake_key = camel_to_snake(self.select_key)
+                values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+                if heater_mode_value in values_dict:
+                    current_option = values_dict[heater_mode_value]
                     _LOGGER.debug("✅ Found valid heater mode: %s", current_option)
                     self._attr_available = True
                     self._sync_state(current_option)
@@ -176,7 +209,7 @@ class EconetSelect(EconetEntity, SelectEntity):
                     _LOGGER.warning(
                         "❌ Unknown heater mode value: %s (valid values: %s)",
                         heater_mode_value,
-                        list(HEATER_MODE_VALUES.keys()),
+                        list(values_dict.keys()),
                     )
                     self._attr_available = False
                     self._sync_state(None)
@@ -203,13 +236,14 @@ class EconetSelect(EconetEntity, SelectEntity):
                 _LOGGER.error("❌ Invalid option: %s", option)
                 self._raise_heater_mode_error(f"Invalid option: {option}")
 
-            # Use the parameter index (55) to set the value
+            # Use the parameter index to set the value
+            param_index = SELECT_KEY_SET.get(self.select_key, "unknown")
             _LOGGER.debug(
                 "📡 Calling API to set parameter %s to value %s",
-                HEATER_MODE_PARAM_INDEX,
+                param_index,
                 value,
             )
-            success = await self.api.set_param(HEATER_MODE_PARAM_INDEX, value)
+            success = await self.api.set_param(param_index, value)
             _LOGGER.debug("📡 API call result: %s", success)
 
             if success:
@@ -259,17 +293,32 @@ class EconetSelect(EconetEntity, SelectEntity):
         raise HeaterModeSelectError(message)
 
 
+def get_select_option_name(select_key: str, numeric_value: int) -> str | None:
+    """Convert numeric value to option name for any select entity."""
+    snake_key = camel_to_snake(select_key)
+    values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+    return values_dict.get(numeric_value)
+
+
+def get_select_option_value(select_key: str, option_name: str) -> int | None:
+    """Convert option name to numeric value for any select entity."""
+    snake_key = camel_to_snake(select_key)
+    values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+    for value, name in values_dict.items():
+        if name == option_name:
+            return value
+    return None
+
+
+# Legacy functions for backward compatibility
 def get_heater_mode_name(numeric_value: int) -> str | None:
     """Convert numeric heater mode value to option name."""
-    return HEATER_MODE_VALUES.get(numeric_value)
+    return get_select_option_name("heater_mode", numeric_value)
 
 
 def get_heater_mode_value(option_name: str) -> int | None:
     """Convert option name to numeric heater mode value for API."""
-    for value, name in HEATER_MODE_VALUES.items():
-        if name == option_name:
-            return value
-    return None
+    return get_select_option_value("heater_mode", option_name)
 
 
 async def async_setup_entry(
@@ -309,16 +358,23 @@ async def async_setup_entry(
 
     _LOGGER.debug("Successfully retrieved coordinator and API")
 
-    # Create heater mode select entity
-    heater_mode_description = SelectEntityDescription(
-        key="heater_mode",
-        translation_key="heater_mode",
-        icon="mdi:thermostat",
-    )
+    # Create select entities based on available configurations
+    entities = []
 
-    entities = [
-        EconetSelect(heater_mode_description, coordinator, api),
-    ]
+    for select_key in SELECT_KEY_SET:
+        _LOGGER.debug("Creating select entity: %s", select_key)
+        # Convert camelCase to snake_case for entity key
+        entity_key = camel_to_snake(select_key)
+
+        entity_description = SelectEntityDescription(
+            key=entity_key,
+            translation_key=entity_key,
+            # Icon will be handled by Home Assistant icon translations via icons.json
+        )
+
+        entity = EconetSelect(entity_description, coordinator, api, select_key)
+        entities.append(entity)
+        _LOGGER.debug("Created select entity: %s", select_key)
 
     _LOGGER.info("Adding %d select entities", len(entities))
     async_add_entities(entities)

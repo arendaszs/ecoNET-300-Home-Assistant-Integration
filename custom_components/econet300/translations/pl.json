@@ -26,16 +26,12 @@
     },
     "select": {
       "heater_mode": {
-        "name": "Tryb grzania"
-      },
-      "heater_mode_winter": {
-        "name": "Zima"
-      },
-      "heater_mode_summer": {
-        "name": "Lato"
-      },
-      "heater_mode_auto": {
-        "name": "Auto"
+        "name": "Tryb grzania",
+        "options": {
+          "winter": "Zima",
+          "summer": "Lato",
+          "auto": "Auto"
+        }
       }
     },
     "binary_sensor": {

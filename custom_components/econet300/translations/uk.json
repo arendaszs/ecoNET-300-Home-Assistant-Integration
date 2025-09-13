@@ -26,16 +26,12 @@
     },
     "select": {
       "heater_mode": {
-        "name": "Режим опалення"
-      },
-      "heater_mode_winter": {
-        "name": "Зима"
-      },
-      "heater_mode_summer": {
-        "name": "Літо"
-      },
-      "heater_mode_auto": {
-        "name": "Авто"
+        "name": "Режим опалення",
+        "options": {
+          "winter": "Зима",
+          "summer": "Літо",
+          "auto": "Авто"
+        }
       }
     },
     "binary_sensor": {
