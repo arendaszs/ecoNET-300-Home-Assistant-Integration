@@ -56,9 +56,8 @@ class EconetSelect(EconetEntity, SelectEntity):
     @property
     def options(self) -> list[str]:
         """Return the available options."""
-        # Convert camelCase select_key to snake_case for dictionary lookup
-        snake_key = camel_to_snake(self.select_key)
-        values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+        # Use original camelCase key for dictionary lookup
+        values_dict = SELECT_KEY_VALUES.get(self.select_key, {})
         return list(values_dict.values())
 
     @property
@@ -102,10 +101,9 @@ class EconetSelect(EconetEntity, SelectEntity):
         current_state_value = None
         if self.coordinator.data is not None:
             reg_params_data = self.coordinator.data.get("regParamsData", {})
-            snake_key = camel_to_snake(self.select_key)
             current_state_value = reg_params_data.get(SELECT_KEY_STATE[self.select_key])
 
-        values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+        values_dict = SELECT_KEY_VALUES.get(self.select_key, {})
         return {
             "heater_mode_value": heater_mode_value,
             "current_state_value": current_state_value,
@@ -139,8 +137,7 @@ class EconetSelect(EconetEntity, SelectEntity):
                 )
 
                 if heater_mode_value is not None:
-                    snake_key = camel_to_snake(self.select_key)
-                    values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+                    values_dict = SELECT_KEY_VALUES.get(self.select_key, {})
                     if heater_mode_value in values_dict:
                         current_option = values_dict[heater_mode_value]
                         _LOGGER.debug("✅ Found valid heater mode: %s", current_option)
@@ -198,8 +195,7 @@ class EconetSelect(EconetEntity, SelectEntity):
 
             if heater_mode_value is not None:
                 # Map numeric value to option name
-                snake_key = camel_to_snake(self.select_key)
-                values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+                values_dict = SELECT_KEY_VALUES.get(self.select_key, {})
                 if heater_mode_value in values_dict:
                     current_option = values_dict[heater_mode_value]
                     _LOGGER.debug("✅ Found valid heater mode: %s", current_option)
@@ -295,15 +291,13 @@ class EconetSelect(EconetEntity, SelectEntity):
 
 def get_select_option_name(select_key: str, numeric_value: int) -> str | None:
     """Convert numeric value to option name for any select entity."""
-    snake_key = camel_to_snake(select_key)
-    values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+    values_dict = SELECT_KEY_VALUES.get(select_key, {})
     return values_dict.get(numeric_value)
 
 
 def get_select_option_value(select_key: str, option_name: str) -> int | None:
     """Convert option name to numeric value for any select entity."""
-    snake_key = camel_to_snake(select_key)
-    values_dict = SELECT_KEY_VALUES.get(snake_key, {})
+    values_dict = SELECT_KEY_VALUES.get(select_key, {})
     for value, name in values_dict.items():
         if name == option_name:
             return value
