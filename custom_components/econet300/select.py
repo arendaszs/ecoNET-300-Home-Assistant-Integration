@@ -55,6 +55,18 @@ class EconetSelect(EconetEntity, SelectEntity):
         """Return the current option."""
         return self._attr_current_option
 
+    def _sync_state(self, value: str | None) -> None:
+        """Synchronize the state of the select entity."""
+        _LOGGER.debug("🔄 _sync_state called with value: %s", value)
+        self._attr_current_option = value
+        _LOGGER.debug(
+            "✅ Updated _attr_current_option to: %s for entity: %s",
+            self._attr_current_option,
+            self.entity_description.key,
+        )
+        self.async_write_ha_state()
+        _LOGGER.debug("📤 Called async_write_ha_state()")
+
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return entity specific state attributes."""
@@ -67,9 +79,7 @@ class EconetSelect(EconetEntity, SelectEntity):
         current_state_value = None
         if self.coordinator.data is not None:
             reg_params_data = self.coordinator.data.get("regParamsData", {})
-            current_state_value = reg_params_data.get(
-                int(HEATER_MODE_CURRENT_STATE_PARAM)
-            )
+            current_state_value = reg_params_data.get(HEATER_MODE_CURRENT_STATE_PARAM)
 
         return {
             "heater_mode_value": heater_mode_value,
@@ -91,32 +101,38 @@ class EconetSelect(EconetEntity, SelectEntity):
             if self.coordinator.data is not None:
                 _LOGGER.debug("📊 Coordinator data available")
                 reg_params_data = self.coordinator.data.get("regParamsData", {})
-                _LOGGER.debug("📋 regParamsData: %s", reg_params_data)
-                heater_mode_value = reg_params_data.get(
-                    int(HEATER_MODE_CURRENT_STATE_PARAM)
-                )
+                _LOGGER.debug("📋 regParamsData keys: %s", list(reg_params_data.keys()))
+                _LOGGER.debug("📋 regParamsData type: %s", type(reg_params_data))
+
+                heater_mode_value = reg_params_data.get(HEATER_MODE_CURRENT_STATE_PARAM)
                 _LOGGER.debug(
-                    "🎯 Heater mode current state (2049): %s", heater_mode_value
+                    "🎯 Heater mode current state (2049): %s (type: %s)",
+                    heater_mode_value,
+                    type(heater_mode_value),
                 )
 
                 if heater_mode_value is not None:
                     if heater_mode_value in HEATER_MODE_VALUES:
-                        self._attr_current_option = HEATER_MODE_VALUES[
-                            heater_mode_value
-                        ]
-                        _LOGGER.debug(
-                            "✅ Set current_option to: %s", self._attr_current_option
-                        )
+                        current_option = HEATER_MODE_VALUES[heater_mode_value]
+                        _LOGGER.debug("✅ Found valid heater mode: %s", current_option)
+                        self._attr_available = True
+                        self._sync_state(current_option)
                     else:
-                        self._attr_current_option = None
                         _LOGGER.warning(
-                            "Unknown heater mode value: %s", heater_mode_value
+                            "❌ Unknown heater mode value: %s (valid values: %s)",
+                            heater_mode_value,
+                            list(HEATER_MODE_VALUES.keys()),
                         )
+                        self._attr_available = False
+                        self._sync_state(None)
                 else:
-                    self._attr_current_option = None
                     _LOGGER.debug("❌ No heater mode current state found")
+                    self._attr_available = False
+                    self._sync_state(None)
             else:
                 _LOGGER.debug("❌ Coordinator data is None")
+                self._attr_available = False
+                self._sync_state(None)
         else:
             # For other entities, use standard logic
             _LOGGER.debug(
@@ -139,25 +155,35 @@ class EconetSelect(EconetEntity, SelectEntity):
         if self.entity_description.key == "heater_mode":
             _LOGGER.debug("🔥 Processing heater_mode in _handle_coordinator_update")
             reg_params_data = self.coordinator.data.get("regParamsData", {})
-            _LOGGER.debug("📋 regParamsData: %s", reg_params_data)
-            heater_mode_value = reg_params_data.get(
-                int(HEATER_MODE_CURRENT_STATE_PARAM)
+            _LOGGER.debug("📋 regParamsData keys: %s", list(reg_params_data.keys()))
+            _LOGGER.debug("📋 regParamsData type: %s", type(reg_params_data))
+
+            heater_mode_value = reg_params_data.get(HEATER_MODE_CURRENT_STATE_PARAM)
+            _LOGGER.debug(
+                "🎯 Heater mode current state (2049): %s (type: %s)",
+                heater_mode_value,
+                type(heater_mode_value),
             )
-            _LOGGER.debug("🎯 Heater mode current state (2049): %s", heater_mode_value)
 
             if heater_mode_value is not None:
                 # Map numeric value to option name
                 if heater_mode_value in HEATER_MODE_VALUES:
-                    self._attr_current_option = HEATER_MODE_VALUES[heater_mode_value]
-                    _LOGGER.debug(
-                        "✅ Updated current_option to: %s", self._attr_current_option
-                    )
+                    current_option = HEATER_MODE_VALUES[heater_mode_value]
+                    _LOGGER.debug("✅ Found valid heater mode: %s", current_option)
+                    self._attr_available = True
+                    self._sync_state(current_option)
                 else:
-                    self._attr_current_option = None
-                    _LOGGER.warning("Unknown heater mode value: %s", heater_mode_value)
+                    _LOGGER.warning(
+                        "❌ Unknown heater mode value: %s (valid values: %s)",
+                        heater_mode_value,
+                        list(HEATER_MODE_VALUES.keys()),
+                    )
+                    self._attr_available = False
+                    self._sync_state(None)
             else:
-                self._attr_current_option = None
                 _LOGGER.debug("❌ No heater mode current state found")
+                self._attr_available = False
+                self._sync_state(None)
         else:
             # For other entities, use standard logic
             _LOGGER.debug(
@@ -165,23 +191,34 @@ class EconetSelect(EconetEntity, SelectEntity):
             )
             super()._handle_coordinator_update()
 
-        self.async_write_ha_state()
-
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
+        _LOGGER.debug("🎯 async_select_option called with option: %s", option)
         try:
             # Get the numeric value for the selected option
             value = get_heater_mode_value(option)
+            _LOGGER.debug("🔢 Converted option '%s' to value: %s", option, value)
+
             if value is None:
+                _LOGGER.error("❌ Invalid option: %s", option)
                 self._raise_heater_mode_error(f"Invalid option: {option}")
 
             # Use the parameter index (55) to set the value
+            _LOGGER.debug(
+                "📡 Calling API to set parameter %s to value %s",
+                HEATER_MODE_PARAM_INDEX,
+                value,
+            )
             success = await self.api.set_param(HEATER_MODE_PARAM_INDEX, value)
+            _LOGGER.debug("📡 API call result: %s", success)
 
             if success:
                 # Update the current option
                 old_option = self._attr_current_option
+                _LOGGER.debug("🔄 Updating from '%s' to '%s'", old_option, option)
+
                 self._attr_current_option = option
+                self._attr_available = True
 
                 # Log the change with context for better logbook entries
                 _LOGGER.info(
@@ -192,6 +229,7 @@ class EconetSelect(EconetEntity, SelectEntity):
                 )
 
                 # Write the state change to trigger Home Assistant's state change logging
+                _LOGGER.debug("📤 Calling async_write_ha_state() after option change")
                 self.async_write_ha_state()
 
                 # Additional context for debugging
