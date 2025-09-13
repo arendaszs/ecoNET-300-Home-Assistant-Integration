@@ -11,7 +11,12 @@
     },
     "select": {
       "heater_mode": {
-        "default": "mdi:thermostat"
+        "default": "mdi:thermostat",
+        "state": {
+          "winter": "mdi:snowflake",
+          "summer": "mdi:weather-sunny",
+          "auto": "mdi:thermostat-auto"
+        }
       }
     },
     "binary_sensor": {
