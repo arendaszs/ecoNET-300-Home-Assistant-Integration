@@ -81,13 +81,7 @@ class EconetSelect(EconetEntity, SelectEntity):
         """Synchronize the state of the select entity."""
         _LOGGER.debug("🔄 _sync_state called with value: %s", value)
         self._attr_current_option = value
-        _LOGGER.debug(
-            "✅ Updated _attr_current_option to: %s for entity: %s",
-            self._attr_current_option,
-            self.entity_description.key,
-        )
         self.async_write_ha_state()
-        _LOGGER.debug("📤 Called async_write_ha_state()")
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
@@ -122,10 +116,7 @@ class EconetSelect(EconetEntity, SelectEntity):
             _LOGGER.debug("🔥 Processing heater_mode in async_added_to_hass")
             # For heater mode, get current state from regParamsData parameter 2049
             if self.coordinator.data is not None:
-                _LOGGER.debug("📊 Coordinator data available")
                 reg_params_data = self.coordinator.data.get("regParamsData", {})
-                _LOGGER.debug("📋 regParamsData keys: %s", list(reg_params_data.keys()))
-                _LOGGER.debug("📋 regParamsData type: %s", type(reg_params_data))
 
                 heater_mode_value = reg_params_data.get(
                     SELECT_KEY_STATE.get(self.select_key, "unknown")
@@ -181,8 +172,6 @@ class EconetSelect(EconetEntity, SelectEntity):
         if self.entity_description.key == "heater_mode":
             _LOGGER.debug("🔥 Processing heater_mode in _handle_coordinator_update")
             reg_params_data = self.coordinator.data.get("regParamsData", {})
-            _LOGGER.debug("📋 regParamsData keys: %s", list(reg_params_data.keys()))
-            _LOGGER.debug("📋 regParamsData type: %s", type(reg_params_data))
 
             heater_mode_value = reg_params_data.get(
                 SELECT_KEY_STATE.get(self.select_key, "unknown")
@@ -259,16 +248,7 @@ class EconetSelect(EconetEntity, SelectEntity):
                 )
 
                 # Write the state change to trigger Home Assistant's state change logging
-                _LOGGER.debug("📤 Calling async_write_ha_state() after option change")
                 self.async_write_ha_state()
-
-                # Additional context for debugging
-                _LOGGER.debug(
-                    "Heater mode state updated: %s -> %s (API value: %d)",
-                    old_option,
-                    option,
-                    value,
-                )
             else:
                 _LOGGER.error(
                     "Failed to change heater mode to %s - API returned failure", option
@@ -336,7 +316,6 @@ async def async_setup_entry(
         return
 
     entry_data = hass.data[DOMAIN][config_entry.entry_id]
-    _LOGGER.debug("Entry data keys: %s", list(entry_data.keys()))
 
     # Check if required services exist
     if SERVICE_COORDINATOR not in entry_data:
