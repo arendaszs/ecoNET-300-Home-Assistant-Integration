@@ -349,7 +349,7 @@ SELECT_KEY_STATE: dict[str, str] = {
     # "fanMode": "2051",
 }
 
-# Select entity value mappings (numeric value -> option name)
+# Select entity value mappings (numeric value -> display name)
 SELECT_KEY_VALUES: dict[str, dict[int, str]] = {
     "heaterMode": {
         0: "Winter",
@@ -358,9 +358,9 @@ SELECT_KEY_VALUES: dict[str, dict[int, str]] = {
     },
     # Add more select entities here as they are created
     # "pumpMode": {
-    #     0: "off",
-    #     1: "on",
-    #     2: "auto",
+    #     0: "Off",
+    #     1: "On",
+    #     2: "Auto",
     # },
 }
 

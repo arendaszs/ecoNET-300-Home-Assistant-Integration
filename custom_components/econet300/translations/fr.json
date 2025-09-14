@@ -26,12 +26,7 @@
     },
     "select": {
       "heater_mode": {
-        "name": "Mode de chauffage",
-        "options": {
-          "Winter": "Hiver",
-          "Summer": "Été",
-          "Auto": "Auto"
-        }
+        "name": "Mode de chauffage"
       }
     },
     "binary_sensor": {
