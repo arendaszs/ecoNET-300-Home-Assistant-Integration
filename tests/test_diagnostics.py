@@ -178,14 +178,14 @@ class DiagnosticsValidator:
                 result.add_success("Username data redacted correctly")
             else:
                 result.add_failure(
-                    f"Username data not redacted: {redacted_data['username']}"
+                    "Username data not redacted (actual value not shown for security)"
                 )
 
             if redacted_data["password"] == "**REDACTED**":
                 result.add_success("Password data redacted correctly")
             else:
                 result.add_failure(
-                    f"Password data not redacted: {redacted_data['password']}"
+                    "Password data not redacted (actual value not shown for security)"
                 )
 
             # Check safe data is preserved
@@ -229,7 +229,7 @@ class DiagnosticsValidator:
                 result.add_success("Nested username data redacted correctly")
             else:
                 result.add_failure(
-                    f"Nested username data not redacted: {redacted_data['api_info']['username']}"
+                    "Nested username data not redacted (actual value not shown for security)"
                 )
 
             # Check safe data is preserved
@@ -273,14 +273,14 @@ class DiagnosticsValidator:
                 result.add_success("Deeply nested username data redacted correctly")
             else:
                 result.add_failure(
-                    f"Deeply nested username data not redacted: {redacted_data['config']['credentials']['username']}"
+                    "Deeply nested username data not redacted (actual value not shown for security)"
                 )
 
             if redacted_data["config"]["credentials"]["password"] == "**REDACTED**":
                 result.add_success("Deeply nested password data redacted correctly")
             else:
                 result.add_failure(
-                    f"Deeply nested password data not redacted: {redacted_data['config']['credentials']['password']}"
+                    "Deeply nested password data not redacted (actual value not shown for security)"
                 )
 
             # Check safe data is preserved
