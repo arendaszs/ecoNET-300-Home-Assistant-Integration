@@ -364,8 +364,6 @@ SELECT_KEY_VALUES: dict[str, dict[int, str]] = {
     # },
 }
 
-# Note: Icon mappings are handled by icons.json file
-# No need to duplicate icon information in const.py
 
 # Legacy constants for backward compatibility
 HEATER_MODE_VALUES = SELECT_KEY_VALUES["heaterMode"]
