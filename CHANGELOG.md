@@ -1,12 +1,75 @@
 # Changelog
 
+## [v1.1.15] - 2025-01-13
+
+### New Features
+
+- **Universal Select Entity System**: Implemented dynamic select entity creation with camel_to_snake conversion
+  - **Dynamic Configuration**: Select entities now created from `const.py` mappings instead of hardcoded definitions
+  - **Camel Case Support**: API parameters use camelCase format (`heaterMode`) with automatic snake_case conversion for entity IDs
+  - **Scalable Architecture**: Easy to add new select entities by updating `SELECT_KEY_SET`, `SELECT_KEY_STATE`, and `SELECT_KEY_VALUES`
+  - **Files Modified**: `custom_components/econet300/select.py`, `custom_components/econet300/const.py`
+
+### Bug Fixes
+
+- **Select Entity Translation Display**: Fixed issue where raw values were shown instead of translated text
+
+  - **Problem**: Option values in dictionary were lowercase (`"summer"`) but translations expected Title Case (`"Summer"`)
+  - **Solution**: Updated all option values to use Title Case consistently across all files
+  - **Impact**: UI now displays proper translations (e.g., "Summer" instead of "summer")
+  - **Files Modified**: `const.py`, `icons.json`, `strings.json`, all translation files
+
+- **Select Entity Option Conversion**: Fixed dictionary lookup errors in option value conversion
+
+  - **Problem**: Legacy functions used wrong dictionary keys (`"heater_mode"` vs `"heaterMode"`)
+  - **Solution**: Updated `get_heater_mode_value()` and `get_heater_mode_name()` to use correct camelCase keys
+  - **Impact**: Select entity option changes now work correctly (e.g., changing to "Summer" mode)
+  - **Files Modified**: `custom_components/econet300/select.py`
+
+- **Translation Case Consistency**: Fixed case mismatch between option values and translation keys
+  - **Problem**: Dictionary values and translation keys had different case formats
+  - **Solution**: Standardized all option values to Title Case format
+  - **Impact**: Proper translation display in all supported languages
+  - **Files Modified**: All translation files (`en.json`, `pl.json`, `fr.json`, `uk.json`)
+
+### Technical Improvements
+
+- **Code Cleanup**: Reduced verbose debug logging while preserving essential troubleshooting information
+
+  - **Removed**: 9 verbose debug logs that cluttered output
+  - **Kept**: 25 essential debug logs for troubleshooting
+  - **Benefits**: Cleaner logs, better performance, easier debugging
+  - **Files Modified**: `custom_components/econet300/select.py`
+
+- **Icon System Optimization**: Centralized icon management in `icons.json` file
+
+  - **Removed**: Duplicate icon mappings from `const.py`
+  - **Centralized**: All icon definitions now in `icons.json` following Home Assistant best practices
+  - **State-Specific Icons**: Select options now have proper state-specific icons
+  - **Files Modified**: `custom_components/econet300/const.py`, `custom_components/econet300/icons.json`
+
+- **Translation Structure**: Updated translation format to use proper Home Assistant `options` structure
+  - **Before**: Separate translation keys for each option (`heater_mode_winter`, `heater_mode_summer`)
+  - **After**: Proper `options` structure with option keys (`Winter`, `Summer`, `Auto`)
+  - **Benefits**: Better Home Assistant integration, cleaner translation files
+  - **Files Modified**: All translation files
+
+### Multi-language Support
+
+- **Enhanced Select Entity Translations**: Added comprehensive translations for select entity options
+  - **English**: Winter, Summer, Auto
+  - **Polish**: Zima, Lato, Auto
+  - **French**: Hiver, Été, Auto
+  - **Ukrainian**: Зима, Літо, Авто
+  - **Files Modified**: All translation files (`en.json`, `pl.json`, `fr.json`, `uk.json`)
+
 ## [v1.1.14] - 2025-01-10
 
 ### New Features
 
 - **Multi-language Support**: Added comprehensive translation support for 6 languages
   - **Czech (cs)**: Complete translation coverage with 348 parameters
-  - **French (fr)**: Complete translation coverage with 876 parameters  
+  - **French (fr)**: Complete translation coverage with 876 parameters
   - **Ukrainian (uk)**: Complete translation coverage with 855 parameters
   - **Enhanced Testing**: Updated all translation test scripts to validate all 6 languages
   - **Cloud Integration**: Translations sourced from official ecoNET cloud reference
