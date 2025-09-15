@@ -1,20 +1,26 @@
-"""Select entities for ecoNET300 integration."""
+"""Select entities for ecoNET300 integration.
+
+This module implements select entities for the ecoNET300 integration.
+Uses Home Assistant icon translation system via icons.json.
+"""
 
 import logging
 from typing import Any
 
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
+from .common_functions import camel_to_snake
 from .const import (
     DOMAIN,
-    HEATER_MODE_PARAM_INDEX,
-    HEATER_MODE_VALUES,
+    SELECT_KEY_GET_INDEX,
+    SELECT_KEY_POST_INDEX,
+    SELECT_KEY_VALUES,
     SERVICE_API,
     SERVICE_COORDINATOR,
 )
@@ -31,28 +37,55 @@ class EconetSelect(EconetEntity, SelectEntity):
     """Represents an ecoNET select entity."""
 
     entity_description: SelectEntityDescription
+    select_key: str
 
     def __init__(
         self,
         entity_description: SelectEntityDescription,
         coordinator: EconetDataCoordinator,
         api: Econet300Api,
+        select_key: str,
     ):
         """Initialize a new ecoNET select entity."""
         self.entity_description = entity_description
         self.api = api
+        self.select_key = select_key
         self._attr_current_option = None
         super().__init__(coordinator, api)
 
     @property
     def options(self) -> list[str]:
-        """Return the available options."""
-        return list(HEATER_MODE_VALUES.values())
+        """Return the available options with proper display names."""
+        # Use original camelCase key for dictionary lookup
+        values_dict = SELECT_KEY_VALUES.get(self.select_key, {})
+        # Return properly formatted display names for better user experience
+        return [value.title() for value in values_dict.values()]
+
+    @property
+    def icon(self) -> str | None:
+        """Return the icon for the entity.
+
+        Home Assistant will automatically handle icon translations using:
+        - entity.select.{translation_key} in icons.json
+        - State-specific icons based on current_option
+        """
+        # Let Home Assistant handle icon translations via icons.json
+        # The icon will be automatically selected based on the current_option
+        return None
 
     @property
     def current_option(self) -> str | None:
-        """Return the current option."""
-        return self._attr_current_option
+        """Return the current option with proper display name."""
+        if self._attr_current_option:
+            return self._attr_current_option.title()
+        return None
+
+    def _sync_state(self, value: str | None) -> None:
+        """Synchronize the state of the select entity."""
+        _LOGGER.debug("🔄 _sync_state called with value: %s", value)
+        # Store the internal lowercase value for icon matching
+        self._attr_current_option = value
+        self.async_write_ha_state()
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
@@ -62,91 +95,180 @@ class EconetSelect(EconetEntity, SelectEntity):
             get_heater_mode_value(current_option) if current_option else None
         )
 
+        # Get current state from regParamsData if available
+        current_state_value = None
+        if self.coordinator.data is not None:
+            reg_params_data = self.coordinator.data.get("regParamsData", {})
+            current_state_value = reg_params_data.get(
+                SELECT_KEY_GET_INDEX[self.select_key]
+            )
+
+        values_dict = SELECT_KEY_VALUES.get(self.select_key, {})
         return {
             "heater_mode_value": heater_mode_value,
-            "available_options": list(HEATER_MODE_VALUES.values()),
-            "api_parameter": HEATER_MODE_PARAM_INDEX,
+            "current_state_value": current_state_value,
+            "available_options": list(values_dict.values()),
+            "setting_parameter": SELECT_KEY_POST_INDEX.get(self.select_key, "unknown"),
+            "current_state_parameter": SELECT_KEY_GET_INDEX.get(
+                self.select_key, "unknown"
+            ),
         }
 
-    def _sync_state(self, value: Any) -> None:
-        """Synchronize the state of the select entity."""
-        # For heater mode, we need to get the value from the parameter index 55
-        # The value comes from the coordinator data
+    async def async_added_to_hass(self):
+        """Handle added to hass - override to check regParamsData for heater_mode."""
+        _LOGGER.debug(
+            "🏠 async_added_to_hass called for: %s", self.entity_description.key
+        )
+
         if self.entity_description.key == "heater_mode":
-            # Get the value from the parameter index 55
-            heater_mode_value = self.coordinator.data.get("paramsEdits", {}).get(
-                HEATER_MODE_PARAM_INDEX
+            _LOGGER.debug("🔥 Processing heater_mode in async_added_to_hass")
+            # For heater mode, get current state from regParamsData parameter 2049
+            if self.coordinator.data is not None:
+                reg_params_data = self.coordinator.data.get("regParamsData", {})
+
+                heater_mode_value = reg_params_data.get(
+                    SELECT_KEY_GET_INDEX.get(self.select_key, "unknown")
+                )
+                _LOGGER.debug(
+                    "🎯 Heater mode current state (2049): %s (type: %s)",
+                    heater_mode_value,
+                    type(heater_mode_value),
+                )
+
+                if heater_mode_value is not None:
+                    values_dict = SELECT_KEY_VALUES.get(self.select_key, {})
+                    if heater_mode_value in values_dict:
+                        current_option = values_dict[heater_mode_value]
+                        _LOGGER.debug("✅ Found valid heater mode: %s", current_option)
+                        self._attr_available = True
+                        self._sync_state(current_option)
+                    else:
+                        _LOGGER.warning(
+                            "❌ Unknown heater mode value: %s (valid values: %s)",
+                            heater_mode_value,
+                            list(values_dict.keys()),
+                        )
+                        self._attr_available = False
+                        self._sync_state(None)
+                else:
+                    _LOGGER.debug("❌ No heater mode current state found")
+                    self._attr_available = False
+                    self._sync_state(None)
+            else:
+                _LOGGER.debug("❌ Coordinator data is None")
+                self._attr_available = False
+                self._sync_state(None)
+        else:
+            # For other entities, use standard logic
+            _LOGGER.debug(
+                "🔄 Using standard logic for: %s", self.entity_description.key
+            )
+            await super().async_added_to_hass()
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        _LOGGER.debug(
+            "🔄 _handle_coordinator_update called for: %s", self.entity_description.key
+        )
+
+        if self.coordinator.data is None:
+            _LOGGER.debug("❌ Coordinator data is None")
+            return
+
+        # For heater mode, get current state from regParamsData parameter 2049
+        if self.entity_description.key == "heater_mode":
+            _LOGGER.debug("🔥 Processing heater_mode in _handle_coordinator_update")
+            reg_params_data = self.coordinator.data.get("regParamsData", {})
+
+            heater_mode_value = reg_params_data.get(
+                SELECT_KEY_GET_INDEX.get(self.select_key, "unknown")
+            )
+            _LOGGER.debug(
+                "🎯 Heater mode current state (2049): %s (type: %s)",
+                heater_mode_value,
+                type(heater_mode_value),
             )
 
             if heater_mode_value is not None:
-                # Extract the actual value if it's a dict
-                if isinstance(heater_mode_value, dict) and "value" in heater_mode_value:
-                    numeric_value = heater_mode_value["value"]
+                # Map numeric value to option name
+                values_dict = SELECT_KEY_VALUES.get(self.select_key, {})
+                if heater_mode_value in values_dict:
+                    current_option = values_dict[heater_mode_value]
+                    _LOGGER.debug("✅ Found valid heater mode: %s", current_option)
+                    self._attr_available = True
+                    self._sync_state(current_option)
                 else:
-                    numeric_value = heater_mode_value
-
-                # Map the numeric value to the option name
-                if isinstance(numeric_value, (int, float)):
-                    option_name = HEATER_MODE_VALUES.get(int(numeric_value))
-                    if option_name is not None:
-                        self._attr_current_option = option_name
-                    else:
-                        self._attr_current_option = None
-                        _LOGGER.warning("Unknown heater mode value: %s", numeric_value)
-                else:
-                    self._attr_current_option = None
                     _LOGGER.warning(
-                        "Invalid heater mode value type: %s", type(numeric_value)
+                        "❌ Unknown heater mode value: %s (valid values: %s)",
+                        heater_mode_value,
+                        list(values_dict.keys()),
                     )
+                    self._attr_available = False
+                    self._sync_state(None)
             else:
-                self._attr_current_option = None
-                _LOGGER.debug("Heater mode value not found in coordinator data")
-        # Handle other select entities if needed
-        elif value is not None and isinstance(value, (int, float)):
-            option_name = HEATER_MODE_VALUES.get(int(value))
-            if option_name is not None:
-                self._attr_current_option = option_name
-            else:
-                self._attr_current_option = None
+                _LOGGER.debug("❌ No heater mode current state found")
+                self._attr_available = False
+                self._sync_state(None)
         else:
-            self._attr_current_option = None
-
-        self.async_write_ha_state()
+            # For other entities, use standard logic
+            _LOGGER.debug(
+                "🔄 Using standard logic for: %s", self.entity_description.key
+            )
+            super()._handle_coordinator_update()
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
+        _LOGGER.debug("🎯 async_select_option called with option: %s", option)
         try:
+            # Convert display name back to internal lowercase value for lookup
+            internal_option = option.lower()
+            _LOGGER.debug(
+                "🔄 Converted display name '%s' to internal value: %s",
+                option,
+                internal_option,
+            )
+
             # Get the numeric value for the selected option
-            value = get_heater_mode_value(option)
+            value = get_heater_mode_value(internal_option)
+            _LOGGER.debug(
+                "🔢 Converted option '%s' to value: %s", internal_option, value
+            )
+
             if value is None:
+                _LOGGER.error("❌ Invalid option: %s", option)
                 self._raise_heater_mode_error(f"Invalid option: {option}")
 
-            # Use the parameter index (55) to set the value
-            success = await self.api.set_param(HEATER_MODE_PARAM_INDEX, value)
+            # Use the parameter index to set the value
+            param_index = SELECT_KEY_POST_INDEX.get(self.select_key, "unknown")
+            _LOGGER.debug(
+                "📡 Calling API to set parameter %s to value %s",
+                param_index,
+                value,
+            )
+            success = await self.api.set_param(param_index, value)
+            _LOGGER.debug("📡 API call result: %s", success)
 
             if success:
-                # Update the current option
+                # Update the current option (store internal lowercase value)
                 old_option = self._attr_current_option
-                self._attr_current_option = option
+                _LOGGER.debug(
+                    "🔄 Updating from '%s' to '%s'", old_option, internal_option
+                )
+
+                self._attr_current_option = internal_option
+                self._attr_available = True
 
                 # Log the change with context for better logbook entries
                 _LOGGER.info(
                     "Heater mode changed from '%s' to '%s' (API value: %d)",
                     old_option or "unknown",
-                    option,
+                    option,  # Display the user-friendly name in logs
                     value,
                 )
 
                 # Write the state change to trigger Home Assistant's state change logging
                 self.async_write_ha_state()
-
-                # Additional context for debugging
-                _LOGGER.debug(
-                    "Heater mode state updated: %s -> %s (API value: %d)",
-                    old_option,
-                    option,
-                    value,
-                )
             else:
                 _LOGGER.error(
                     "Failed to change heater mode to %s - API returned failure", option
@@ -167,17 +289,30 @@ class EconetSelect(EconetEntity, SelectEntity):
         raise HeaterModeSelectError(message)
 
 
+def get_select_option_name(select_key: str, numeric_value: int) -> str | None:
+    """Convert numeric value to option name for any select entity."""
+    values_dict = SELECT_KEY_VALUES.get(select_key, {})
+    return values_dict.get(numeric_value)
+
+
+def get_select_option_value(select_key: str, option_name: str) -> int | None:
+    """Convert option name to numeric value for any select entity."""
+    values_dict = SELECT_KEY_VALUES.get(select_key, {})
+    for value, name in values_dict.items():
+        if name == option_name:
+            return value
+    return None
+
+
+# Legacy functions for backward compatibility
 def get_heater_mode_name(numeric_value: int) -> str | None:
     """Convert numeric heater mode value to option name."""
-    return HEATER_MODE_VALUES.get(numeric_value)
+    return get_select_option_name("heaterMode", numeric_value)
 
 
 def get_heater_mode_value(option_name: str) -> int | None:
     """Convert option name to numeric heater mode value for API."""
-    for value, name in HEATER_MODE_VALUES.items():
-        if name == option_name:
-            return value
-    return None
+    return get_select_option_value("heaterMode", option_name)
 
 
 async def async_setup_entry(
@@ -201,7 +336,6 @@ async def async_setup_entry(
         return
 
     entry_data = hass.data[DOMAIN][config_entry.entry_id]
-    _LOGGER.debug("Entry data keys: %s", list(entry_data.keys()))
 
     # Check if required services exist
     if SERVICE_COORDINATOR not in entry_data:
@@ -217,16 +351,23 @@ async def async_setup_entry(
 
     _LOGGER.debug("Successfully retrieved coordinator and API")
 
-    # Create heater mode select entity
-    heater_mode_description = SelectEntityDescription(
-        key="heater_mode",
-        translation_key="heater_mode",
-        icon="mdi:thermostat",
-    )
+    # Create select entities based on available configurations
+    entities = []
 
-    entities = [
-        EconetSelect(heater_mode_description, coordinator, api),
-    ]
+    for select_key in SELECT_KEY_POST_INDEX:
+        _LOGGER.debug("Creating select entity: %s", select_key)
+        # Convert camelCase to snake_case for entity key
+        entity_key = camel_to_snake(select_key)
+
+        entity_description = SelectEntityDescription(
+            key=entity_key,
+            translation_key=entity_key,
+            # Icon will be handled by Home Assistant icon translations via icons.json
+        )
+
+        entity = EconetSelect(entity_description, coordinator, api, select_key)
+        entities.append(entity)
+        _LOGGER.debug("Created select entity: %s", select_key)
 
     _LOGGER.info("Adding %d select entities", len(entities))
     async_add_entities(entities)

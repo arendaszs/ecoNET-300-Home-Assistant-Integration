@@ -3,9 +3,36 @@ description:
 globs:
 alwaysApply: false
 ---
+
 # Testing Standards
 
+## 🧪 ALWAYS Check Existing Tests First
+
+**BEFORE creating new test files, ALWAYS check if existing test files can be updated with new features.**
+
+**Process:**
+
+1. **Search existing tests** in the `tests/` directory
+2. **Look for related test files** that might cover similar functionality
+3. **Update existing tests** to include new features instead of creating duplicates
+4. **Only create new test files** if no existing test covers the functionality
+
+**Examples:**
+
+- ✅ **Good**: Update `test_icon_translations.py` to include select entity tests
+- ❌ **Bad**: Create `test_select_icon_translations.py` when `test_icon_translations.py` exists
+- ✅ **Good**: Update `test_sensor_basic.py` to include new sensor types
+- ❌ **Bad**: Create `test_new_sensor.py` when sensor tests already exist
+
+**Benefits:**
+
+- Reduces test file proliferation
+- Maintains test organization
+- Avoids duplicate test setup code
+- Easier maintenance and discovery
+
 ## Test Framework
+
 - Use pytest for testing framework
 - Write unit tests for all public functions
 - Mock external dependencies
@@ -13,24 +40,28 @@ alwaysApply: false
 - Use fixtures for common test data
 
 ## Test Structure
+
 - Group tests by functionality
 - Use descriptive test names
 - Follow AAA pattern (Arrange, Act, Assert)
 - Test edge cases and error conditions
 
 ## Mocking Guidelines
+
 - Mock device API responses
 - Use pytest-mock for mocking
 - Create realistic test data
 - Test different device types and models
 
 ## Coverage Requirements
+
 - Aim for high test coverage
 - Test all public interfaces
 - Include integration tests for critical paths
 - Test configuration flows
 
 ## Test Data
+
 - Use fixtures for common test data
 - Create realistic device responses
 - Test with different parameter combinations

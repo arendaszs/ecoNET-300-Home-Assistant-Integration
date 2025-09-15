@@ -330,22 +330,45 @@ NUMBER_MAP = {
 }
 
 # =============================================================================
-# HEATER SUMMER/WINTER/AUTO MODE MAPPINGS
+# SELECT ENTITY MAPPINGS
 # =============================================================================
-# HEATER SUMMER/WINTER/AUTO MODE MAPPINGS
-# =============================================================================
-# Note: Display names are now handled by the translation system
-# Numeric keys with option names for Home Assistant select entities
 
-HEATER_MODE_VALUES = {
-    0: "winter",
-    1: "summer",
-    2: "auto",
+# Select entity parameter mappings (for writing settings)
+SELECT_KEY_POST_INDEX: dict[str, str] = {
+    "heaterMode": "55",  # Heater mode winter/summer/auto
+    # Add more select entities here as they are created
+    # "pumpMode": "56",
+    # "fanMode": "57",
+}
+
+# Select entity current state mappings (for reading current state)
+SELECT_KEY_GET_INDEX: dict[str, str] = {
+    "heaterMode": "2049",  # Heater mode current state
+    # Add more select entities here as they are created
+    # "pumpMode": "2050",
+    # "fanMode": "2051",
+}
+
+# Select entity value mappings (numeric value -> display name)
+SELECT_KEY_VALUES: dict[str, dict[int, str]] = {
+    "heaterMode": {
+        0: "winter",
+        1: "summer",
+        2: "auto",
+    },
+    # Add more select entities here as they are created
+    # "pumpMode": {
+    #     0: "Off",
+    #     1: "On",
+    #     2: "Auto",
+    # },
 }
 
 
-# Heater mode parameter index (API parameter 55)
-HEATER_MODE_PARAM_INDEX = "55"
+# Legacy constants for backward compatibility
+HEATER_MODE_VALUES = SELECT_KEY_VALUES["heaterMode"]
+HEATER_MODE_PARAM_INDEX = SELECT_KEY_POST_INDEX["heaterMode"]
+HEATER_MODE_CURRENT_STATE_PARAM = SELECT_KEY_GET_INDEX["heaterMode"]
 
 # =============================================================================
 # PARAMETER ENDPOINT MAPPINGS
@@ -493,6 +516,19 @@ STATE_CLASS_MAP: dict[str, SensorStateClass | None] = {
     "routerType": None,
     "protocolType": None,
     "moduleEcoSTERSoftVer": None,
+    "ecosrvSoftVer": None,
+    "transmission": None,
+    "ecoSterMode1": None,
+    "ecoSterMode2": None,
+    "ecoSterMode3": None,
+    "ecoSterMode4": None,
+    "ecoSterMode5": None,
+    "ecoSterMode6": None,
+    "ecoSterMode7": None,
+    "ecoSterMode8": None,
+    "P1": None,
+    "P2": None,
+    "H": None,
     # ecoMAX360i
     "PS": None,
     "heating_work_state_pump4": None,

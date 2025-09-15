@@ -27,26 +27,11 @@
     "select": {
       "heater_mode": {
         "name": "Режим опалення"
-      },
-      "heater_mode_winter": {
-        "name": "Зима"
-      },
-      "heater_mode_summer": {
-        "name": "Літо"
-      },
-      "heater_mode_auto": {
-        "name": "Авто"
       }
     },
     "binary_sensor": {
       "lighter_works": {
         "name": "Запалювач"
-      },
-      "weather_control": {
-        "name": "Погодне керування котлом"
-      },
-      "unseal": {
-        "name": "Розгерметизація"
       },
       "pump_co_works": {
         "name": "Насос СО"

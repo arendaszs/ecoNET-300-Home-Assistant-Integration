@@ -94,9 +94,13 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                 # Fetch regular parameters from ../econet/regParams
                 reg_params = await self._api.fetch_reg_params()
 
+                # Fetch regParamsData from ../econet/regParamsData
+                reg_params_data = await self._api.fetch_reg_params_data()
+
                 return {
                     "sysParams": sys_params,
                     "regParams": reg_params,
+                    "regParamsData": reg_params_data,
                     "paramsEdits": params_edits,
                 }
         except AuthError as err:
