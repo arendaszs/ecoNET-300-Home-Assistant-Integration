@@ -18,8 +18,8 @@ from .common import EconetDataCoordinator
 from .common_functions import camel_to_snake
 from .const import (
     DOMAIN,
-    SELECT_KEY_SET,
-    SELECT_KEY_STATE,
+    SELECT_KEY_GET_INDEX,
+    SELECT_KEY_POST_INDEX,
     SELECT_KEY_VALUES,
     SERVICE_API,
     SERVICE_COORDINATOR,
@@ -95,15 +95,19 @@ class EconetSelect(EconetEntity, SelectEntity):
         current_state_value = None
         if self.coordinator.data is not None:
             reg_params_data = self.coordinator.data.get("regParamsData", {})
-            current_state_value = reg_params_data.get(SELECT_KEY_STATE[self.select_key])
+            current_state_value = reg_params_data.get(
+                SELECT_KEY_GET_INDEX[self.select_key]
+            )
 
         values_dict = SELECT_KEY_VALUES.get(self.select_key, {})
         return {
             "heater_mode_value": heater_mode_value,
             "current_state_value": current_state_value,
             "available_options": list(values_dict.values()),
-            "setting_parameter": SELECT_KEY_SET.get(self.select_key, "unknown"),
-            "current_state_parameter": SELECT_KEY_STATE.get(self.select_key, "unknown"),
+            "setting_parameter": SELECT_KEY_POST_INDEX.get(self.select_key, "unknown"),
+            "current_state_parameter": SELECT_KEY_GET_INDEX.get(
+                self.select_key, "unknown"
+            ),
         }
 
     async def async_added_to_hass(self):
@@ -119,7 +123,7 @@ class EconetSelect(EconetEntity, SelectEntity):
                 reg_params_data = self.coordinator.data.get("regParamsData", {})
 
                 heater_mode_value = reg_params_data.get(
-                    SELECT_KEY_STATE.get(self.select_key, "unknown")
+                    SELECT_KEY_GET_INDEX.get(self.select_key, "unknown")
                 )
                 _LOGGER.debug(
                     "🎯 Heater mode current state (2049): %s (type: %s)",
@@ -174,7 +178,7 @@ class EconetSelect(EconetEntity, SelectEntity):
             reg_params_data = self.coordinator.data.get("regParamsData", {})
 
             heater_mode_value = reg_params_data.get(
-                SELECT_KEY_STATE.get(self.select_key, "unknown")
+                SELECT_KEY_GET_INDEX.get(self.select_key, "unknown")
             )
             _LOGGER.debug(
                 "🎯 Heater mode current state (2049): %s (type: %s)",
@@ -222,7 +226,7 @@ class EconetSelect(EconetEntity, SelectEntity):
                 self._raise_heater_mode_error(f"Invalid option: {option}")
 
             # Use the parameter index to set the value
-            param_index = SELECT_KEY_SET.get(self.select_key, "unknown")
+            param_index = SELECT_KEY_POST_INDEX.get(self.select_key, "unknown")
             _LOGGER.debug(
                 "📡 Calling API to set parameter %s to value %s",
                 param_index,
@@ -334,7 +338,7 @@ async def async_setup_entry(
     # Create select entities based on available configurations
     entities = []
 
-    for select_key in SELECT_KEY_SET:
+    for select_key in SELECT_KEY_POST_INDEX:
         _LOGGER.debug("Creating select entity: %s", select_key)
         # Convert camelCase to snake_case for entity key
         entity_key = camel_to_snake(select_key)

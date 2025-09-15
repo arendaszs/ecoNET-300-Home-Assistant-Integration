@@ -334,7 +334,7 @@ NUMBER_MAP = {
 # =============================================================================
 
 # Select entity parameter mappings (for writing settings)
-SELECT_KEY_SET: dict[str, str] = {
+SELECT_KEY_POST_INDEX: dict[str, str] = {
     "heaterMode": "55",  # Heater mode winter/summer/auto
     # Add more select entities here as they are created
     # "pumpMode": "56",
@@ -342,7 +342,7 @@ SELECT_KEY_SET: dict[str, str] = {
 }
 
 # Select entity current state mappings (for reading current state)
-SELECT_KEY_STATE: dict[str, str] = {
+SELECT_KEY_GET_INDEX: dict[str, str] = {
     "heaterMode": "2049",  # Heater mode current state
     # Add more select entities here as they are created
     # "pumpMode": "2050",
@@ -367,8 +367,8 @@ SELECT_KEY_VALUES: dict[str, dict[int, str]] = {
 
 # Legacy constants for backward compatibility
 HEATER_MODE_VALUES = SELECT_KEY_VALUES["heaterMode"]
-HEATER_MODE_PARAM_INDEX = SELECT_KEY_SET["heaterMode"]
-HEATER_MODE_CURRENT_STATE_PARAM = SELECT_KEY_STATE["heaterMode"]
+HEATER_MODE_PARAM_INDEX = SELECT_KEY_POST_INDEX["heaterMode"]
+HEATER_MODE_CURRENT_STATE_PARAM = SELECT_KEY_GET_INDEX["heaterMode"]
 
 # =============================================================================
 # PARAMETER ENDPOINT MAPPINGS
