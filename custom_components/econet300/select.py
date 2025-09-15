@@ -55,10 +55,11 @@ class EconetSelect(EconetEntity, SelectEntity):
 
     @property
     def options(self) -> list[str]:
-        """Return the available options."""
+        """Return the available options with proper display names."""
         # Use original camelCase key for dictionary lookup
         values_dict = SELECT_KEY_VALUES.get(self.select_key, {})
-        return list(values_dict.values())
+        # Return properly formatted display names for better user experience
+        return [value.title() for value in values_dict.values()]
 
     @property
     def icon(self) -> str | None:
@@ -74,12 +75,15 @@ class EconetSelect(EconetEntity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        """Return the current option."""
-        return self._attr_current_option
+        """Return the current option with proper display name."""
+        if self._attr_current_option:
+            return self._attr_current_option.title()
+        return None
 
     def _sync_state(self, value: str | None) -> None:
         """Synchronize the state of the select entity."""
         _LOGGER.debug("🔄 _sync_state called with value: %s", value)
+        # Store the internal lowercase value for icon matching
         self._attr_current_option = value
         self.async_write_ha_state()
 
@@ -217,9 +221,19 @@ class EconetSelect(EconetEntity, SelectEntity):
         """Change the selected option."""
         _LOGGER.debug("🎯 async_select_option called with option: %s", option)
         try:
+            # Convert display name back to internal lowercase value for lookup
+            internal_option = option.lower()
+            _LOGGER.debug(
+                "🔄 Converted display name '%s' to internal value: %s",
+                option,
+                internal_option,
+            )
+
             # Get the numeric value for the selected option
-            value = get_heater_mode_value(option)
-            _LOGGER.debug("🔢 Converted option '%s' to value: %s", option, value)
+            value = get_heater_mode_value(internal_option)
+            _LOGGER.debug(
+                "🔢 Converted option '%s' to value: %s", internal_option, value
+            )
 
             if value is None:
                 _LOGGER.error("❌ Invalid option: %s", option)
@@ -236,18 +250,20 @@ class EconetSelect(EconetEntity, SelectEntity):
             _LOGGER.debug("📡 API call result: %s", success)
 
             if success:
-                # Update the current option
+                # Update the current option (store internal lowercase value)
                 old_option = self._attr_current_option
-                _LOGGER.debug("🔄 Updating from '%s' to '%s'", old_option, option)
+                _LOGGER.debug(
+                    "🔄 Updating from '%s' to '%s'", old_option, internal_option
+                )
 
-                self._attr_current_option = option
+                self._attr_current_option = internal_option
                 self._attr_available = True
 
                 # Log the change with context for better logbook entries
                 _LOGGER.info(
                     "Heater mode changed from '%s' to '%s' (API value: %d)",
                     old_option or "unknown",
-                    option,
+                    option,  # Display the user-friendly name in logs
                     value,
                 )
 

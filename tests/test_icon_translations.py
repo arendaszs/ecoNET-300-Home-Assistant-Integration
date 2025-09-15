@@ -16,6 +16,8 @@ from unittest.mock import Mock
 
 from homeassistant.components.select import SelectEntityDescription
 
+from custom_components.econet300.const import SELECT_KEY_VALUES
+
 # Add the custom_components directory to the path
 custom_components_path = str(
     Path(__file__).parent.parent / "custom_components" / "econet300"
@@ -199,7 +201,7 @@ def test_select_icon_selection_logic():
                 return default_icon
         return None
 
-    # Test different states
+    # Test different states - now using lowercase to match the fix
     test_cases = [
         (None, "mdi:thermostat"),
         ("winter", "mdi:snowflake"),
@@ -215,6 +217,57 @@ def test_select_icon_selection_logic():
         )
 
 
+def test_heater_mode_case_consistency():
+    """Test that heater mode internal values match icons.json state keys exactly."""
+    # Load the icons.json file
+    icons_file = (
+        Path(__file__).parent.parent / "custom_components" / "econet300" / "icons.json"
+    )
+
+    with icons_file.open(encoding="utf-8") as f:
+        icons_data = json.load(f)
+
+    # Get the heater mode state keys from icons.json
+    heater_mode_icons = icons_data["entity"]["select"]["heater_mode"]
+    state_keys = set(heater_mode_icons["state"].keys())
+
+    # Get the heater mode internal values from const.py (should be lowercase)
+    heater_mode_values = set(SELECT_KEY_VALUES["heaterMode"].values())
+
+    # Verify they match exactly (case-sensitive) - both should be lowercase
+    assert state_keys == heater_mode_values, (
+        f"State keys in icons.json ({state_keys}) do not match "
+        f"internal values in const.py ({heater_mode_values}). "
+        f"This will prevent state-specific icons from displaying correctly."
+    )
+
+    # Verify all expected states are present (lowercase)
+    expected_states = {"winter", "summer", "auto"}
+    assert state_keys == expected_states, (
+        f"Expected states {expected_states}, got {state_keys}"
+    )
+
+
+def test_heater_mode_display_names():
+    """Test that heater mode display names are properly formatted for users."""
+    # Get the internal values (should be lowercase)
+    internal_values = list(SELECT_KEY_VALUES["heaterMode"].values())
+
+    # Verify internal values are lowercase
+    for value in internal_values:
+        assert value.islower(), (
+            f"Internal value '{value}' should be lowercase for icon matching"
+        )
+
+    # Test display name formatting
+    display_names = [value.title() for value in internal_values]
+    expected_display_names = ["Winter", "Summer", "Auto"]
+
+    assert display_names == expected_display_names, (
+        f"Display names {display_names} should match {expected_display_names}"
+    )
+
+
 def test_select_entity_uses_icon_translations():
     """Test that select entities properly use Home Assistant icon translation system."""
     # Create a mock coordinator and API
@@ -224,7 +277,7 @@ def test_select_entity_uses_icon_translations():
     # Mock coordinator data
     mock_coordinator.data = {
         "regParamsData": {
-            "2049": 0  # winter mode
+            "2049": 0  # winter mode (0 = winter, 1 = summer, 2 = auto)
         }
     }
 
