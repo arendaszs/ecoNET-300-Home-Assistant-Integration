@@ -236,13 +236,14 @@ DEFAULT_SENSORS = {
 }
 
 # Main sensor mapping by controller type
+# All controllers use DEFAULT_SENSORS (specific mappings are for reference only)
 SENSOR_MAP_KEY = {
-    "ecoMAX360i": ECOMAX360I_SENSORS,
-    "ecoSter": ECOSTER_SENSORS,
-    "lambda": LAMBDA_SENSORS,
-    "ecoSOL 500": ECOSOL_SENSORS,
-    "ecoSOL 301": ECOSOL_SENSORS,  # ecoSOL 301 uses same sensors as ecoSOL 500
-    "_default": DEFAULT_SENSORS,
+    "ecoMAX360i": ECOMAX360I_SENSORS,  # Reference only - not used
+    "ecoSter": ECOSTER_SENSORS,  # Reference only - not used
+    "lambda": LAMBDA_SENSORS,  # Reference only - not used
+    "ecoSOL 500": ECOSOL_SENSORS,  # Reference only - not used
+    "ecoSOL 301": ECOSOL_SENSORS,  # Reference only - not used
+    "_default": DEFAULT_SENSORS,  # Always used for all controllers
 }
 
 # =============================================================================
@@ -300,11 +301,12 @@ ECOSOL_BINARY_SENSORS = {
 }
 
 # Main binary sensor mapping by controller type
+# All controllers use DEFAULT_BINARY_SENSORS (specific mappings are for reference only)
 BINARY_SENSOR_MAP_KEY = {
-    "_default": DEFAULT_BINARY_SENSORS,
-    "ecoSter": ECOSTER_BINARY_SENSORS,
-    "ecoSOL 500": ECOSOL_BINARY_SENSORS,
-    "ecoSOL 301": ECOSOL_BINARY_SENSORS,  # ecoSOL 301 uses same binary sensors as ecoSOL 500
+    "_default": DEFAULT_BINARY_SENSORS,  # Always used for all controllers
+    "ecoSter": ECOSTER_BINARY_SENSORS,  # Reference only - not used
+    "ecoSOL 500": ECOSOL_BINARY_SENSORS,  # Reference only - not used
+    "ecoSOL 301": ECOSOL_BINARY_SENSORS,  # Reference only - not used
 }
 
 # Helper: Extract ecoSOL controller IDs for easy access
@@ -649,6 +651,8 @@ ENTITY_BINARY_DEVICE_CLASS_MAP = {
     # ecoMAX850R2-X specific binary sensors
     "contactGZC": BinarySensorDeviceClass.CONNECTIVITY,
     "contactGZCActive": BinarySensorDeviceClass.CONNECTIVITY,
+    # Alarm sensors
+    "alarmActive": BinarySensorDeviceClass.PROBLEM,
 }
 
 # =============================================================================

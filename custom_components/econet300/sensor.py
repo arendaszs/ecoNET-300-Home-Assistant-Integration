@@ -163,13 +163,18 @@ def create_controller_sensors(
     # Extract the controllerID from sysParams
     controller_id = data_sysParams.get("controllerID", None)
 
-    # Determine the keys to use based on the controllerID
-    sensor_keys = SENSOR_MAP_KEY.get(controller_id, SENSOR_MAP_KEY["_default"])
-    _LOGGER.info(
-        "Using sensor keys for controllerID '%s': %s",
-        controller_id if controller_id else "None (default)",
-        sensor_keys,
-    )
+    # Always use default sensor mapping for all controllers
+    sensor_keys = SENSOR_MAP_KEY["_default"].copy()
+    if controller_id and controller_id in SENSOR_MAP_KEY:
+        _LOGGER.info(
+            "ControllerID '%s' found in mapping, but using default sensor mapping",
+            controller_id,
+        )
+    else:
+        _LOGGER.info(
+            "ControllerID '%s' not found in mapping, using default sensor mapping",
+            controller_id if controller_id else "None",
+        )
 
     # Always filter out ecoSTER sensors from controller sensors since they are created as separate devices
     ecoSTER_sensors = SENSOR_MAP_KEY.get("ecoSter", set())
