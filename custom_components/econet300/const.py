@@ -73,6 +73,37 @@ API_EDITABLE_PARAMS_LIMITS_URI = "rmCurrentDataParamsEdits"
 API_EDITABLE_PARAMS_LIMITS_DATA = "data"
 
 # =============================================================================
+# RM... ENDPOINT CONSTANTS (Remote Menu API)
+# =============================================================================
+# These endpoints provide structured data for the ecoNET24 web interface
+# Based on analysis of dev_set1.js and test fixtures
+
+# Core RM endpoints for parameter management
+API_RM_PARAMS_NAMES_URI = "rmParamsNames"
+API_RM_PARAMS_DATA_URI = "rmParamsData"
+API_RM_PARAMS_DESCS_URI = "rmParamsDescs"
+API_RM_PARAMS_ENUMS_URI = "rmParamsEnums"
+API_RM_PARAMS_UNITS_NAMES_URI = "rmParamsUnitsNames"
+
+# RM endpoints for categories and structure
+API_RM_CATS_NAMES_URI = "rmCatsNames"
+API_RM_CATS_DESCS_URI = "rmCatsDescs"
+API_RM_STRUCTURE_URI = "rmStructure"
+
+# RM endpoints for current data
+API_RM_CURRENT_DATA_PARAMS_URI = "rmCurrentDataParams"
+API_RM_CURRENT_DATA_PARAMS_EDITS_URI = "rmCurrentDataParamsEdits"
+
+# RM endpoints for system information
+API_RM_LANGS_URI = "rmLangs"
+API_RM_EXISTING_LANGS_URI = "rmExistingLangs"
+API_RM_LOCKS_NAMES_URI = "rmLocksNames"
+API_RM_ALARMS_NAMES_URI = "rmAlarmsNames"
+
+# RM endpoint data key (all endpoints use "data" as the key)
+API_RM_DATA_KEY = "data"
+
+# =============================================================================
 # OPERATION MODES AND STATUS MAPPINGS
 # =============================================================================
 OPERATION_MODE_NAMES = {

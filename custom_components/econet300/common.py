@@ -97,11 +97,16 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                 # Fetch regParamsData from ../econet/regParamsData
                 reg_params_data = await self._api.fetch_reg_params_data()
 
+                # Optionally fetch RM... endpoint data for enhanced functionality
+                # These provide structured data used by the ecoNET24 web interface
+                rm_data = await self._fetch_rm_endpoint_data()
+
                 return {
                     "sysParams": sys_params,
                     "regParams": reg_params,
                     "regParamsData": reg_params_data,
                     "paramsEdits": params_edits,
+                    "rmData": rm_data,
                 }
         except AuthError as err:
             _LOGGER.error("Authentication error: %s", err)
@@ -112,3 +117,115 @@ class EconetDataCoordinator(DataUpdateCoordinator):
         except (asyncio.TimeoutError, ClientError) as err:
             _LOGGER.error("Timeout or client error: %s", err)
             raise UpdateFailed(f"Timeout or client error: {err}") from err
+
+    async def _fetch_rm_endpoint_data(self) -> dict[str, Any]:
+        """Fetch data from RM... endpoints for enhanced functionality.
+
+        This method fetches structured data from the RM... endpoints that are
+        used by the ecoNET24 web interface. This data can be used for:
+        - Better parameter names and descriptions
+        - Language support
+        - Menu structure information
+        - Alarm and lock information
+
+        Returns:
+            Dictionary containing RM endpoint data.
+
+        """
+        rm_data = {}
+
+        try:
+            # Fetch core RM data that's most useful for Home Assistant
+            # These calls are made in parallel for better performance
+            tasks = [
+                self._api.fetch_rm_current_data_params(),
+                self._api.fetch_rm_params_names(),
+                self._api.fetch_rm_params_data(),
+                self._api.fetch_rm_langs(),
+            ]
+
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            # Process results
+            rm_data["currentDataParams"] = (
+                results[0] if not isinstance(results[0], Exception) else {}
+            )
+            rm_data["paramsNames"] = (
+                results[1] if not isinstance(results[1], Exception) else {}
+            )
+            rm_data["paramsData"] = (
+                results[2] if not isinstance(results[2], Exception) else {}
+            )
+            rm_data["langs"] = (
+                results[3] if not isinstance(results[3], Exception) else {}
+            )
+
+            # Log any errors
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    task_names = [
+                        "currentDataParams",
+                        "paramsNames",
+                        "paramsData",
+                        "langs",
+                    ]
+                    _LOGGER.warning("Failed to fetch %s: %s", task_names[i], result)
+
+            # Only fetch additional data if core data was successful
+            if rm_data["currentDataParams"]:
+                # Fetch additional useful data
+                additional_tasks = [
+                    self._api.fetch_rm_params_descs(),
+                    self._api.fetch_rm_params_enums(),
+                    self._api.fetch_rm_alarms_names(),
+                ]
+
+                additional_results = await asyncio.gather(
+                    *additional_tasks, return_exceptions=True
+                )
+
+                rm_data["paramsDescs"] = (
+                    additional_results[0]
+                    if not isinstance(additional_results[0], Exception)
+                    else {}
+                )
+                rm_data["paramsEnums"] = (
+                    additional_results[1]
+                    if not isinstance(additional_results[1], Exception)
+                    else {}
+                )
+                rm_data["alarmsNames"] = (
+                    additional_results[2]
+                    if not isinstance(additional_results[2], Exception)
+                    else {}
+                )
+
+                # Log any additional errors
+                additional_names = ["paramsDescs", "paramsEnums", "alarmsNames"]
+                for i, result in enumerate(additional_results):
+                    if isinstance(result, Exception):
+                        _LOGGER.warning(
+                            "Failed to fetch %s: %s", additional_names[i], result
+                        )
+
+            _LOGGER.debug(
+                "Successfully fetched RM endpoint data: %s", list(rm_data.keys())
+            )
+
+        except Exception as e:
+            _LOGGER.warning("Error fetching RM endpoint data: %s", e)
+            # Return empty dict to avoid breaking the coordinator
+
+        return rm_data
+
+    def has_rm_data(self, key: str) -> bool:
+        """Check if RM data key is present in rmData."""
+        if self.data is None or "rmData" not in self.data:
+            return False
+        return key in self.data["rmData"]
+
+    def get_rm_data(self, key: str) -> dict[str, Any] | None:
+        """Get RM data by key."""
+        if not self.has_rm_data(key):
+            return None
+        return self.data["rmData"][key]

@@ -17,6 +17,21 @@ from .const import (
     API_REG_PARAMS_DATA_URI,
     API_REG_PARAMS_PARAM_DATA,
     API_REG_PARAMS_URI,
+    API_RM_ALARMS_NAMES_URI,
+    API_RM_CATS_DESCS_URI,
+    API_RM_CATS_NAMES_URI,
+    API_RM_CURRENT_DATA_PARAMS_EDITS_URI,
+    API_RM_CURRENT_DATA_PARAMS_URI,
+    API_RM_DATA_KEY,
+    API_RM_EXISTING_LANGS_URI,
+    API_RM_LANGS_URI,
+    API_RM_LOCKS_NAMES_URI,
+    API_RM_PARAMS_DATA_URI,
+    API_RM_PARAMS_DESCS_URI,
+    API_RM_PARAMS_ENUMS_URI,
+    API_RM_PARAMS_NAMES_URI,
+    API_RM_PARAMS_UNITS_NAMES_URI,
+    API_RM_STRUCTURE_URI,
     API_SYS_PARAMS_PARAM_HW_VER,
     API_SYS_PARAMS_PARAM_MODEL_ID,
     API_SYS_PARAMS_PARAM_SW_REV,
@@ -427,6 +442,512 @@ class Econet300Api:
                 e,
             )
         return None
+
+    # =============================================================================
+    # RM... ENDPOINT METHODS (Remote Menu API)
+    # =============================================================================
+    # These methods provide access to the structured data endpoints used by
+    # the ecoNET24 web interface. Based on analysis of dev_set1.js and test fixtures.
+
+    async def fetch_rm_params_names(self, lang: str = "en") -> dict[str, Any] | None:
+        """Fetch parameter names with translations from rmParamsNames endpoint.
+
+        This endpoint provides human-readable parameter names in the specified language.
+        Used by the ecoNET24 web interface to display parameter labels.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing parameter names mapped to their translations.
+            None if the request fails.
+
+        Example:
+            {
+                "remoteMenuParamsNamesVer": "61477_1",
+                "data": [
+                    "100% Blow-in output",
+                    "100% Feeder operation",
+                    "Boiler hysteresis",
+                    "FL airfl. correction",
+                    "Minimum boiler output FL"
+                ]
+            }
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_PARAMS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            _LOGGER.debug("Fetching parameter names from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning("Failed to fetch parameter names from rmParamsNames")
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching parameter names: %s", e)
+            return None
+
+    async def fetch_rm_params_data(self) -> dict[str, Any] | None:
+        """Fetch parameter metadata from rmParamsData endpoint.
+
+        This endpoint provides parameter metadata including min/max values, units,
+        and other configuration information for each parameter.
+
+        Returns:
+            Dictionary containing parameter metadata.
+            None if the request fails.
+
+        Example:
+            {
+                "remoteMenuValuesKonfVer": 14264,
+                "remoteMenuValuesVer": 43253,
+                "data": [
+                    {
+                        "value": 60,
+                        "maxv": 100,
+                        "minv": 15,
+                        "edit": true,
+                        "unit": 5,
+                        "mult": 1,
+                        "offset": 0
+                    }
+                ]
+            }
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_PARAMS_DATA_URI}?uid={self.uid}"
+            _LOGGER.debug("Fetching parameter data from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning("Failed to fetch parameter data from rmParamsData")
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching parameter data: %s", e)
+            return None
+
+    async def fetch_rm_params_descs(self, lang: str = "en") -> dict[str, Any] | None:
+        """Fetch parameter descriptions from rmParamsDescs endpoint.
+
+        This endpoint provides detailed descriptions of parameters in the specified language.
+        Used for help text and parameter explanations in the web interface.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing parameter descriptions.
+            None if the request fails.
+
+        Example:
+            {
+                "remoteMenuParamsDescsVer": "16688_1",
+                "data": [
+                    "Blow-in output when the burner runs at maximum output.",
+                    "Feeder operation time when the burner runs at maximum output.",
+                    "If the boiler temperature drops below the present boiler temperature by the boiler hysteresis value, then the automatic burner firing up will take place."
+                ]
+            }
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_PARAMS_DESCS_URI}?uid={self.uid}&lang={lang}"
+            _LOGGER.debug("Fetching parameter descriptions from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning(
+                    "Failed to fetch parameter descriptions from rmParamsDescs"
+                )
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching parameter descriptions: %s", e)
+            return None
+
+    async def fetch_rm_params_enums(self, lang: str = "en") -> dict[str, Any] | None:
+        """Fetch parameter enumeration values from rmParamsEnums endpoint.
+
+        This endpoint provides enumeration values for parameters that have
+        predefined options (like operation modes, status values, etc.).
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing parameter enumeration values.
+            None if the request fails.
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_PARAMS_ENUMS_URI}?uid={self.uid}&lang={lang}"
+            _LOGGER.debug("Fetching parameter enums from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning("Failed to fetch parameter enums from rmParamsEnums")
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching parameter enums: %s", e)
+            return None
+
+    async def fetch_rm_params_units_names(
+        self, lang: str = "en"
+    ) -> dict[str, Any] | None:
+        """Fetch parameter unit names from rmParamsUnitsNames endpoint.
+
+        This endpoint provides unit names and symbols for parameters.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing parameter unit names.
+            None if the request fails.
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_PARAMS_UNITS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            _LOGGER.debug("Fetching parameter units from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning(
+                    "Failed to fetch parameter units from rmParamsUnitsNames"
+                )
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching parameter units: %s", e)
+            return None
+
+    async def fetch_rm_cats_names(self, lang: str = "en") -> dict[str, Any] | None:
+        """Fetch category names from rmCatsNames endpoint.
+
+        This endpoint provides category names for organizing parameters in the web interface.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing category names.
+            None if the request fails.
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_CATS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            _LOGGER.debug("Fetching category names from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning("Failed to fetch category names from rmCatsNames")
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching category names: %s", e)
+            return None
+
+    async def fetch_rm_cats_descs(self, lang: str = "en") -> dict[str, Any] | None:
+        """Fetch category descriptions from rmCatsDescs endpoint.
+
+        This endpoint provides detailed descriptions of parameter categories.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing category descriptions.
+            None if the request fails.
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_CATS_DESCS_URI}?uid={self.uid}&lang={lang}"
+            _LOGGER.debug("Fetching category descriptions from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning(
+                    "Failed to fetch category descriptions from rmCatsDescs"
+                )
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching category descriptions: %s", e)
+            return None
+
+    async def fetch_rm_structure(self, lang: str = "en") -> dict[str, Any] | None:
+        """Fetch menu structure from rmStructure endpoint.
+
+        This endpoint provides the hierarchical menu structure for the web interface,
+        showing how parameters are organized and grouped.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing menu structure.
+            None if the request fails.
+
+        """
+        try:
+            url = (
+                f"{self.host}/service/{API_RM_STRUCTURE_URI}?uid={self.uid}&lang={lang}"
+            )
+            _LOGGER.debug("Fetching menu structure from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning("Failed to fetch menu structure from rmStructure")
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching menu structure: %s", e)
+            return None
+
+    async def fetch_rm_current_data_params(
+        self, lang: str = "en"
+    ) -> dict[str, Any] | None:
+        """Fetch current parameter values from rmCurrentDataParams endpoint.
+
+        This endpoint provides the current values of all parameters.
+        This is the main data source for sensor values in Home Assistant.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing current parameter values.
+            None if the request fails.
+
+        Example:
+            {
+                "remoteMenuCurrDataParamsVer": "17127_1",
+                "data": {
+                    "1": {
+                        "unit": 31,
+                        "name": "Lighter",
+                        "special": 1
+                    },
+                    "26": {
+                        "unit": 1,
+                        "name": "Feeder temperature",
+                        "special": 1
+                    }
+                }
+            }
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_CURRENT_DATA_PARAMS_URI}?uid={self.uid}&lang={lang}"
+            _LOGGER.debug("Fetching current data params from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning(
+                    "Failed to fetch current data params from rmCurrentDataParams"
+                )
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching current data params: %s", e)
+            return None
+
+    async def fetch_rm_current_data_params_edits(self) -> dict[str, Any] | None:
+        """Fetch editable parameter data from rmCurrentDataParamsEdits endpoint.
+
+        This endpoint provides information about which parameters can be edited
+        and their current values. Used for number entities and controls.
+
+        Returns:
+            Dictionary containing editable parameter data.
+            None if the request fails.
+
+        Example:
+            {
+                "currentDataParamsEditsVer": 1,
+                "data": {
+                    "1280": {
+                        "max": 68,
+                        "type": 4,
+                        "value": 40,
+                        "min": 27
+                    },
+                    "2048": {
+                        "max": 2,
+                        "type": 4,
+                        "value": 0,
+                        "min": 0
+                    }
+                }
+            }
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_CURRENT_DATA_PARAMS_EDITS_URI}?uid={self.uid}"
+            _LOGGER.debug("Fetching current data params edits from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning(
+                    "Failed to fetch current data params edits from rmCurrentDataParamsEdits"
+                )
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching current data params edits: %s", e)
+            return None
+
+    async def fetch_rm_langs(self) -> dict[str, Any] | None:
+        """Fetch available languages from rmLangs endpoint.
+
+        This endpoint provides information about available languages for translations.
+
+        Returns:
+            Dictionary containing available languages.
+            None if the request fails.
+
+        Example:
+            {
+                "remoteMenuLangsVer": "20028",
+                "defaultLang": "default",
+                "data": [
+                    {
+                        "code": "pl",
+                        "name": "Polski",
+                        "version": "3EDBB76"
+                    },
+                    {
+                        "default": true,
+                        "code": "en",
+                        "name": "English",
+                        "version": "3ACA62B1"
+                    }
+                ]
+            }
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_LANGS_URI}?uid={self.uid}"
+            _LOGGER.debug("Fetching available languages from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning("Failed to fetch available languages from rmLangs")
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching available languages: %s", e)
+            return None
+
+    async def fetch_rm_existing_langs(self) -> dict[str, Any] | None:
+        """Fetch existing language list from rmExistingLangs endpoint.
+
+        This endpoint provides a list of languages that are actually available
+        on the controller (as opposed to all possible languages).
+
+        Returns:
+            Dictionary containing existing language list.
+            None if the request fails.
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_EXISTING_LANGS_URI}?uid={self.uid}"
+            _LOGGER.debug("Fetching existing languages from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning(
+                    "Failed to fetch existing languages from rmExistingLangs"
+                )
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching existing languages: %s", e)
+            return None
+
+    async def fetch_rm_locks_names(self, lang: str = "en") -> dict[str, Any] | None:
+        """Fetch lock/restriction messages from rmLocksNames endpoint.
+
+        This endpoint provides messages about parameter locks and restrictions.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing lock/restriction messages.
+            None if the request fails.
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_LOCKS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            _LOGGER.debug("Fetching lock names from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning("Failed to fetch lock names from rmLocksNames")
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching lock names: %s", e)
+            return None
+
+    async def fetch_rm_alarms_names(self, lang: str = "en") -> dict[str, Any] | None:
+        """Fetch alarm descriptions from rmAlarmsNames endpoint.
+
+        This endpoint provides descriptions of alarm conditions and messages.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing alarm descriptions.
+            None if the request fails.
+
+        """
+        try:
+            url = f"{self.host}/service/{API_RM_ALARMS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            _LOGGER.debug("Fetching alarm names from: %s", url)
+
+            data = await self._client.get(url)
+            if data is None:
+                _LOGGER.warning("Failed to fetch alarm names from rmAlarmsNames")
+                return None
+
+            return data.get(API_RM_DATA_KEY, {})
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error fetching alarm names: %s", e)
+            return None
 
 
 async def make_api(hass: HomeAssistant, cache: MemCache, data: dict):
