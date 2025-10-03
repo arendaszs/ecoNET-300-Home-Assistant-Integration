@@ -21,3 +21,29 @@ def camel_to_snake(key: str) -> str:
     # Now apply the standard camel to snake conversion
     key = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", key)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", key).lower()
+
+
+def generate_translation_key(name: str) -> str:
+    """Convert parameter name to Home Assistant translation key."""
+    # Replace common characters
+    key = name.replace(" ", "_")
+    key = key.replace("%", "percent")
+    key = key.replace(".", "")
+    key = key.replace("-", "_")
+    key = key.replace("(", "")
+    key = key.replace(")", "")
+    key = key.replace(":", "")
+    key = key.replace("'", "")
+    key = key.replace('"', "")
+
+    # Convert to lowercase
+    key = key.lower()
+
+    # Handle specific patterns: mixer 3 room therm -> mixer3_room_therm
+    # Pattern: word + space + number + space + word -> word + number + underscore + word
+    key = re.sub(r"(\w+)_(\d+)_(\w+)", r"\1\2_\3", key)
+
+    # Handle other similar patterns: word + number + space + word -> word + number + underscore + word
+    key = re.sub(r"(\w+)(\d+)_(\w+)", r"\1\2_\3", key)
+
+    return key

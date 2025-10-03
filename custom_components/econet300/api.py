@@ -1,6 +1,7 @@
 """Econet300 API class describing methods of getting and setting data."""
 
 import asyncio
+from datetime import datetime
 from http import HTTPStatus
 import logging
 from typing import Any
@@ -10,6 +11,7 @@ from aiohttp import BasicAuth, ClientSession, ClientTimeout
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
+from .common_functions import generate_translation_key
 from .const import (
     API_EDITABLE_PARAMS_LIMITS_DATA,
     API_EDITABLE_PARAMS_LIMITS_URI,
@@ -464,13 +466,13 @@ class Econet300Api:
 
         Example:
             {
-                "remoteMenuParamsNamesVer": "61477_1",
-                "data": [
-                    "100% Blow-in output",
-                    "100% Feeder operation",
-                    "Boiler hysteresis",
-                    "FL airfl. correction",
-                    "Minimum boiler output FL"
+                "remoteMenuParamsNamesVer": "61477_1",  # Version of parameter names
+                "data": [                               # Array of parameter names (index matches rmParamsData)
+                    "100% Blow-in output",             # Human-readable name for parameter 0
+                    "100% Feeder operation",            # Human-readable name for parameter 1
+                    "Boiler hysteresis",               # Human-readable name for parameter 2
+                    "FL airfl. correction",            # Human-readable name for parameter 3
+                    "Minimum boiler output FL"         # Human-readable name for parameter 4
                 ]
             }
 
@@ -502,17 +504,17 @@ class Econet300Api:
 
         Example:
             {
-                "remoteMenuValuesKonfVer": 14264,
-                "remoteMenuValuesVer": 43253,
+                "remoteMenuValuesKonfVer": 14264,  # Configuration version number
+                "remoteMenuValuesVer": 43253,      # Data version number
                 "data": [
                     {
-                        "value": 60,
-                        "maxv": 100,
-                        "minv": 15,
-                        "edit": true,
-                        "unit": 5,
-                        "mult": 1,
-                        "offset": 0
+                        "value": 60,    # Current parameter value
+                        "maxv": 100,    # Maximum allowed value
+                        "minv": 15,     # Minimum allowed value
+                        "edit": true,   # Whether parameter can be edited
+                        "unit": 5,      # Unit index (maps to rmParamsUnitsNames)
+                        "mult": 1,      # Multiplier for value conversion
+                        "offset": 0     # Offset for value conversion
                     }
                 ]
             }
@@ -548,11 +550,11 @@ class Econet300Api:
 
         Example:
             {
-                "remoteMenuParamsDescsVer": "16688_1",
-                "data": [
-                    "Blow-in output when the burner runs at maximum output.",
-                    "Feeder operation time when the burner runs at maximum output.",
-                    "If the boiler temperature drops below the present boiler temperature by the boiler hysteresis value, then the automatic burner firing up will take place."
+                "remoteMenuParamsDescsVer": "16688_1",  # Version of parameter descriptions
+                "data": [                               # Array of parameter descriptions (index matches rmParamsData)
+                    "Blow-in output when the burner runs at maximum output.",                    # Description for parameter 0
+                    "Feeder operation time when the burner runs at maximum output.",              # Description for parameter 1
+                    "If the boiler temperature drops below the present boiler temperature by the boiler hysteresis value, then the automatic burner firing up will take place."  # Description for parameter 2
                 ]
             }
 
@@ -587,6 +589,27 @@ class Econet300Api:
             Dictionary containing parameter enumeration values.
             None if the request fails.
 
+        Example:
+            {
+                "remoteMenuParamsEnumsVer": "22746_1",  # Version of parameter enums
+                "data": [                              # Array of enum objects
+                    {
+                        "0": [                         # Enum type 0
+                            "off",                     # Value 0 = "off"
+                            "on"                       # Value 1 = "on"
+                        ]
+                    },
+                    {
+                        "1": [                         # Enum type 1
+                            "off",                     # Value 0 = "off"
+                            "priority",                # Value 1 = "priority"
+                            "no_priority",             # Value 2 = "no_priority"
+                            "summer_mode"              # Value 3 = "summer_mode"
+                        ]
+                    }
+                ]
+            }
+
         """
         try:
             url = f"{self.host}/service/{API_RM_PARAMS_ENUMS_URI}?uid={self.uid}&lang={lang}"
@@ -616,6 +639,22 @@ class Econet300Api:
         Returns:
             Dictionary containing parameter unit names.
             None if the request fails.
+
+        Example:
+            {
+                "remoteMenuParamsUnitsNamesVer": "22746_1",  # Version of unit names
+                "data": [                                   # Array of unit symbols (index matches unit field in rmParamsData)
+                    "",                                     # Index 0: No unit (empty string)
+                    "°C",                                   # Index 1: Celsius temperature
+                    "sek.",                                 # Index 2: Seconds
+                    "min.",                                 # Index 3: Minutes
+                    "h.",                                   # Index 4: Hours
+                    "%",                                    # Index 5: Percentage
+                    "kg",                                   # Index 6: Kilograms
+                    "kW",                                   # Index 7: Kilowatts
+                    "r/min"                                 # Index 8: Revolutions per minute
+                ]
+            }
 
         """
         try:
@@ -706,6 +745,25 @@ class Econet300Api:
             Dictionary containing menu structure.
             None if the request fails.
 
+        Example:
+            {
+                "remoteMenuStructureVer": "22746_1",  # Version of menu structure
+                "data": [                             # Array of menu structure entries
+                    {
+                        "pass_index": 0,              # Menu level/pass index
+                        "index": 1,                   # Unique identifier for this entry
+                        "type": 7,                    # Entry type (7=menu group, 1=parameter, etc.)
+                        "lock": false                 # Whether this entry is locked
+                    },
+                    {
+                        "pass_index": 0,              # Same menu level
+                        "index": 46,                  # Parameter ID (matches number field in merged data)
+                        "type": 1,                    # Type 1 = parameter entry
+                        "lock": false                 # Not locked
+                    }
+                ]
+            }
+
         """
         try:
             url = (
@@ -741,17 +799,17 @@ class Econet300Api:
 
         Example:
             {
-                "remoteMenuCurrDataParamsVer": "17127_1",
-                "data": {
-                    "1": {
-                        "unit": 31,
-                        "name": "Lighter",
-                        "special": 1
+                "remoteMenuCurrDataParamsVer": "17127_1",  # Version of current data
+                "data": {                                  # Dictionary of current parameter values
+                    "1": {                                # Parameter ID 1
+                        "unit": 31,                       # Unit index (maps to rmParamsUnitsNames)
+                        "name": "Lighter",                # Parameter name
+                        "special": 1                      # Special flag/status
                     },
-                    "26": {
-                        "unit": 1,
-                        "name": "Feeder temperature",
-                        "special": 1
+                    "26": {                               # Parameter ID 26
+                        "unit": 1,                        # Unit index (1 = "°C")
+                        "name": "Feeder temperature",     # Parameter name
+                        "special": 1                      # Special flag/status
                     }
                 }
             }
@@ -948,6 +1006,565 @@ class Econet300Api:
         except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
             _LOGGER.error("Error fetching alarm names: %s", e)
             return None
+
+    # =============================================================================
+    # STEP-BY-STEP UNIFIED RM DATA METHODS
+    # =============================================================================
+    # These methods demonstrate how to merge rm... endpoint data step by step,
+    # starting with the most fundamental endpoint (rmParamsData) as the foundation.
+
+    async def fetch_merged_rm_data_with_names(
+        self, lang: str = "en"
+    ) -> dict[str, Any] | None:
+        """Merge rmParamsData with rmParamsNames.
+
+        This is the first step in creating a unified data structure.
+        We start with rmParamsData as the foundation and merge in parameter names.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing merged parameter data with names.
+            None if the request fails.
+
+        Example:
+            {
+                "version": "1.0-names",                    # Merged data version
+                "timestamp": "2024-01-15T10:30:00Z",       # Generation timestamp
+                "device": {                                # Device information
+                    "uid": "ecoMAX810P-L-device",         # Device unique identifier
+                    "controllerId": "ecoMAX810P-L",        # Controller type
+                    "language": "en"                       # Language used
+                },
+                "parameters": [                            # Merged parameter array
+                    {
+                        "value": 60,                       # Current parameter value
+                        "maxv": 100,                       # Maximum allowed value
+                        "minv": 15,                        # Minimum allowed value
+                        "edit": true,                      # Whether parameter can be edited
+                        "unit": 5,                         # Unit index (maps to rmParamsUnitsNames)
+                        "mult": 1,                          # Multiplier for value conversion
+                        "offset": 0,                        # Offset for value conversion
+                        "name": "100% Blow-in output",     # Human-readable name (from rmParamsNames)
+                        "index": 0                          # Array index position
+                    }
+                ],
+                "metadata": {                              # Data statistics
+                    "totalParameters": 1,                   # Total number of parameters
+                    "namedParameters": 1,                   # Parameters with names
+                    "editableParameters": 1                 # Parameters that can be edited
+                },
+                "sourceEndpoints": {                        # Source endpoint information
+                    "rmParamsData": "Parameter metadata (values, min/max, units, edit flags)",
+                    "rmParamsNames": "Human-readable parameter names"
+                }
+            }
+
+        """
+        try:
+            # Fetch core data in parallel
+            tasks = [
+                self.fetch_rm_params_data(),
+                self.fetch_rm_params_names(lang),
+            ]
+
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            params_data: list[dict[str, Any]] = []
+            params_names: list[str] = []
+
+            if (
+                not isinstance(results[0], Exception)
+                and results[0] is not None
+                and isinstance(results[0], list)
+            ):
+                params_data = results[0]  # type: ignore[assignment]
+            if (
+                not isinstance(results[1], Exception)
+                and results[1] is not None
+                and isinstance(results[1], list)
+            ):
+                params_names = results[1]  # type: ignore[assignment]
+
+            if not params_data:
+                _LOGGER.warning("No parameter data available")
+                return None
+
+            # Merge parameter data with names
+            merged_params = []
+            for i, param in enumerate(params_data):
+                if isinstance(param, dict):
+                    merged_param = param.copy()  # Start with original parameter data
+
+                    # Add name if available
+                    if i < len(params_names) and isinstance(params_names, list):
+                        merged_param["name"] = params_names[i]  # type: ignore[index]
+                    else:
+                        merged_param["name"] = f"Parameter {i}"
+
+                    # Add index for reference
+                    merged_param["index"] = i
+
+                    merged_params.append(merged_param)
+
+            unified_data = {
+                "version": "1.0-names",
+                "timestamp": datetime.now().isoformat(),
+                "device": {
+                    "uid": self.uid,
+                    "controllerId": self.model_id,
+                    "language": lang,
+                },
+                "parameters": merged_params,
+                "metadata": {
+                    "totalParameters": len(merged_params),
+                    "namedParameters": len([p for p in merged_params if "name" in p]),
+                    "editableParameters": len(
+                        [p for p in merged_params if p.get("edit", False)]
+                    ),
+                },
+            }
+
+            _LOGGER.debug(
+                "Merged %d parameters with names from rmParamsData + rmParamsNames",
+                len(merged_params),
+            )
+            return unified_data
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error("Error merging rmParamsData with rmParamsNames: %s", e)
+            return None
+
+    async def fetch_merged_rm_data_with_names_and_descs(
+        self, lang: str = "en"
+    ) -> dict[str, Any] | None:
+        """Merge rmParamsData with rmParamsNames and rmParamsDescs.
+
+        This step adds parameter descriptions to the existing merged structure.
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing merged parameter data with names and descriptions.
+            None if the request fails.
+
+        """
+        try:
+            # Get step 1 data
+            step1_data = await self.fetch_merged_rm_data_with_names(lang)
+            if not step1_data:
+                return None
+
+            # Fetch descriptions
+            params_descs = await self.fetch_rm_params_descs(lang)
+            if isinstance(params_descs, Exception):
+                params_descs = []
+
+            # Merge descriptions
+            for i, param in enumerate(step1_data["parameters"]):
+                if isinstance(params_descs, list) and i < len(params_descs):
+                    param["description"] = params_descs[i]
+                else:
+                    param["description"] = ""
+
+            # Update metadata
+            step1_data["version"] = "1.0-names-descs"
+            step1_data["metadata"]["describedParameters"] = len(
+                [p for p in step1_data["parameters"] if p.get("description")]
+            )
+
+            _LOGGER.debug(
+                "Added descriptions to %d parameters from rmParamsDescs",
+                len(step1_data["parameters"]),
+            )
+            return step1_data
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error(
+                "Error merging rmParamsData with rmParamsNames and rmParamsDescs: %s", e
+            )
+            return None
+
+    async def fetch_merged_rm_data_with_names_descs_and_structure(
+        self, lang: str = "en"
+    ) -> dict[str, Any] | None:
+        """Merge rmParamsData with rmParamsNames, rmParamsDescs, rmStructure, and rmParamsEnums.
+
+        This step adds parameter numbers, units, and enumeration data to individual parameters.
+        Returns a cleaned structure with only essential data (structure, enums, metadata sections removed).
+
+        Args:
+            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+
+        Returns:
+            Dictionary containing fully merged parameter data.
+            None if the request fails.
+
+        Example:
+            {
+                "version": "1.0-names-descs-structure-units-indexed-enums-cleaned",  # Cleaned merged data version
+                "timestamp": "2024-01-15T10:30:00Z",           # Generation timestamp
+                "device": {                                    # Device information
+                    "uid": "ecoMAX810P-L-device",             # Device unique identifier
+                    "controllerId": "ecoMAX810P-L",            # Controller type
+                    "language": "en"                           # Language used
+                },
+                "parameters": {                                # Indexed parameter object
+                    "0": {                                     # Parameter index as key
+                        "value": 60,                           # Current parameter value
+                        "maxv": 100,                           # Maximum allowed value
+                        "minv": 15,                            # Minimum allowed value
+                        "edit": true,                          # Whether parameter can be edited
+                        "unit": 5,                             # Unit index (maps to rmParamsUnitsNames)
+                        "mult": 1,                              # Multiplier for value conversion
+                        "offset": 0,                           # Offset for value conversion
+                        "name": "100% Blow-in output",         # Human-readable name (from rmParamsNames)
+                        "key": "100percent_blow_in_output",    # Generated key using generate_translation_key
+                        "description": "Blow-in output when...", # Parameter description (from rmParamsDescs)
+                        "index": 0,                             # Array index position
+                        "number": 46,                           # Parameter ID from structure (from rmStructure)
+                        "unit_name": "%"                        # Resolved unit symbol (from rmParamsUnitsNames)
+                    },
+                    "69": {                                     # Another parameter example
+                        "value": 25,
+                        "maxv": 85,
+                        "minv": 20,
+                        "edit": true,
+                        "unit": 1,
+                        "mult": 1,
+                        "offset": 0,
+                        "name": "Min. mixer 3 temp.",
+                        "key": "min_mixer3_temp",
+                        "description": "Param. allows for limiting...",
+                        "index": 69,
+                        "number": 67,
+                        "unit_name": "°C"
+                    },
+                    "1": {                                      # Parameter with enum example
+                        "value": 1,
+                        "maxv": 1,
+                        "minv": 0,
+                        "edit": true,
+                        "unit": 2,
+                        "mult": 1,
+                        "offset": 0,
+                        "name": "100% Feeder operation",
+                        "key": "100percent_feeder_operation",
+                        "description": "Feeder operation setting...",
+                        "index": 1,
+                        "number": 111,
+                        "unit_name": "sek.",
+                        "enum": {                               # Enum data (if available)
+                            "id": 1,
+                            "values": ["OFF", "ON"],
+                            "first": 0
+                        },
+                        "enum_value": "ON"                      # Current enum value (if applicable)
+                    }
+                }
+            }
+
+        """
+        try:
+            # Get step 2 data
+            step2_data = await self.fetch_merged_rm_data_with_names_and_descs(lang)
+            if not step2_data:
+                return None
+
+            # Fetch additional data in parallel
+            tasks = [
+                self.fetch_rm_structure(lang),
+                self.fetch_rm_params_enums(lang),
+                self.fetch_rm_params_units_names(lang),
+            ]
+
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            structure: list[dict[str, Any]] = []
+            enums: list[dict[str, Any]] = []
+            units: list[str] = []
+
+            if (
+                not isinstance(results[0], Exception)
+                and results[0] is not None
+                and isinstance(results[0], list)
+            ):
+                structure = results[0]  # type: ignore[assignment]
+            if (
+                not isinstance(results[1], Exception)
+                and results[1] is not None
+                and isinstance(results[1], list)
+            ):
+                enums = results[1]  # type: ignore[assignment]
+            if (
+                not isinstance(results[2], Exception)
+                and results[2] is not None
+                and isinstance(results[2], list)
+            ):
+                units = results[2]  # type: ignore[assignment]
+
+            # Add parameter numbers based on structure
+            # Extract parameter entries from structure (type == 1)
+            param_structure_entries = [
+                item
+                for item in structure
+                if isinstance(item, dict) and item.get("type") == 1
+            ]
+
+            # Add numbers, units, and keys to parameters based on structure mapping
+            for param in step2_data["parameters"]:
+                param_index = param.get("index", 0)
+
+                # Use the structure entry index if available
+                if param_index < len(param_structure_entries):
+                    structure_entry = param_structure_entries[param_index]
+                    param["number"] = structure_entry.get("index", param_index)
+                else:
+                    # Fallback to parameter index if no structure entry
+                    param["number"] = param_index
+
+                # Add unit name if available
+                unit_index = param.get("unit")
+                if (
+                    unit_index is not None
+                    and isinstance(unit_index, int)
+                    and unit_index < len(units)
+                    and isinstance(units[unit_index], str)  # type: ignore[index]
+                ):
+                    param["unit_name"] = units[unit_index]  # type: ignore[index]
+                else:
+                    param["unit_name"] = ""
+
+                # Add key using generate_translation_key
+                if "name" in param:
+                    param["key"] = generate_translation_key(param["name"])
+
+            # Convert parameters array to object with index keys
+            parameters_dict = {}
+            for param in step2_data["parameters"]:
+                param_index = param.get("index", 0)
+                parameters_dict[param_index] = param
+
+            # Replace parameters array with indexed object
+            step2_data["parameters"] = parameters_dict
+
+            # Add enum data to parameters based on structure data_id references
+            structure_enum_map = {}
+            for entry in structure:
+                if isinstance(entry, dict) and "data_id" in entry:
+                    param_index = entry.get("index")
+                    enum_id = int(entry.get("data_id", 0))
+                    if param_index is not None:
+                        structure_enum_map[param_index] = enum_id
+
+            # Add enum data to parameters
+            enum_count = 0
+
+            # First pass: Add enums based on structure data_id references
+            for param_index_str, param in parameters_dict.items():
+                param_index = int(param_index_str)
+
+                # Check if this parameter has an enum reference AND no unit_name (enum-type parameter)
+                if param_index in structure_enum_map and param.get("unit_name") == "":
+                    enum_id = structure_enum_map[param_index]
+
+                    # Get enum data if available
+                    if enum_id < len(enums):
+                        enum_data = enums[enum_id]
+                        param["enum"] = {
+                            "id": enum_id,
+                            "values": enum_data.get("values", []),
+                            "first": enum_data.get("first", 0),
+                        }
+
+                        # Add current enum value if parameter has a value and it's within enum range
+                        if "value" in param and param["value"] is not None:
+                            param_value = param["value"]
+                            enum_values = enum_data.get("values", [])
+                            first_value = enum_data.get("first", 0)
+
+                            # Calculate the actual enum index
+                            enum_index = param_value - first_value
+                            if 0 <= enum_index < len(enum_values):
+                                param["enum_value"] = enum_values[enum_index]
+
+                        enum_count += 1
+
+            # Second pass: Smart enum detection for parameters without structure enum references
+            smart_enum_count = 0
+            for param_index_str, param in parameters_dict.items():
+                # Skip if already has enum data
+                if "enum" in param:
+                    continue
+
+                # Check if this parameter needs smart enum detection
+                if self._should_detect_enum_smart(param):
+                    best_enum_id = self._find_best_matching_enum(param, enums)
+                    if best_enum_id is not None:
+                        enum_data = enums[best_enum_id]
+                        param["enum"] = {
+                            "id": best_enum_id,
+                            "values": enum_data.get("values", []),
+                            "first": enum_data.get("first", 0),
+                            "detection_method": "smart_detection",
+                        }
+
+                        # Add current enum value if parameter has a value and it's within enum range
+                        if "value" in param and param["value"] is not None:
+                            param_value = param["value"]
+                            enum_values = enum_data.get("values", [])
+                            first_value = enum_data.get("first", 0)
+
+                            # Calculate the actual enum index
+                            enum_index = param_value - first_value
+                            if 0 <= enum_index < len(enum_values):
+                                param["enum_value"] = enum_values[enum_index]
+
+                        smart_enum_count += 1
+
+            # Update version to reflect cleaned structure
+            step2_data["version"] = (
+                "1.0-names-descs-structure-units-indexed-enums-cleaned"
+            )
+
+            _LOGGER.debug(
+                "Added parameter numbers (%d), units (%d types), enum mappings (%d structure + %d smart) from rmStructure + rmParamsEnums + rmParamsUnitsNames. Converted to indexed format with cleaned structure.",
+                len(param_structure_entries),
+                len(units),
+                enum_count,
+                smart_enum_count,
+            )
+
+            return step2_data
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            _LOGGER.error(
+                "Error merging rmParamsData with names, descriptions, and structure: %s",
+                e,
+            )
+            return None
+
+    def _should_detect_enum_smart(self, param: dict[str, Any]) -> bool:
+        """Determine if a parameter should have smart enum detection applied.
+
+        Args:
+            param: Parameter dictionary
+
+        Returns:
+            True if parameter should have smart enum detection
+
+        """
+        # Check for empty unit_name (indicates enum-type parameter)
+        unit_name = param.get("unit_name", "")
+        if unit_name != "":
+            return False
+
+        # Check for special unit indices that typically indicate enums
+        unit_index = param.get("unit")
+        if unit_index in [31]:  # Known enum unit indices
+            return True
+
+        # Check if description contains enum-like patterns
+        description = param.get("description", "").lower()
+        enum_patterns = [
+            "off",
+            "on",
+            "auto",
+            "manual",
+            "enabled",
+            "disabled",
+            "start",
+            "stop",
+            "open",
+            "close",
+            "connected",
+            "disconnected",
+        ]
+
+        pattern_matches = sum(1 for pattern in enum_patterns if pattern in description)
+        if pattern_matches >= 2:  # At least 2 enum-like patterns
+            return True
+
+        # Check if min/max values suggest discrete states
+        minv = param.get("minv", 0)
+        maxv = param.get("maxv", 0)
+        if isinstance(minv, (int, float)) and isinstance(maxv, (int, float)):
+            # If range is small and discrete, likely an enum
+            if 0 <= minv <= maxv <= 10 and maxv - minv <= 5:
+                return True
+
+        return False
+
+    def _find_best_matching_enum(
+        self, param: dict[str, Any], enums: list[dict[str, Any]]
+    ) -> int | None:
+        """Find the best matching enum for a parameter based on description analysis.
+
+        Args:
+            param: Parameter dictionary
+            enums: List of enum data from rmParamsEnums
+
+        Returns:
+            Best matching enum ID or None if no good match found
+
+        """
+        description = param.get("description", "").lower()
+        name = param.get("name", "").lower()
+
+        best_enum_id = None
+        best_score = 0
+
+        for enum_id, enum_data in enumerate(enums):
+            if not isinstance(enum_data, dict) or not enum_data.get("values"):
+                continue
+
+            values = enum_data["values"]
+            if not values:
+                continue
+
+            # Calculate match score
+            score = 0
+
+            # Count exact matches in description
+            for value in values:
+                if value and value.lower() in description:
+                    score += 2  # Exact match in description
+
+            # Count partial matches in description
+            for value in values:
+                if value:
+                    value_words = value.lower().split()
+                    for word in value_words:
+                        if len(word) > 2 and word in description:
+                            score += 1  # Partial match
+
+            # Count matches in parameter name
+            for value in values:
+                if value and value.lower() in name:
+                    score += 3  # Match in name (higher weight)
+
+            # Bonus for perfect enum size match
+            param_value = param.get("value", 0)
+            minv = param.get("minv", 0)
+            maxv = param.get("maxv", 0)
+
+            if (
+                isinstance(param_value, (int, float))
+                and isinstance(minv, (int, float))
+                and isinstance(maxv, (int, float))
+            ):
+                expected_range = maxv - minv + 1
+                if expected_range == len(values):
+                    score += 5  # Perfect size match
+
+            # Require minimum score threshold
+            if score >= 3 and score > best_score:
+                best_score = score
+                best_enum_id = enum_id
+
+        return best_enum_id
 
 
 async def make_api(hass: HomeAssistant, cache: MemCache, data: dict):
