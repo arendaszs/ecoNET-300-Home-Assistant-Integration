@@ -66,3 +66,48 @@ alwaysApply: false
 - Create realistic device responses
 - Test with different parameter combinations
 - Validate error handling scenarios
+
+## Fixtures Folder Structure
+
+**MANDATORY: Follow the established fixtures folder naming convention**
+
+### 📁 Controller Folder Naming
+
+**Folder Structure:** `tests/fixtures/[CONTROLLER_NAME]/`
+
+**Examples:**
+
+- `tests/fixtures/ecoMAX360/`
+- `tests/fixtures/ecoMAX810P-L/`
+- `tests/fixtures/ecoSOL500/`
+- `tests/fixtures/SControl MK1/`
+
+### 📄 JSON File Naming Convention
+
+**Each controller folder MUST contain JSON files named after API endpoints:**
+
+**Required Files:**
+
+- `regParams.json` - Regular parameters endpoint response
+- `sysParams.json` - System parameters endpoint response
+- `editParams.json` - Edit parameters endpoint response (if applicable)
+- `rmParamsData.json` - RM parameters data endpoint response
+- `rmParamsDescs.json` - RM parameters descriptions endpoint response
+- `rmParamsEnums.json` - RM parameters enums endpoint response
+- `rmParamsNames.json` - RM parameters names endpoint response
+- `rmStructure.json` - RM structure endpoint response
+- `rmParamsComplete.json` - Complete RM parameters endpoint response
+
+**File Content Requirements:**
+
+- Each JSON file MUST contain the actual API response from the corresponding endpoint
+- Responses should be realistic and representative of the controller's capabilities
+- Include both success and error response examples when applicable
+- Maintain consistent data structure across similar controllers
+
+**Benefits:**
+
+- Easy identification of controller-specific test data
+- Clear mapping between endpoints and test fixtures
+- Consistent test data organization
+- Simplified test maintenance and updates
