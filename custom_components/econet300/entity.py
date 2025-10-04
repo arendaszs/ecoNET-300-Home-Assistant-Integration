@@ -73,6 +73,7 @@ class EconetEntity(CoordinatorEntity):
         sys_params = self.coordinator.data.get("sysParams", {})
         reg_params = self.coordinator.data.get("regParams", {})
         params_edits = self.coordinator.data.get("paramsEdits", {})
+        merged_data = self.coordinator.data.get("mergedData", {})
 
         # Safety check: ensure all data sources are always dicts
         if sys_params is None:
@@ -84,17 +85,31 @@ class EconetEntity(CoordinatorEntity):
         if params_edits is None:
             params_edits = {}
             _LOGGER.info("paramsEdits was None, defaulting to empty dict")
+        if merged_data is None:
+            merged_data = {}
+            _LOGGER.debug("mergedData was None, defaulting to empty dict")
+
+        # Check if this is a dynamic entity (parameter ID as key)
+        is_dynamic_entity = self.entity_description.key.isdigit()
+        merged_parameters = merged_data.get("parameters", {}) if merged_data else {}
 
         _LOGGER.debug(
-            "DEBUG: Looking for key '%s' in data sources - sysParams: %s, regParams: %s, paramsEdits: %s",
+            "DEBUG: Looking for key '%s' in data sources - sysParams: %s, regParams: %s, paramsEdits: %s, mergedData: %s, is_dynamic: %s",
             self.entity_description.key,
             self.entity_description.key in sys_params,
             self.entity_description.key in reg_params,
             self.entity_description.key in params_edits,
+            self.entity_description.key in merged_parameters,
+            is_dynamic_entity,
         )
 
         value = None
-        if self.entity_description.key in sys_params:
+        if is_dynamic_entity and self.entity_description.key in merged_parameters:
+            # For dynamic entities, get the value from merged data
+            param_data = merged_parameters[self.entity_description.key]
+            value = param_data.get("value")
+            _LOGGER.debug("DEBUG: Found dynamic entity value in mergedData: %s", value)
+        elif self.entity_description.key in sys_params:
             value = sys_params[self.entity_description.key]
             _LOGGER.debug("DEBUG: Found in sysParams: %s", value)
         elif self.entity_description.key in reg_params:
@@ -136,6 +151,7 @@ class EconetEntity(CoordinatorEntity):
         sys_params = self.coordinator.data.get("sysParams", {})
         reg_params = self.coordinator.data.get("regParams", {})
         params_edits = self.coordinator.data.get("paramsEdits", {})
+        merged_data = self.coordinator.data.get("mergedData", {})
 
         # Safety check: ensure all data sources are always dicts
         if sys_params is None:
@@ -153,6 +169,11 @@ class EconetEntity(CoordinatorEntity):
             _LOGGER.info(
                 "async_added_to_hass: paramsEdits was None, defaulting to empty dict"
             )
+        if merged_data is None:
+            merged_data = {}
+            _LOGGER.debug(
+                "async_added_to_hass: mergedData was None, defaulting to empty dict"
+            )
         _LOGGER.debug("async_sysParams: %s", sys_params)
         _LOGGER.debug("async_regParams: %s", reg_params)
         _LOGGER.debug("async_paramsEdits: %s", params_edits)
@@ -161,24 +182,38 @@ class EconetEntity(CoordinatorEntity):
         sys_keys = sys_params.keys() if sys_params is not None else []
         reg_keys = reg_params.keys() if reg_params is not None else []
         edit_keys = params_edits.keys() if params_edits is not None else []
+        merged_keys = merged_data.get("parameters", {}).keys() if merged_data else []
         _LOGGER.debug("Available keys in sysParams: %s", sys_keys)
         _LOGGER.debug("Available keys in regParams: %s", reg_keys)
         _LOGGER.debug("Available keys in paramsEdits: %s", edit_keys)
+        _LOGGER.debug("Available keys in mergedData parameters: %s", merged_keys)
 
         # Expected key from entity_description
         expected_key = self.entity_description.key
         _LOGGER.debug("Expected key: %s", expected_key)
 
-        # Retrieve the value from sysParams or regParams  or paramsEdits
-        value = (
-            sys_params.get(expected_key)
-            if sys_params.get(expected_key) is not None
-            else (
-                reg_params.get(expected_key)
-                if reg_params.get(expected_key) is not None
-                else params_edits.get(expected_key)
+        # Check if this is a dynamic entity (parameter ID as key)
+        is_dynamic_entity = expected_key.isdigit()
+        merged_parameters = merged_data.get("parameters", {}) if merged_data else {}
+
+        # Retrieve the value from appropriate data source
+        value = None
+        if is_dynamic_entity and expected_key in merged_parameters:
+            # For dynamic entities, get the value from merged data
+            param_data = merged_parameters[expected_key]
+            value = param_data.get("value")
+            _LOGGER.debug("DEBUG: Found dynamic entity value in mergedData: %s", value)
+        else:
+            # For legacy entities, use standard logic
+            value = (
+                sys_params.get(expected_key)
+                if sys_params.get(expected_key) is not None
+                else (
+                    reg_params.get(expected_key)
+                    if reg_params.get(expected_key) is not None
+                    else params_edits.get(expected_key)
+                )
             )
-        )
 
         if value is not None:
             _LOGGER.debug("Found key '%s' with value: %s", expected_key, value)

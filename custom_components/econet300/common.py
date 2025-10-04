@@ -7,6 +7,7 @@ from datetime import timedelta
 import logging
 from typing import Any
 
+import aiohttp
 from aiohttp import ClientError
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -101,12 +102,22 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                 # These provide structured data used by the ecoNET24 web interface
                 rm_data = await self._fetch_rm_endpoint_data()
 
+                # Fetch merged parameter data for dynamic entities
+                merged_data = None
+                try:
+                    merged_data = await self._api.fetch_merged_rm_data_with_names_descs_and_structure()
+                except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+                    _LOGGER.debug(
+                        "Failed to fetch merged parameter data in coordinator: %s", e
+                    )
+
                 return {
                     "sysParams": sys_params,
                     "regParams": reg_params,
                     "regParamsData": reg_params_data,
                     "paramsEdits": params_edits,
                     "rmData": rm_data,
+                    "mergedData": merged_data,
                 }
         except AuthError as err:
             _LOGGER.error("Authentication error: %s", err)
@@ -212,7 +223,7 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                 "Successfully fetched RM endpoint data: %s", list(rm_data.keys())
             )
 
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
             _LOGGER.warning("Error fetching RM endpoint data: %s", e)
             # Return empty dict to avoid breaking the coordinator
 

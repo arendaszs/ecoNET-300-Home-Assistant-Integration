@@ -53,9 +53,15 @@ class EconetNumber(EconetEntity, NumberEntity):
 
     def _sync_state(self, value):
         """Sync the state of the ecoNET number entity."""
-        _LOGGER.debug("ecoNETNumber _sync_state: %s", value)
         _LOGGER.debug(
-            "DEBUG: Value type: %s, Value keys: %s",
+            "ecoNETNumber _sync_state for entity %s: %s",
+            self.entity_description.key,
+            value,
+        )
+        _LOGGER.debug(
+            "DEBUG: Entity key=%s, translation_key=%s, Value type: %s, Value keys: %s",
+            self.entity_description.key,
+            self.entity_description.translation_key,
             type(value),
             value.keys() if isinstance(value, dict) else "Not a dict",
         )
@@ -250,9 +256,19 @@ def create_dynamic_number_entity_description(
     else:
         step = 1.0
 
+    # Debug translation key generation
+    translation_key = param.get("key", f"parameter_{param_id}")
+    _LOGGER.debug(
+        "DEBUG: Creating entity description for param_id=%s, name=%s, key=%s, translation_key=%s",
+        param_id,
+        param.get("name", "No name"),
+        param.get("key", "No key"),
+        translation_key,
+    )
+
     return EconetNumberEntityDescription(
         key=param_id,
-        translation_key=param.get("key", f"parameter_{param_id}"),
+        translation_key=translation_key,
         native_unit_of_measurement=ha_unit,
         native_min_value=min_value,
         native_max_value=max_value,
@@ -290,7 +306,14 @@ async def async_setup_entry(
 
         # Create number entities dynamically from merged data
         dynamic_entities = []
+        _LOGGER.info(
+            "DEBUG: Starting dynamic entity creation. Total parameters: %d",
+            len(merged_data["parameters"]),
+        )
+
         for param_id, param in merged_data["parameters"].items():
+            _LOGGER.debug("DEBUG: Processing parameter %s: %s", param_id, param)
+
             if should_be_number_entity(param):
                 try:
                     entity_description = create_dynamic_number_entity_description(
@@ -298,13 +321,14 @@ async def async_setup_entry(
                     )
                     entity = EconetNumber(entity_description, coordinator, api)
                     dynamic_entities.append(entity)
-                    _LOGGER.debug(
-                        "Created dynamic number entity: %s (%s) - %s to %s %s",
+                    _LOGGER.info(
+                        "Created dynamic number entity: %s (%s) - %s to %s %s, translation_key=%s",
                         param.get("name", f"Parameter {param_id}"),
                         param_id,
                         param.get("minv", 0),
                         param.get("maxv", 100),
                         param.get("unit_name", ""),
+                        entity_description.translation_key,
                     )
                 except (ValueError, KeyError, TypeError) as e:
                     _LOGGER.warning(
