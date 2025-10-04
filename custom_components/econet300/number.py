@@ -1,8 +1,10 @@
 """Base entity number for Econet300."""
 
+import asyncio
 from dataclasses import dataclass
 import logging
 
+import aiohttp
 from homeassistant.components.number import NumberEntity, NumberEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -279,7 +281,7 @@ async def async_setup_entry(
     # Try to get merged parameter data for dynamic entity creation
     try:
         merged_data = await api.fetch_merged_rm_data_with_names_descs_and_structure()
-    except Exception as e:
+    except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
         _LOGGER.warning("Failed to fetch merged parameter data: %s", e)
         merged_data = None
 
