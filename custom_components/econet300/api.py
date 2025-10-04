@@ -478,7 +478,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_PARAMS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            url = f"{self.host}/econet/{API_RM_PARAMS_NAMES_URI}?uid={self.uid}&lang={lang}"
             _LOGGER.debug("Fetching parameter names from: %s", url)
 
             data = await self._client.get(url)
@@ -521,7 +521,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_PARAMS_DATA_URI}?uid={self.uid}"
+            url = f"{self.host}/econet/{API_RM_PARAMS_DATA_URI}?uid={self.uid}"
             _LOGGER.debug("Fetching parameter data from: %s", url)
 
             data = await self._client.get(url)
@@ -560,7 +560,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_PARAMS_DESCS_URI}?uid={self.uid}&lang={lang}"
+            url = f"{self.host}/econet/{API_RM_PARAMS_DESCS_URI}?uid={self.uid}&lang={lang}"
             _LOGGER.debug("Fetching parameter descriptions from: %s", url)
 
             data = await self._client.get(url)
@@ -612,7 +612,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_PARAMS_ENUMS_URI}?uid={self.uid}&lang={lang}"
+            url = f"{self.host}/econet/{API_RM_PARAMS_ENUMS_URI}?uid={self.uid}&lang={lang}"
             _LOGGER.debug("Fetching parameter enums from: %s", url)
 
             data = await self._client.get(url)
@@ -658,7 +658,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_PARAMS_UNITS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            url = f"{self.host}/econet/{API_RM_PARAMS_UNITS_NAMES_URI}?uid={self.uid}&lang={lang}"
             _LOGGER.debug("Fetching parameter units from: %s", url)
 
             data = await self._client.get(url)
@@ -688,7 +688,9 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_CATS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            url = (
+                f"{self.host}/econet/{API_RM_CATS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            )
             _LOGGER.debug("Fetching category names from: %s", url)
 
             data = await self._client.get(url)
@@ -716,7 +718,9 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_CATS_DESCS_URI}?uid={self.uid}&lang={lang}"
+            url = (
+                f"{self.host}/econet/{API_RM_CATS_DESCS_URI}?uid={self.uid}&lang={lang}"
+            )
             _LOGGER.debug("Fetching category descriptions from: %s", url)
 
             data = await self._client.get(url)
@@ -767,7 +771,7 @@ class Econet300Api:
         """
         try:
             url = (
-                f"{self.host}/service/{API_RM_STRUCTURE_URI}?uid={self.uid}&lang={lang}"
+                f"{self.host}/econet/{API_RM_STRUCTURE_URI}?uid={self.uid}&lang={lang}"
             )
             _LOGGER.debug("Fetching menu structure from: %s", url)
 
@@ -816,7 +820,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_CURRENT_DATA_PARAMS_URI}?uid={self.uid}&lang={lang}"
+            url = f"{self.host}/econet/{API_RM_CURRENT_DATA_PARAMS_URI}?uid={self.uid}&lang={lang}"
             _LOGGER.debug("Fetching current data params from: %s", url)
 
             data = await self._client.get(url)
@@ -863,7 +867,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_CURRENT_DATA_PARAMS_EDITS_URI}?uid={self.uid}"
+            url = f"{self.host}/econet/{API_RM_CURRENT_DATA_PARAMS_EDITS_URI}?uid={self.uid}"
             _LOGGER.debug("Fetching current data params edits from: %s", url)
 
             data = await self._client.get(url)
@@ -909,7 +913,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_LANGS_URI}?uid={self.uid}"
+            url = f"{self.host}/econet/{API_RM_LANGS_URI}?uid={self.uid}"
             _LOGGER.debug("Fetching available languages from: %s", url)
 
             data = await self._client.get(url)
@@ -935,7 +939,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_EXISTING_LANGS_URI}?uid={self.uid}"
+            url = f"{self.host}/econet/{API_RM_EXISTING_LANGS_URI}?uid={self.uid}"
             _LOGGER.debug("Fetching existing languages from: %s", url)
 
             data = await self._client.get(url)
@@ -965,7 +969,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_LOCKS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            url = f"{self.host}/econet/{API_RM_LOCKS_NAMES_URI}?uid={self.uid}&lang={lang}"
             _LOGGER.debug("Fetching lock names from: %s", url)
 
             data = await self._client.get(url)
@@ -993,7 +997,7 @@ class Econet300Api:
 
         """
         try:
-            url = f"{self.host}/service/{API_RM_ALARMS_NAMES_URI}?uid={self.uid}&lang={lang}"
+            url = f"{self.host}/econet/{API_RM_ALARMS_NAMES_URI}?uid={self.uid}&lang={lang}"
             _LOGGER.debug("Fetching alarm names from: %s", url)
 
             data = await self._client.get(url)

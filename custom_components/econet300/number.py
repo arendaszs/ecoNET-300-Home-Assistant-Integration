@@ -277,7 +277,11 @@ async def async_setup_entry(
         return async_add_entities(entities)
 
     # Try to get merged parameter data for dynamic entity creation
-    merged_data = await api.fetch_merged_rm_data_with_names_descs_and_structure()
+    try:
+        merged_data = await api.fetch_merged_rm_data_with_names_descs_and_structure()
+    except Exception as e:
+        _LOGGER.warning("Failed to fetch merged parameter data: %s", e)
+        merged_data = None
 
     if merged_data and "parameters" in merged_data:
         _LOGGER.info("Using dynamic number entity creation from merged parameter data")
@@ -333,5 +337,13 @@ async def async_setup_entry(
                     "Cannot add number entity - availability key: %s does not exist",
                     key,
                 )
+
+    # Final check - if no entities were created, log a warning
+    if not entities:
+        _LOGGER.warning(
+            "No number entities could be created. This may indicate that your device "
+            "does not support the rmParamsData endpoint for dynamic entities, and "
+            "the legacy NUMBER_MAP entities are not available on your device."
+        )
 
     return async_add_entities(entities)
