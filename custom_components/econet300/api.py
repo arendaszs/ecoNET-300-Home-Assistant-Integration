@@ -1130,11 +1130,11 @@ class Econet300Api:
                 "Merged %d parameters with names from rmParamsData + rmParamsNames",
                 len(merged_params),
             )
-            return unified_data
-
         except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
             _LOGGER.error("Error merging rmParamsData with rmParamsNames: %s", e)
             return None
+        else:
+            return unified_data
 
     async def fetch_merged_rm_data_with_names_and_descs(
         self, lang: str = "en"
@@ -1179,13 +1179,13 @@ class Econet300Api:
                 "Added descriptions to %d parameters from rmParamsDescs",
                 len(step1_data["parameters"]),
             )
-            return step1_data
-
         except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
             _LOGGER.error(
                 "Error merging rmParamsData with rmParamsNames and rmParamsDescs: %s", e
             )
             return None
+        else:
+            return step1_data
 
     async def fetch_merged_rm_data_with_names_descs_and_structure(
         self, lang: str = "en"
@@ -1305,39 +1305,12 @@ class Econet300Api:
             ):
                 units = results[2]  # type: ignore[assignment]
 
-            # Add parameter numbers based on structure
-            # Extract parameter entries from structure (type == 1)
-            param_structure_entries = [
-                item
-                for item in structure
-                if isinstance(item, dict) and item.get("type") == 1
-            ]
+            # Add parameter numbers, units, and keys using helper methods
+            self._add_parameter_numbers(step2_data["parameters"], structure)
+            self._add_unit_names(step2_data["parameters"], units)
 
-            # Add numbers, units, and keys to parameters based on structure mapping
+            # Add keys using generate_translation_key
             for param in step2_data["parameters"]:
-                param_index = param.get("index", 0)
-
-                # Use the structure entry index if available
-                if param_index < len(param_structure_entries):
-                    structure_entry = param_structure_entries[param_index]
-                    param["number"] = structure_entry.get("index", param_index)
-                else:
-                    # Fallback to parameter index if no structure entry
-                    param["number"] = param_index
-
-                # Add unit name if available
-                unit_index = param.get("unit")
-                if (
-                    unit_index is not None
-                    and isinstance(unit_index, int)
-                    and unit_index < len(units)
-                    and isinstance(units[unit_index], str)  # type: ignore[index]
-                ):
-                    param["unit_name"] = units[unit_index]  # type: ignore[index]
-                else:
-                    param["unit_name"] = ""
-
-                # Add key using generate_translation_key
                 if "name" in param:
                     param["key"] = generate_translation_key(param["name"])
 
@@ -1350,84 +1323,23 @@ class Econet300Api:
             # Replace parameters array with indexed object
             step2_data["parameters"] = parameters_dict
 
-            # Add enum data to parameters based on structure data_id references
-            structure_enum_map = {}
-            for entry in structure:
-                if isinstance(entry, dict) and "data_id" in entry:
-                    param_index = entry.get("index")
-                    enum_id = int(entry.get("data_id", 0))
-                    if param_index is not None:
-                        structure_enum_map[param_index] = enum_id
-
-            # Add enum data to parameters
-            enum_count = 0
-
-            # First pass: Add enums based on structure data_id references
-            for param_index_str, param in parameters_dict.items():
-                param_index = int(param_index_str)
-
-                # Check if this parameter has an enum reference AND no unit_name (enum-type parameter)
-                if param_index in structure_enum_map and param.get("unit_name") == "":
-                    enum_id = structure_enum_map[param_index]
-
-                    # Get enum data if available
-                    if enum_id < len(enums):
-                        enum_data = enums[enum_id]
-                        param["enum"] = {
-                            "id": enum_id,
-                            "values": enum_data.get("values", []),
-                            "first": enum_data.get("first", 0),
-                        }
-
-                        # Add current enum value if parameter has a value and it's within enum range
-                        if "value" in param and param["value"] is not None:
-                            param_value = param["value"]
-                            enum_values = enum_data.get("values", [])
-                            first_value = enum_data.get("first", 0)
-
-                            # Calculate the actual enum index
-                            enum_index = param_value - first_value
-                            if 0 <= enum_index < len(enum_values):
-                                param["enum_value"] = enum_values[enum_index]
-
-                        enum_count += 1
-
-            # Second pass: Smart enum detection for parameters without structure enum references
-            smart_enum_count = 0
-            for param_index_str, param in parameters_dict.items():
-                # Skip if already has enum data
-                if "enum" in param:
-                    continue
-
-                # Check if this parameter needs smart enum detection
-                if self._should_detect_enum_smart(param):
-                    best_enum_id = self._find_best_matching_enum(param, enums)
-                    if best_enum_id is not None:
-                        enum_data = enums[best_enum_id]
-                        param["enum"] = {
-                            "id": best_enum_id,
-                            "values": enum_data.get("values", []),
-                            "first": enum_data.get("first", 0),
-                            "detection_method": "smart_detection",
-                        }
-
-                        # Add current enum value if parameter has a value and it's within enum range
-                        if "value" in param and param["value"] is not None:
-                            param_value = param["value"]
-                            enum_values = enum_data.get("values", [])
-                            first_value = enum_data.get("first", 0)
-
-                            # Calculate the actual enum index
-                            enum_index = param_value - first_value
-                            if 0 <= enum_index < len(enum_values):
-                                param["enum_value"] = enum_values[enum_index]
-
-                        smart_enum_count += 1
+            # Add enum data using helper methods
+            enum_count = self._add_enum_data_from_structure(
+                parameters_dict, structure, enums
+            )
+            smart_enum_count = self._add_smart_enum_detection(parameters_dict, enums)
 
             # Update version to reflect cleaned structure
             step2_data["version"] = (
                 "1.0-names-descs-structure-units-indexed-enums-cleaned"
             )
+
+            # Extract parameter entries from structure for logging
+            param_structure_entries = [
+                item
+                for item in structure
+                if isinstance(item, dict) and item.get("type") == 1
+            ]
 
             _LOGGER.debug(
                 "Added parameter numbers (%d), units (%d types), enum mappings (%d structure + %d smart) from rmStructure + rmParamsEnums + rmParamsUnitsNames. Converted to indexed format with cleaned structure.",
@@ -1436,15 +1348,14 @@ class Econet300Api:
                 enum_count,
                 smart_enum_count,
             )
-
-            return step2_data
-
         except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
             _LOGGER.error(
                 "Error merging rmParamsData with names, descriptions, and structure: %s",
                 e,
             )
             return None
+        else:
+            return step2_data
 
     def _should_detect_enum_smart(self, param: dict[str, Any]) -> bool:
         """Determine if a parameter should have smart enum detection applied.
@@ -1565,6 +1476,168 @@ class Econet300Api:
                 best_enum_id = enum_id
 
         return best_enum_id
+
+    def _add_parameter_numbers(
+        self, parameters: list[dict[str, Any]], structure: list[dict[str, Any]]
+    ) -> None:
+        """Add parameter numbers based on structure data.
+
+        Args:
+            parameters: List of parameter dictionaries to update
+            structure: Structure data from rmStructure endpoint
+
+        """
+        # Extract parameter entries from structure (type == 1)
+        param_structure_entries = [
+            item
+            for item in structure
+            if isinstance(item, dict) and item.get("type") == 1
+        ]
+
+        # Add numbers to parameters based on structure mapping
+        for param in parameters:
+            param_index = param.get("index", 0)
+
+            # Use the structure entry index if available
+            if param_index < len(param_structure_entries):
+                structure_entry = param_structure_entries[param_index]
+                param["number"] = structure_entry.get("index", param_index)
+            else:
+                # Fallback to parameter index if no structure entry
+                param["number"] = param_index
+
+    def _add_unit_names(
+        self, parameters: list[dict[str, Any]], units: list[str]
+    ) -> None:
+        """Add unit names to parameters based on unit indices.
+
+        Args:
+            parameters: List of parameter dictionaries to update
+            units: List of unit names from rmParamsUnitsNames endpoint
+
+
+        """
+        for param in parameters:
+            # Add unit name if available
+            unit_index = param.get("unit")
+            if (
+                unit_index is not None
+                and isinstance(unit_index, int)
+                and unit_index < len(units)
+                and isinstance(units[unit_index], str)
+            ):
+                param["unit_name"] = units[unit_index]
+            else:
+                param["unit_name"] = ""
+
+    def _add_enum_data_from_structure(
+        self,
+        parameters_dict: dict[str, dict[str, Any]],
+        structure: list[dict[str, Any]],
+        enums: list[dict[str, Any]],
+    ) -> int:
+        """Add enum data to parameters based on structure data_id references.
+
+        Args:
+            parameters_dict: Dictionary of parameters indexed by string keys
+            structure: Structure data from rmStructure endpoint
+            enums: List of enum data from rmParamsEnums endpoint
+
+        Returns:
+            Number of enums added from structure references
+
+        """
+        # Create structure enum map
+        structure_enum_map = {}
+        for entry in structure:
+            if isinstance(entry, dict) and "data_id" in entry:
+                param_index = entry.get("index")
+                enum_id = int(entry.get("data_id", 0))
+                if param_index is not None:
+                    structure_enum_map[param_index] = enum_id
+
+        # Add enum data to parameters
+        enum_count = 0
+        for param_index_str, param in parameters_dict.items():
+            param_index = int(param_index_str)
+
+            # Check if this parameter has an enum reference AND no unit_name (enum-type parameter)
+            if param_index in structure_enum_map and param.get("unit_name") == "":
+                enum_id = structure_enum_map[param_index]
+
+                # Get enum data if available
+                if isinstance(enum_id, int) and 0 <= enum_id < len(enums):
+                    enum_data = enums[enum_id]
+                    param["enum"] = {
+                        "id": enum_id,
+                        "values": enum_data.get("values", []),
+                        "first": enum_data.get("first", 0),
+                    }
+
+                    # Add current enum value if parameter has a value and it's within enum range
+                    if "value" in param and param["value"] is not None:
+                        param_value = param["value"]
+                        enum_values = enum_data.get("values", [])
+                        first_value = enum_data.get("first", 0)
+
+                        # Calculate the actual enum index
+                        enum_index = param_value - first_value
+                        if 0 <= enum_index < len(enum_values):
+                            param["enum_value"] = enum_values[enum_index]
+
+                    enum_count += 1
+
+        return enum_count
+
+    def _add_smart_enum_detection(
+        self, parameters_dict: dict[str, dict[str, Any]], enums: list[dict[str, Any]]
+    ) -> int:
+        """Add enum data using smart detection for parameters without structure enum references.
+
+        Args:
+            parameters_dict: Dictionary of parameters indexed by string keys
+            enums: List of enum data from rmParamsEnums endpoint
+
+        Returns:
+            Number of enums added via smart detection
+
+        """
+        smart_enum_count = 0
+        for param in parameters_dict.values():
+            # Skip if already has enum data
+            if "enum" in param:
+                continue
+
+            # Check if this parameter needs smart enum detection
+            if self._should_detect_enum_smart(param):
+                best_enum_id = self._find_best_matching_enum(param, enums)
+                if (
+                    best_enum_id is not None
+                    and isinstance(best_enum_id, int)
+                    and 0 <= best_enum_id < len(enums)
+                ):
+                    enum_data = enums[best_enum_id]
+                    param["enum"] = {
+                        "id": best_enum_id,
+                        "values": enum_data.get("values", []),
+                        "first": enum_data.get("first", 0),
+                        "detection_method": "smart_detection",
+                    }
+
+                    # Add current enum value if parameter has a value and it's within enum range
+                    if "value" in param and param["value"] is not None:
+                        param_value = param["value"]
+                        enum_values = enum_data.get("values", [])
+                        first_value = enum_data.get("first", 0)
+
+                        # Calculate the actual enum index
+                        enum_index = param_value - first_value
+                        if 0 <= enum_index < len(enum_values):
+                            param["enum_value"] = enum_values[enum_index]
+
+                    smart_enum_count += 1
+
+        return smart_enum_count
 
 
 async def make_api(hass: HomeAssistant, cache: MemCache, data: dict):

@@ -424,6 +424,21 @@ CONTROL_PARAMS = {
 BOILER_CONTROL = "BOILER_CONTROL"
 
 # =============================================================================
+# DYNAMIC ENTITY UNIT MAPPINGS
+# =============================================================================
+# Mapping from ecoNET unit names to Home Assistant units
+# Used for dynamic number entity creation from merged parameter data
+UNIT_NAME_TO_HA_UNIT = {
+    "%": PERCENTAGE,
+    "°C": UnitOfTemperature.CELSIUS,
+    "sek.": UnitOfTime.SECONDS,
+    "min.": UnitOfTime.MINUTES,
+    "h.": UnitOfTime.HOURS,
+    "r/min": "r/min",  # Custom unit for revolutions per minute
+    "kW": UnitOfPower.KILO_WATT,
+}
+
+# =============================================================================
 # ENTITY UNIT MAPPINGS
 # =============================================================================
 # By default all sensors unit_of_measurement are None

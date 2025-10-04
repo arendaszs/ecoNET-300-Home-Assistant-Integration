@@ -21,6 +21,7 @@ from .const import (
     NUMBER_MAP,
     SERVICE_API,
     SERVICE_COORDINATOR,
+    UNIT_NAME_TO_HA_UNIT,
 )
 from .entity import EconetEntity
 
@@ -200,39 +201,137 @@ def create_number_entity_description(
     )
 
 
+def should_be_number_entity(param: dict) -> bool:
+    """Check if parameter should be a number entity.
+
+    Args:
+        param: Parameter dictionary from merged data
+
+    Returns:
+        True if parameter should be a number entity
+
+    """
+    unit_name = param.get("unit_name", "")
+    has_enum = "enum" in param
+    is_editable = param.get("edit", False)
+
+    # Number entity: has unit_name, is editable, no enum
+    return bool(unit_name and is_editable and not has_enum)
+
+
+def create_dynamic_number_entity_description(
+    param_id: str, param: dict
+) -> EconetNumberEntityDescription:
+    """Create a number entity description from parameter data.
+
+    Args:
+        param_id: Parameter ID (string)
+        param: Parameter dictionary from merged data
+
+    Returns:
+        EconetNumberEntityDescription for the parameter
+
+    """
+    # Get unit mapping
+    unit_name = param.get("unit_name", "")
+    ha_unit = UNIT_NAME_TO_HA_UNIT.get(unit_name)
+
+    # Get min/max values
+    min_value = float(param.get("minv", 0))
+    max_value = float(param.get("maxv", 100))
+
+    # Determine step based on unit and range
+    if unit_name in {"%", "°C"} or unit_name in ["sek.", "min.", "h."]:
+        step = 1.0
+    elif max_value - min_value > 100:
+        step = 5.0
+    else:
+        step = 1.0
+
+    return EconetNumberEntityDescription(
+        key=param_id,
+        translation_key=param.get("key", f"parameter_{param_id}"),
+        native_unit_of_measurement=ha_unit,
+        native_min_value=min_value,
+        native_max_value=max_value,
+        native_step=step,
+    )
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the sensor platform."""
+    """Set up the number platform."""
 
     coordinator = hass.data[DOMAIN][entry.entry_id][SERVICE_COORDINATOR]
     api = hass.data[DOMAIN][entry.entry_id][SERVICE_API]
 
     entities: list[EconetNumber] = []
 
-    for key in NUMBER_MAP:
-        sys_params = coordinator.data.get("sysParams", {})
-        if skip_params_edits(sys_params):
-            _LOGGER.info("Skipping number entity setup for controllerID: ecoMAX360i")
-            continue
+    # Check if we should skip params edits for certain controllers
+    sys_params = coordinator.data.get("sysParams", {})
+    if skip_params_edits(sys_params):
+        _LOGGER.info("Skipping number entity setup for controllerID: ecoMAX360i")
+        return async_add_entities(entities)
 
-        number_limits = await api.get_param_limits(key)
-        if number_limits is None:
-            _LOGGER.info(
-                "Cannot add number entity: %s, numeric limits for this entity is None",
-                key,
-            )
-            continue
+    # Try to get merged parameter data for dynamic entity creation
+    merged_data = await api.fetch_merged_rm_data_with_names_descs_and_structure()
 
-        if can_add(key, coordinator):
-            entity_description = create_number_entity_description(key, number_limits)
-            entities.append(EconetNumber(entity_description, coordinator, api))
-        else:
-            _LOGGER.info(
-                "Cannot add number entity - availability key: %s does not exist",
-                key,
-            )
+    if merged_data and "parameters" in merged_data:
+        _LOGGER.info("Using dynamic number entity creation from merged parameter data")
+
+        # Create number entities dynamically from merged data
+        dynamic_entities = []
+        for param_id, param in merged_data["parameters"].items():
+            if should_be_number_entity(param):
+                try:
+                    entity_description = create_dynamic_number_entity_description(
+                        param_id, param
+                    )
+                    entity = EconetNumber(entity_description, coordinator, api)
+                    dynamic_entities.append(entity)
+                    _LOGGER.debug(
+                        "Created dynamic number entity: %s (%s) - %s to %s %s",
+                        param.get("name", f"Parameter {param_id}"),
+                        param_id,
+                        param.get("minv", 0),
+                        param.get("maxv", 100),
+                        param.get("unit_name", ""),
+                    )
+                except (ValueError, KeyError, TypeError) as e:
+                    _LOGGER.warning(
+                        "Failed to create dynamic number entity for parameter %s: %s",
+                        param_id,
+                        e,
+                    )
+
+        entities.extend(dynamic_entities)
+        _LOGGER.info("Created %d dynamic number entities", len(dynamic_entities))
+
+    else:
+        _LOGGER.info("Falling back to legacy number entity creation from NUMBER_MAP")
+
+        # Fallback to legacy method using NUMBER_MAP
+        for key in NUMBER_MAP:
+            number_limits = await api.get_param_limits(key)
+            if number_limits is None:
+                _LOGGER.info(
+                    "Cannot add number entity: %s, numeric limits for this entity is None",
+                    key,
+                )
+                continue
+
+            if can_add(key, coordinator):
+                entity_description = create_number_entity_description(
+                    key, number_limits
+                )
+                entities.append(EconetNumber(entity_description, coordinator, api))
+            else:
+                _LOGGER.info(
+                    "Cannot add number entity - availability key: %s does not exist",
+                    key,
+                )
 
     return async_add_entities(entities)
