@@ -3,9 +3,15 @@
 import asyncio
 from dataclasses import dataclass
 import logging
+import re
+import traceback
 
 import aiohttp
-from homeassistant.components.number import NumberEntity, NumberEntityDescription
+from homeassistant.components.number import (
+    NumberEntity,
+    NumberEntityDescription,
+    NumberMode,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -14,18 +20,21 @@ from .api import Limits
 from .common import Econet300Api, EconetDataCoordinator, skip_params_edits
 from .common_functions import camel_to_snake
 from .const import (
+    AVAILABLE_NUMBER_OF_MIXERS,
     DOMAIN,
     ENTITY_MAX_VALUE,
     ENTITY_MIN_VALUE,
     ENTITY_NUMBER_SENSOR_DEVICE_CLASS_MAP,
     ENTITY_STEP,
     ENTITY_UNIT_MAP,
+    MIXER_SET_AVAILABILITY_KEY,
     NUMBER_MAP,
+    SENSOR_MIXER_KEY,
     SERVICE_API,
     SERVICE_COORDINATOR,
     UNIT_NAME_TO_HA_UNIT,
 )
-from .entity import EconetEntity
+from .entity import EconetEntity, MixerEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,8 +62,8 @@ class EconetNumber(EconetEntity, NumberEntity):
 
     def _sync_state(self, value):
         """Sync the state of the ecoNET number entity."""
-        _LOGGER.debug(
-            "ecoNETNumber _sync_state for entity %s: %s",
+        _LOGGER.info(
+            "DEBUG: EconetNumber _sync_state called for entity %s with value: %s",
             self.entity_description.key,
             value,
         )
@@ -83,10 +92,15 @@ class EconetNumber(EconetEntity, NumberEntity):
         map_key = NUMBER_MAP.get(self.entity_description.key)
 
         if map_key:
+            _LOGGER.debug(
+                "DEBUG: Found map_key %s for entity %s, setting value limits",
+                map_key,
+                self.entity_description.key,
+            )
             self._set_value_limits(value)
         else:
-            _LOGGER.error(
-                "ecoNETNumber _sync_state: map_key %s not found in NUMBER_MAP",
+            _LOGGER.debug(
+                "DEBUG: No map_key found for dynamic entity %s (not in NUMBER_MAP), skipping _set_value_limits",
                 self.entity_description.key,
             )
         # Ensure the state is updated in Home Assistant.
@@ -112,12 +126,15 @@ class EconetNumber(EconetEntity, NumberEntity):
 
     async def async_set_limits_values(self):
         """Async Sync number limits."""
+        _LOGGER.debug(
+            "DEBUG: Getting limits for entity key: %s", self.entity_description.key
+        )
         number_limits = await self.api.get_param_limits(self.entity_description.key)
         _LOGGER.debug("Number limits retrieved: %s", number_limits)
 
         if not number_limits:
-            _LOGGER.info(
-                "Cannot add number entity: %s, numeric limits for this entity is None",
+            _LOGGER.warning(
+                "DEBUG: Cannot get limits for dynamic entity: %s, numeric limits is None",
                 self.entity_description.key,
             )
             return
@@ -167,6 +184,188 @@ class EconetNumber(EconetEntity, NumberEntity):
         self.async_write_ha_state()
 
 
+class MixerDynamicNumber(MixerEntity, NumberEntity):
+    """Mixer-related dynamic number class."""
+
+    entity_description: EconetNumberEntityDescription
+
+    def __init__(
+        self,
+        description: EconetNumberEntityDescription,
+        coordinator: EconetDataCoordinator,
+        api: Econet300Api,
+        mixer_idx: int,
+    ):
+        """Initialize a new instance of the MixerDynamicNumber class."""
+        super().__init__(description, coordinator, api, mixer_idx)
+
+    def _sync_state(self, value):
+        """Sync the state of the mixer dynamic number entity."""
+        _LOGGER.debug(
+            "MixerDynamicNumber _sync_state for entity %s: %s",
+            self.entity_description.key,
+            value,
+        )
+
+        # Handle both dict and direct value
+        if isinstance(value, dict) and "value" in value:
+            val = value.get("value")
+            self._attr_native_value = float(val) if val is not None else None
+        elif isinstance(value, (int, float, str)) and value is not None:
+            self._attr_native_value = float(value)
+        else:
+            self._attr_native_value = None
+
+        # Ensure the state is updated in Home Assistant.
+        self.async_write_ha_state()
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Update the current value."""
+        _LOGGER.debug("Set mixer dynamic value: %s", value)
+
+        # Skip processing if the value is unchanged.
+        if value == self._attr_native_value:
+            return
+
+        if not await self.api.set_param(self.entity_description.key, int(value)):
+            _LOGGER.warning("Setting mixer dynamic value failed")
+            return
+
+        self._attr_native_value = value
+        self.async_write_ha_state()
+
+
+class MixerNumber(MixerEntity, NumberEntity):
+    """Mixer number class."""
+
+    entity_description: EconetNumberEntityDescription
+
+    def __init__(
+        self,
+        description: EconetNumberEntityDescription,
+        coordinator: EconetDataCoordinator,
+        api: Econet300Api,
+        idx: int,
+    ):
+        """Initialize a new instance of the MixerNumber class."""
+        super().__init__(description, coordinator, api, idx)
+
+    def _sync_state(self, value):
+        """Sync the state of the mixer number entity."""
+        _LOGGER.debug(
+            "MixerNumber _sync_state for entity %s: %s",
+            self.entity_description.key,
+            value,
+        )
+        _LOGGER.debug(
+            "DEBUG: Entity key=%s, translation_key=%s, Value type: %s, Value keys: %s",
+            self.entity_description.key,
+            self.entity_description.translation_key,
+            type(value),
+            value.keys() if isinstance(value, dict) else "Not a dict",
+        )
+
+        # Handle both dict and direct value
+        if isinstance(value, dict) and "value" in value:
+            val = value.get("value")
+            self._attr_native_value = float(val) if val is not None else None
+            _LOGGER.debug(
+                "DEBUG: Extracted value from dict: %s", self._attr_native_value
+            )
+        elif isinstance(value, (int, float, str)) and value is not None:
+            self._attr_native_value = float(value)
+            _LOGGER.debug("DEBUG: Using direct value: %s", self._attr_native_value)
+        else:
+            self._attr_native_value = None
+            _LOGGER.debug("DEBUG: Invalid value type, setting to None: %s", value)
+
+        map_key = NUMBER_MAP.get(self.entity_description.key)
+
+        if map_key:
+            self._set_value_limits(value)
+        else:
+            _LOGGER.error(
+                "MixerNumber _sync_state: map_key %s not found in NUMBER_MAP",
+                self.entity_description.key,
+            )
+        # Ensure the state is updated in Home Assistant.
+        self.async_write_ha_state()
+        # Create an asynchronous task for setting the limits.
+        self.hass.async_create_task(self.async_set_limits_values())
+
+    def _set_value_limits(self, value):
+        """Set native min and max values for the entity."""
+        if isinstance(value, dict):
+            min_val = value.get("min")
+            max_val = value.get("max")
+            # Only update if we have valid values, otherwise keep existing values
+            if min_val is not None:
+                self._attr_native_min_value = float(min_val)
+            if max_val is not None:
+                self._attr_native_max_value = float(max_val)
+        _LOGGER.debug(
+            "MixerNumber _set_value_limits: min=%s, max=%s",
+            self._attr_native_min_value,
+            self._attr_native_max_value,
+        )
+
+    async def async_set_limits_values(self):
+        """Async Sync number limits."""
+        number_limits = await self.api.get_param_limits(self.entity_description.key)
+        _LOGGER.debug("Number limits retrieved: %s", number_limits)
+
+        if not number_limits:
+            _LOGGER.info(
+                "Cannot add mixer number entity: %s, numeric limits for this entity is None",
+                self.entity_description.key,
+            )
+            return
+
+        # Directly set min and max values based on fetched limits.
+        self._attr_native_min_value = (
+            float(number_limits.min)
+            if number_limits.min is not None
+            else self._attr_native_min_value
+        )
+        self._attr_native_max_value = (
+            float(number_limits.max)
+            if number_limits.max is not None
+            else self._attr_native_max_value
+        )
+        _LOGGER.debug("Apply mixer number limits: %s", self)
+        self.async_write_ha_state()
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Update the current value."""
+        _LOGGER.debug("Set mixer value: %s", value)
+
+        # Skip processing if the value is unchanged.
+        if value == self._attr_native_value:
+            return
+
+        if value > self._attr_native_max_value:
+            _LOGGER.warning(
+                "Requested mixer value: '%s' exceeds maximum allowed value: '%s'",
+                value,
+                self._attr_max_value,
+            )
+
+        if value < self._attr_native_min_value:
+            _LOGGER.warning(
+                "Requested mixer value: '%s' is below allowed value: '%s'",
+                value,
+                self._attr_min_value,
+            )
+            return
+
+        if not await self.api.set_param(self.entity_description.key, int(value)):
+            _LOGGER.warning("Setting mixer value failed")
+            return
+
+        self._attr_native_value = value
+        self.async_write_ha_state()
+
+
 def can_add(key: str, coordinator: EconetDataCoordinator) -> bool:
     """Check if a given entity can be added based on the availability of data in the coordinator."""
     try:
@@ -202,11 +401,54 @@ def create_number_entity_description(
         key=key,
         translation_key=camel_to_snake(map_key),
         device_class=ENTITY_NUMBER_SENSOR_DEVICE_CLASS_MAP.get(map_key),
+        mode=NumberMode.AUTO,  # Show as input box instead of slider
         native_unit_of_measurement=ENTITY_UNIT_MAP.get(map_key),
         native_min_value=min_value,
         native_max_value=max_value,
         native_step=ENTITY_STEP.get(map_key, 1),
     )
+
+
+def is_mixer_related_entity(param_name: str, param_key: str) -> tuple[bool, int | None]:
+    """Check if a dynamic entity is mixer-related and return the mixer number.
+
+    Args:
+        param_name: The parameter name (e.g., "Preset mixer 1 temperature")
+        param_key: The parameter key (e.g., "preset_mixer1_temperature")
+
+    Returns:
+        Tuple of (is_mixer_related, mixer_number)
+
+    """
+
+    # Check parameter name for mixer patterns
+    mixer_patterns = [
+        r"mixer\s*(\d+)",  # "mixer 1", "mixer1"
+        r"mixer(\d+)",  # "mixer1"
+        r"(\d+)\s*mixer",  # "1 mixer"
+    ]
+
+    for pattern in mixer_patterns:
+        match = re.search(pattern, param_name.lower())
+        if match:
+            mixer_num = int(match.group(1))
+            if 1 <= mixer_num <= AVAILABLE_NUMBER_OF_MIXERS:
+                return True, mixer_num
+
+    # Check parameter key for mixer patterns
+    mixer_key_patterns = [
+        r"mixer(\d+)",  # "mixer1"
+        r"(\d+)_mixer",  # "1_mixer"
+    ]
+
+    for pattern in mixer_key_patterns:
+        match = re.search(pattern, param_key.lower())
+        if match:
+            mixer_num = int(match.group(1))
+            if 1 <= mixer_num <= AVAILABLE_NUMBER_OF_MIXERS:
+                return True, mixer_num
+
+    return False, None
 
 
 def should_be_number_entity(param: dict) -> bool:
@@ -225,6 +467,73 @@ def should_be_number_entity(param: dict) -> bool:
 
     # Number entity: has unit_name, is editable, no enum
     return bool(unit_name and is_editable and not has_enum)
+
+
+async def create_mixer_number_entities(
+    coordinator: EconetDataCoordinator, api: Econet300Api
+) -> list[MixerNumber]:
+    """Create mixer number entities dynamically based on available mixers."""
+    entities: list[MixerNumber] = []
+
+    try:
+        _LOGGER.info("DEBUG: Entering create_mixer_number_entities function")
+        _LOGGER.info("Creating mixer number entities dynamically...")
+
+        # Use the same logic as sensor.py - check SENSOR_MIXER_KEY
+        for mixer_idx, mixer_keys in SENSOR_MIXER_KEY.items():
+            _LOGGER.info(
+                "DEBUG: Checking mixer %d with keys: %s", mixer_idx, mixer_keys
+            )
+            # Check if all required mixer keys have valid (non-null) values
+            if any(
+                coordinator.data.get("regParams", {}).get(mixer_key) is None
+                for mixer_key in mixer_keys
+            ):
+                _LOGGER.info(
+                    "Mixer: %d will not be created due to invalid data.", mixer_idx
+                )
+                continue
+
+            _LOGGER.info(
+                "DEBUG: Mixer %d passed validation, creating entity", mixer_idx
+            )
+            # Create the mixer set temperature key (e.g., "mixerSetTemp1")
+            mixer_set_temp_key = f"{MIXER_SET_AVAILABILITY_KEY}{mixer_idx}"
+
+            # Create entity description with default limits (like mixer sensors)
+            # Mixer sensors don't need API limits, they get data from regParams
+            entity_description = create_number_entity_description(
+                mixer_set_temp_key,
+                None,  # No limits needed, like mixer sensors
+            )
+
+            # Create and add the entity
+            entity = MixerNumber(entity_description, coordinator, api, mixer_idx)
+            entities.append(entity)
+            _LOGGER.info(
+                "Created mixer number entity: %s (Mixer %d)",
+                mixer_set_temp_key,
+                mixer_idx,
+            )
+
+        _LOGGER.info(
+            "DEBUG: Exiting create_mixer_number_entities with %d entities",
+            len(entities),
+        )
+
+    except (
+        aiohttp.ClientError,
+        asyncio.TimeoutError,
+        ValueError,
+        TypeError,
+        AttributeError,
+        KeyError,
+    ) as e:
+        _LOGGER.error("DEBUG: Exception in create_mixer_number_entities: %s", e)
+        _LOGGER.error("DEBUG: Exception type: %s", type(e))
+        _LOGGER.error("DEBUG: Traceback: %s", traceback.format_exc())
+
+    return entities
 
 
 def create_dynamic_number_entity_description(
@@ -267,8 +576,11 @@ def create_dynamic_number_entity_description(
     )
 
     return EconetNumberEntityDescription(
-        key=param_id,
+        key=str(param_id),  # Ensure key is always a string
+        name=param.get("name", f"Parameter {param_id}"),  # Add explicit name
         translation_key=translation_key,
+        device_class=None,  # No specific device class for dynamic entities
+        mode=NumberMode.AUTO,  # Show as input box instead of slider
         native_unit_of_measurement=ha_unit,
         native_min_value=min_value,
         native_max_value=max_value,
@@ -286,7 +598,7 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id][SERVICE_COORDINATOR]
     api = hass.data[DOMAIN][entry.entry_id][SERVICE_API]
 
-    entities: list[EconetNumber] = []
+    entities: list[NumberEntity] = []
 
     # Check if we should skip params edits for certain controllers
     sys_params = coordinator.data.get("sysParams", {})
@@ -305,31 +617,98 @@ async def async_setup_entry(
         _LOGGER.info("Using dynamic number entity creation from merged parameter data")
 
         # Create number entities dynamically from merged data
-        dynamic_entities = []
+        dynamic_entities: list[EconetNumber | MixerDynamicNumber] = []
         _LOGGER.info(
             "DEBUG: Starting dynamic entity creation. Total parameters: %d",
             len(merged_data["parameters"]),
         )
 
+        # Debug: Log first few parameters to understand structure
+        for param_count, (param_id, param) in enumerate(
+            merged_data["parameters"].items()
+        ):
+            if param_count < 5:  # Log first 5 parameters for debugging
+                _LOGGER.info(
+                    "DEBUG: Sample parameter %s: name=%s, unit_name=%s, edit=%s, has_enum=%s",
+                    param_id,
+                    param.get("name", "No name"),
+                    param.get("unit_name", "No unit"),
+                    param.get("edit", False),
+                    "enum" in param,
+                )
+
+        number_entity_count = 0
         for param_id, param in merged_data["parameters"].items():
             _LOGGER.debug("DEBUG: Processing parameter %s: %s", param_id, param)
 
             if should_be_number_entity(param):
+                number_entity_count += 1
+                _LOGGER.info(
+                    "DEBUG: Parameter %s qualifies as number entity: name=%s, unit_name=%s, edit=%s",
+                    param_id,
+                    param.get("name", "No name"),
+                    param.get("unit_name", "No unit"),
+                    param.get("edit", False),
+                )
                 try:
                     entity_description = create_dynamic_number_entity_description(
                         param_id, param
                     )
-                    entity = EconetNumber(entity_description, coordinator, api)
-                    dynamic_entities.append(entity)
-                    _LOGGER.info(
-                        "Created dynamic number entity: %s (%s) - %s to %s %s, translation_key=%s",
-                        param.get("name", f"Parameter {param_id}"),
-                        param_id,
-                        param.get("minv", 0),
-                        param.get("maxv", 100),
-                        param.get("unit_name", ""),
-                        entity_description.translation_key,
+
+                    # Check if this is a mixer-related entity
+                    param_name = param.get("name", f"Parameter {param_id}")
+                    param_key = param.get("key", f"parameter_{param_id}")
+                    is_mixer_related, mixer_num = is_mixer_related_entity(
+                        param_name, param_key
                     )
+
+                    if is_mixer_related:
+                        _LOGGER.info(
+                            "DEBUG: Found mixer-related entity: '%s' -> Mixer %d",
+                            param_name,
+                            mixer_num,
+                        )
+
+                    # Create entity based on type
+                    if is_mixer_related and mixer_num is not None:
+                        # Check if the mixer exists (same logic as mixer sensors)
+                        mixer_keys = SENSOR_MIXER_KEY.get(mixer_num, set())
+                        if any(
+                            coordinator.data.get("regParams", {}).get(mixer_key) is None
+                            for mixer_key in mixer_keys
+                        ):
+                            _LOGGER.info(
+                                "Mixer-related dynamic entity '%s' will not be created due to invalid mixer %d data.",
+                                param_name,
+                                mixer_num,
+                            )
+                            continue
+
+                        # Create mixer-related dynamic entity
+                        mixer_entity = MixerDynamicNumber(
+                            entity_description, coordinator, api, mixer_num
+                        )
+                        _LOGGER.info(
+                            "Created mixer-related dynamic number entity: %s (Mixer %d)",
+                            param_name,
+                            mixer_num,
+                        )
+                        dynamic_entities.append(mixer_entity)
+                    else:
+                        # Create regular dynamic entity
+                        regular_entity = EconetNumber(
+                            entity_description, coordinator, api
+                        )
+                        _LOGGER.info(
+                            "Created dynamic number entity: %s (%s) - %s to %s %s, translation_key=%s",
+                            param_name,
+                            param_id,
+                            param.get("minv", 0),
+                            param.get("maxv", 100),
+                            param.get("unit_name", ""),
+                            entity_description.translation_key,
+                        )
+                        dynamic_entities.append(regular_entity)
                 except (ValueError, KeyError, TypeError) as e:
                     _LOGGER.warning(
                         "Failed to create dynamic number entity for parameter %s: %s",
@@ -337,14 +716,42 @@ async def async_setup_entry(
                         e,
                     )
 
+        _LOGGER.info(
+            "DEBUG: Found %d parameters that qualify as number entities",
+            number_entity_count,
+        )
         entities.extend(dynamic_entities)
         _LOGGER.info("Created %d dynamic number entities", len(dynamic_entities))
+
+        # Create mixer number entities dynamically (even in dynamic mode)
+        _LOGGER.info("DEBUG: About to call create_mixer_number_entities...")
+        mixer_entities = await create_mixer_number_entities(coordinator, api)
+        _LOGGER.info(
+            "DEBUG: create_mixer_number_entities returned %d entities",
+            len(mixer_entities),
+        )
+        entities.extend(mixer_entities)
+
+        # Debug: Log total entities after adding mixer entities
+        _LOGGER.info(
+            "DEBUG: Total entities after adding mixer entities: %d", len(entities)
+        )
 
     else:
         _LOGGER.info("Falling back to legacy number entity creation from NUMBER_MAP")
 
-        # Fallback to legacy method using NUMBER_MAP
+        # Create mixer number entities dynamically
+        _LOGGER.info("DEBUG: Creating mixer number entities...")
+        mixer_entities = await create_mixer_number_entities(coordinator, api)
+        _LOGGER.info("DEBUG: Created %d mixer number entities", len(mixer_entities))
+        entities.extend(mixer_entities)
+
+        # Create other number entities from NUMBER_MAP (excluding mixer entities)
         for key in NUMBER_MAP:
+            # Skip mixer entities as they are created dynamically above
+            map_value = NUMBER_MAP.get(key)
+            if map_value and map_value.startswith("mixerSetTemp"):
+                continue
             number_limits = await api.get_param_limits(key)
             if number_limits is None:
                 _LOGGER.info(
@@ -365,6 +772,7 @@ async def async_setup_entry(
                 )
 
     # Final check - if no entities were created, log a warning
+    _LOGGER.info("DEBUG: Final entity count: %d total entities created", len(entities))
     if not entities:
         _LOGGER.warning(
             "No number entities could be created. This may indicate that your device "

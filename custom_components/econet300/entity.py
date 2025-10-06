@@ -90,10 +90,13 @@ class EconetEntity(CoordinatorEntity):
             _LOGGER.debug("mergedData was None, defaulting to empty dict")
 
         # Check if this is a dynamic entity (parameter ID as key)
-        is_dynamic_entity = self.entity_description.key.isdigit()
+        is_dynamic_entity = (
+            isinstance(self.entity_description.key, int)
+            or str(self.entity_description.key).isdigit()
+        )
         merged_parameters = merged_data.get("parameters", {}) if merged_data else {}
 
-        _LOGGER.debug(
+        _LOGGER.info(
             "DEBUG: Looking for key '%s' in data sources - sysParams: %s, regParams: %s, paramsEdits: %s, mergedData: %s, is_dynamic: %s",
             self.entity_description.key,
             self.entity_description.key in sys_params,
@@ -104,27 +107,42 @@ class EconetEntity(CoordinatorEntity):
         )
 
         value = None
-        if is_dynamic_entity and self.entity_description.key in merged_parameters:
-            # For dynamic entities, get the value from merged data
-            param_data = merged_parameters[self.entity_description.key]
-            value = param_data.get("value")
-            _LOGGER.debug("DEBUG: Found dynamic entity value in mergedData: %s", value)
+        if is_dynamic_entity:
+            # For dynamic entities, try both string and integer keys
+            entity_key = self.entity_description.key
+            param_data = None
+
+            # Try string key first
+            if entity_key in merged_parameters:
+                param_data = merged_parameters[entity_key]
+            # Try integer key if string key not found
+            elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
+                param_data = merged_parameters[int(entity_key)]
+
+            if param_data:
+                value = param_data.get("value")
+                _LOGGER.info(
+                    "DEBUG: Found dynamic entity value in mergedData: %s", value
+                )
         elif self.entity_description.key in sys_params:
             value = sys_params[self.entity_description.key]
-            _LOGGER.debug("DEBUG: Found in sysParams: %s", value)
+            _LOGGER.info("DEBUG: Found in sysParams: %s", value)
         elif self.entity_description.key in reg_params:
             value = reg_params[self.entity_description.key]
-            _LOGGER.debug("DEBUG: Found in regParams: %s", value)
+            _LOGGER.info("DEBUG: Found in regParams: %s", value)
         elif self.entity_description.key in params_edits:
             value = params_edits[self.entity_description.key]
-            _LOGGER.debug("DEBUG: Found in paramsEdits: %s", value)
+            _LOGGER.info("DEBUG: Found in paramsEdits: %s", value)
 
         if value is None:
-            _LOGGER.debug("Value for key %s is None", self.entity_description.key)
+            _LOGGER.info(
+                "DEBUG: Value for key %s is None - entity will not be updated",
+                self.entity_description.key,
+            )
             return
 
-        _LOGGER.debug(
-            "Updating state for key: %s with value: %s",
+        _LOGGER.info(
+            "DEBUG: Updating state for key: %s with value: %s - calling _sync_state",
             self.entity_description.key,
             value,
         )
@@ -133,7 +151,10 @@ class EconetEntity(CoordinatorEntity):
 
     async def async_added_to_hass(self):
         """Handle added to hass."""
-        _LOGGER.debug("Entering async_added_to_hass method")
+        _LOGGER.info(
+            "DEBUG: Entering async_added_to_hass for entity: %s",
+            self.entity_description.key,
+        )
         _LOGGER.debug("Added to HASS: %s", self.entity_description)
         _LOGGER.debug("Coordinator: %s", self.coordinator)
 
@@ -193,16 +214,28 @@ class EconetEntity(CoordinatorEntity):
         _LOGGER.debug("Expected key: %s", expected_key)
 
         # Check if this is a dynamic entity (parameter ID as key)
-        is_dynamic_entity = expected_key.isdigit()
+        is_dynamic_entity = isinstance(expected_key, int) or str(expected_key).isdigit()
         merged_parameters = merged_data.get("parameters", {}) if merged_data else {}
 
         # Retrieve the value from appropriate data source
         value = None
-        if is_dynamic_entity and expected_key in merged_parameters:
-            # For dynamic entities, get the value from merged data
-            param_data = merged_parameters[expected_key]
-            value = param_data.get("value")
-            _LOGGER.debug("DEBUG: Found dynamic entity value in mergedData: %s", value)
+        if is_dynamic_entity:
+            # For dynamic entities, try both string and integer keys
+            entity_key = self.entity_description.key
+            param_data = None
+
+            # Try string key first
+            if entity_key in merged_parameters:
+                param_data = merged_parameters[entity_key]
+            # Try integer key if string key not found
+            elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
+                param_data = merged_parameters[int(entity_key)]
+
+            if param_data:
+                value = param_data.get("value")
+                _LOGGER.info(
+                    "DEBUG: Found dynamic entity initial value in mergedData: %s", value
+                )
         else:
             # For legacy entities, use standard logic
             value = (
@@ -216,10 +249,12 @@ class EconetEntity(CoordinatorEntity):
             )
 
         if value is not None:
-            _LOGGER.debug("Found key '%s' with value: %s", expected_key, value)
+            _LOGGER.info(
+                "DEBUG: Found initial value for entity %s: %s", expected_key, value
+            )
         else:
             _LOGGER.info(
-                "Data key: %s was expected to exist but it doesn't. Available sysParams keys: %s, regParams keys: %s, paramsEdits keys: %s",
+                "DEBUG: No initial value found for entity %s. Available sysParams keys: %s, regParams keys: %s, paramsEdits keys: %s",
                 expected_key,
                 sys_keys,
                 reg_keys,

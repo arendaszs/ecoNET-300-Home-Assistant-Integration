@@ -20,6 +20,7 @@ from homeassistant.const import (
     STATE_PROBLEM,
     STATE_UNKNOWN,
     EntityCategory,
+    UnitOfMass,
     UnitOfPower,
     UnitOfTemperature,
     UnitOfTime,
@@ -434,8 +435,9 @@ UNIT_NAME_TO_HA_UNIT = {
     "sek.": UnitOfTime.SECONDS,
     "min.": UnitOfTime.MINUTES,
     "h.": UnitOfTime.HOURS,
-    "r/min": "r/min",  # Custom unit for revolutions per minute
+    "kg": UnitOfMass.KILOGRAMS,
     "kW": UnitOfPower.KILO_WATT,
+    "r/min": "r/min",  # Custom unit for revolutions per minute
 }
 
 # =============================================================================

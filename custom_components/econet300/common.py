@@ -106,12 +106,16 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                 merged_data = None
                 try:
                     merged_data = await self._api.fetch_merged_rm_data_with_names_descs_and_structure()
+                    _LOGGER.info(
+                        "DEBUG: Coordinator fetched merged data: %s parameters",
+                        len(merged_data.get("parameters", {})) if merged_data else 0,
+                    )
                 except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
-                    _LOGGER.debug(
+                    _LOGGER.warning(
                         "Failed to fetch merged parameter data in coordinator: %s", e
                     )
 
-                return {
+                result = {
                     "sysParams": sys_params,
                     "regParams": reg_params,
                     "regParamsData": reg_params_data,
@@ -119,6 +123,17 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                     "rmData": rm_data,
                     "mergedData": merged_data,
                 }
+
+                # Debug: Log merged data structure
+                if merged_data and "parameters" in merged_data:
+                    param_keys = list(merged_data["parameters"].keys())[
+                        :5
+                    ]  # First 5 keys
+                    _LOGGER.info(
+                        "DEBUG: Coordinator merged data keys (first 5): %s", param_keys
+                    )
+
+                return result
         except AuthError as err:
             _LOGGER.error("Authentication error: %s", err)
             raise ConfigEntryAuthFailed from err
