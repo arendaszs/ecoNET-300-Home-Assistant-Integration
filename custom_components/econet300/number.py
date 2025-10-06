@@ -515,6 +515,10 @@ async def create_mixer_number_entities(
                 mixer_set_temp_key,
                 mixer_idx,
             )
+            _LOGGER.info(
+                "DEBUG: MixerNumber device_info: %s",
+                entity.device_info,
+            )
 
         _LOGGER.info(
             "DEBUG: Exiting create_mixer_number_entities with %d entities",
