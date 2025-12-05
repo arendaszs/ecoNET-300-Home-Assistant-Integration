@@ -604,13 +604,56 @@ async def async_setup_entry(
 
     entities: list[NumberEntity] = []
 
+    # Read options for entity filtering
+    options = dict(entry.options) if entry.options else {}  # type: ignore[arg-type]
+    show_advanced = options.get("show_advanced_parameters", False)
+    enable_dynamic = options.get("enable_dynamic_entities", True)
+
+    # Define basic parameter IDs from NUMBER_MAP (always shown)
+    basic_param_ids = set(NUMBER_MAP.keys())  # {"1280", "1281", "55", "1287", ...}
+
+    # Initialize counters for logging
+    basic_entities: list[EconetNumber] = []
+    dynamic_entities: list[EconetNumber | MixerDynamicNumber] = []
+
     # Check if we should skip params edits for certain controllers
     sys_params = coordinator.data.get("sysParams", {})
     if skip_params_edits(sys_params):
         _LOGGER.info("Skipping number entity setup for controllerID: ecoMAX360i")
         return async_add_entities(entities)
 
+    # Always create basic NUMBER_MAP entities first
+    _LOGGER.info("Creating basic NUMBER_MAP entities (always shown)")
+    for key in NUMBER_MAP:
+        # Skip mixer entities as they are created dynamically
+        map_value = NUMBER_MAP.get(key)
+        if map_value and map_value.startswith("mixerSetTemp"):
+            continue
+        number_limits = await api.get_param_limits(key)
+        if number_limits is None:
+            _LOGGER.info(
+                "Cannot add basic number entity: %s, numeric limits for this entity is None",
+                key,
+            )
+            continue
+
+        if can_add(key, coordinator):
+            entity_description = create_number_entity_description(key, number_limits)
+            basic_entities.append(EconetNumber(entity_description, coordinator, api))
+            _LOGGER.info("Created basic number entity: %s (%s)", key, map_value)
+        else:
+            _LOGGER.info(
+                "Cannot add basic number entity - availability key: %s does not exist",
+                key,
+            )
+    entities.extend(basic_entities)
+    _LOGGER.info("Created %d basic NUMBER_MAP entities", len(basic_entities))
+
     # Try to get merged parameter data for dynamic entity creation
+    if not enable_dynamic:
+        _LOGGER.info("Dynamic entities disabled in options, skipping dynamic creation")
+        return async_add_entities(entities)
+
     try:
         merged_data = await api.fetch_merged_rm_data_with_names_descs_and_structure()
     except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
@@ -621,7 +664,6 @@ async def async_setup_entry(
         _LOGGER.info("Using dynamic number entity creation from merged parameter data")
 
         # Create number entities dynamically from merged data
-        dynamic_entities: list[EconetNumber | MixerDynamicNumber] = []
         _LOGGER.info(
             "DEBUG: Starting dynamic entity creation. Total parameters: %d",
             len(merged_data["parameters"]),
@@ -644,6 +686,22 @@ async def async_setup_entry(
         number_entity_count = 0
         for param_id, param in merged_data["parameters"].items():
             _LOGGER.debug("DEBUG: Processing parameter %s: %s", param_id, param)
+
+            # Skip basic parameters (already created from NUMBER_MAP)
+            if param_id in basic_param_ids:
+                _LOGGER.debug(
+                    "Skipping parameter %s - already created as basic NUMBER_MAP entity",
+                    param_id,
+                )
+                continue
+
+            # Skip advanced parameters if show_advanced is False
+            if not show_advanced:
+                _LOGGER.debug(
+                    "Skipping advanced parameter %s - show_advanced_parameters is False",
+                    param_id,
+                )
+                continue
 
             if should_be_number_entity(param):
                 number_entity_count += 1
@@ -725,7 +783,16 @@ async def async_setup_entry(
             number_entity_count,
         )
         entities.extend(dynamic_entities)
-        _LOGGER.info("Created %d dynamic number entities", len(dynamic_entities))
+        if show_advanced:
+            _LOGGER.info(
+                "Created %d advanced dynamic number entities (show_advanced_parameters=True)",
+                len(dynamic_entities),
+            )
+        else:
+            _LOGGER.info(
+                "Skipped advanced dynamic entities (show_advanced_parameters=False). "
+                "Only basic NUMBER_MAP entities are shown."
+            )
 
         # Create mixer number entities dynamically (even in dynamic mode)
         _LOGGER.info("DEBUG: About to call create_mixer_number_entities...")
@@ -776,7 +843,16 @@ async def async_setup_entry(
                 )
 
     # Final check - if no entities were created, log a warning
-    _LOGGER.info("DEBUG: Final entity count: %d total entities created", len(entities))
+    mixer_count = len(
+        [e for e in entities if isinstance(e, (MixerNumber, MixerDynamicNumber))]
+    )
+    _LOGGER.info(
+        "Final entity count: %d total entities created (%d basic + %d advanced + %d mixer)",
+        len(entities),
+        len(basic_entities),
+        len(dynamic_entities),
+        mixer_count,
+    )
     if not entities:
         _LOGGER.warning(
             "No number entities could be created. This may indicate that your device "

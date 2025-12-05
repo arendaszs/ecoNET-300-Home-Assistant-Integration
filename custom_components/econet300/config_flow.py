@@ -106,17 +106,7 @@ class InvalidAuth(HomeAssistantError):
 OPTIONS_SCHEMA = vol.Schema(
     {
         vol.Required("enable_dynamic_entities", default=True): bool,
-        vol.Required("show_temperature_controls", default=True): bool,
-        vol.Required("show_power_settings", default=True): bool,
-        vol.Required("show_percentage_settings", default=True): bool,
-        vol.Required("show_time_settings", default=True): bool,
-        vol.Required("show_other_settings", default=True): bool,
-        vol.Required("entity_organization_mode", default="device_class"): vol.In(
-            ["device_class", "unit_type", "all_together"]
-        ),
-        vol.Required("max_entities_per_group", default=20): vol.All(
-            vol.Coerce(int), vol.Range(min=5, max=50)
-        ),
+        vol.Required("show_advanced_parameters", default=False): bool,
     }
 )
 
