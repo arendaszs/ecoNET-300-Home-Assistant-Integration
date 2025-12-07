@@ -327,10 +327,15 @@ class MixerNumber(MixerEntity, NumberEntity):
         map_key = NUMBER_MAP.get(self.entity_description.key)
 
         if map_key:
+            _LOGGER.debug(
+                "DEBUG: Found map_key %s for mixer entity %s, setting value limits",
+                map_key,
+                self.entity_description.key,
+            )
             self._set_value_limits(value)
         else:
-            _LOGGER.error(
-                "MixerNumber _sync_state: map_key %s not found in NUMBER_MAP",
+            _LOGGER.debug(
+                "DEBUG: No map_key found for mixer entity %s (not in NUMBER_MAP), skipping _set_value_limits",
                 self.entity_description.key,
             )
         # Ensure the state is updated in Home Assistant.
@@ -666,7 +671,7 @@ def create_dynamic_number_entity_description(
         name=param.get("name", f"Parameter {param_id}"),  # Add explicit name
         translation_key=translation_key,
         device_class=None,  # No specific device class for dynamic entities
-        mode=NumberMode.AUTO,  # Show as input box instead of slider
+        mode=NumberMode.BOX,  # Always show as number input box
         native_unit_of_measurement=ha_unit,
         native_min_value=min_value,
         native_max_value=max_value,
