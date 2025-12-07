@@ -839,7 +839,7 @@ SENSOR_MODE_MAPPING: dict[int, str] = {
     0: "off",
     1: "manual",
     2: "auto",
-    3: "service",
+    3: "work",
     4: "test",
     5: "pause",
     6: "error",
