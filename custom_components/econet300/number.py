@@ -833,6 +833,7 @@ def _create_regular_entity_by_category(
             param.get("unit_name", ""),
         )
     else:
+        # Basic parameters: all under main device (can be organized in cards)
         entity = EconetNumber(entity_description, coordinator, api)
         _LOGGER.info(
             "Created dynamic number entity: %s (%s) - category: %s, %s to %s %s, translation_key=%s",

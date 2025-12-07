@@ -72,3 +72,39 @@ def get_parameter_type_from_category(category_name: str | None) -> str:
 
     # Basic categories (user-friendly)
     return "basic"
+
+
+def sanitize_category_for_device_id(category_name: str) -> str:
+    """Sanitize category name for use in device identifiers.
+
+    Args:
+        category_name: Category name from rmCatsNames (e.g., "Output modulation")
+
+    Returns:
+        Sanitized identifier safe for device IDs (e.g., "output_modulation")
+
+    """
+    if not category_name:
+        return ""
+
+    # Use similar logic to generate_translation_key
+    key = category_name.replace(" ", "_")
+    key = key.replace("%", "percent")
+    key = key.replace(".", "")
+    key = key.replace("-", "_")
+    key = key.replace("(", "")
+    key = key.replace(")", "")
+    key = key.replace(":", "")
+    key = key.replace("'", "")
+    key = key.replace('"', "")
+    key = key.replace("/", "_")
+    key = key.lower()
+
+    # Remove any remaining non-alphanumeric characters except underscore
+    key = re.sub(r"[^a-z0-9_]", "", key)
+
+    # Replace multiple underscores with single underscore
+    key = re.sub(r"_+", "_", key)
+
+    # Remove leading/trailing underscores
+    return key.strip("_")
