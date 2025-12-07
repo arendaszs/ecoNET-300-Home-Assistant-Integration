@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import logging
 import re
 import traceback
+from typing import cast
 
 import aiohttp
 from homeassistant.components.number import (
@@ -13,14 +14,20 @@ from homeassistant.components.number import (
     NumberMode,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Limits
 from .common import Econet300Api, EconetDataCoordinator, skip_params_edits
-from .common_functions import camel_to_snake
+from .common_functions import camel_to_snake, get_parameter_type_from_category
 from .const import (
     AVAILABLE_NUMBER_OF_MIXERS,
+    DEVICE_INFO_ADVANCED_PARAMETERS_NAME,
+    DEVICE_INFO_MANUFACTURER,
+    DEVICE_INFO_MODEL,
+    DEVICE_INFO_SERVICE_PARAMETERS_NAME,
     DOMAIN,
     ENTITY_MAX_VALUE,
     ENTITY_MIN_VALUE,
@@ -42,6 +49,8 @@ _LOGGER = logging.getLogger(__name__)
 @dataclass(frozen=True, kw_only=True)
 class EconetNumberEntityDescription(NumberEntityDescription):
     """Describes ecoNET number entity."""
+
+    entity_category: EntityCategory | None = EntityCategory.CONFIG
 
 
 class EconetNumber(EconetEntity, NumberEntity):
@@ -235,6 +244,42 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
         self.async_write_ha_state()
 
 
+class ServiceMixerDynamicNumber(MixerDynamicNumber):
+    """Service mixer dynamic number entity - disabled by default."""
+
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_entity_registry_enabled_default = False
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device info for service mixer parameters."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{self.api.uid}-service-parameters")},
+            name=DEVICE_INFO_SERVICE_PARAMETERS_NAME,
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            via_device=(DOMAIN, self.api.uid),
+        )
+
+
+class AdvancedMixerDynamicNumber(MixerDynamicNumber):
+    """Advanced mixer dynamic number entity - disabled by default."""
+
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_entity_registry_enabled_default = False
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device info for advanced mixer parameters."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{self.api.uid}-advanced-parameters")},
+            name=DEVICE_INFO_ADVANCED_PARAMETERS_NAME,
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            via_device=(DOMAIN, self.api.uid),
+        )
+
+
 class MixerNumber(MixerEntity, NumberEntity):
     """Mixer number class."""
 
@@ -366,6 +411,42 @@ class MixerNumber(MixerEntity, NumberEntity):
         self.async_write_ha_state()
 
 
+class ServiceParameterNumber(EconetNumber):
+    """Service parameter number entity - disabled by default."""
+
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_entity_registry_enabled_default = False
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device info for service parameters."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{self.api.uid}-service-parameters")},
+            name=DEVICE_INFO_SERVICE_PARAMETERS_NAME,
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            via_device=(DOMAIN, self.api.uid),
+        )
+
+
+class AdvancedParameterNumber(EconetNumber):
+    """Advanced parameter number entity - disabled by default."""
+
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_entity_registry_enabled_default = False
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device info for advanced parameters."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{self.api.uid}-advanced-parameters")},
+            name=DEVICE_INFO_ADVANCED_PARAMETERS_NAME,
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            via_device=(DOMAIN, self.api.uid),
+        )
+
+
 def can_add(key: str, coordinator: EconetDataCoordinator) -> bool:
     """Check if a given entity can be added based on the availability of data in the coordinator."""
     try:
@@ -406,6 +487,7 @@ def create_number_entity_description(
         native_min_value=min_value,
         native_max_value=max_value,
         native_step=ENTITY_STEP.get(map_key, 1),
+        entity_category=EntityCategory.CONFIG,
     )
 
 
@@ -589,40 +671,24 @@ def create_dynamic_number_entity_description(
         native_min_value=min_value,
         native_max_value=max_value,
         native_step=step,
+        entity_category=EntityCategory.CONFIG,
     )
 
 
-async def async_setup_entry(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
-) -> None:
-    """Set up the number platform."""
+async def _create_basic_entities(
+    api: Econet300Api, coordinator: EconetDataCoordinator
+) -> list[EconetNumber]:
+    """Create basic NUMBER_MAP entities.
 
-    coordinator = hass.data[DOMAIN][entry.entry_id][SERVICE_COORDINATOR]
-    api = hass.data[DOMAIN][entry.entry_id][SERVICE_API]
+    Args:
+        api: API instance
+        coordinator: Data coordinator
 
-    entities: list[NumberEntity] = []
+    Returns:
+        List of basic number entities
 
-    # Read options for entity filtering
-    options = dict(entry.options) if entry.options else {}  # type: ignore[arg-type]
-    show_advanced = options.get("show_advanced_parameters", False)
-    enable_dynamic = options.get("enable_dynamic_entities", True)
-
-    # Define basic parameter IDs from NUMBER_MAP (always shown)
-    basic_param_ids = set(NUMBER_MAP.keys())  # {"1280", "1281", "55", "1287", ...}
-
-    # Initialize counters for logging
-    basic_entities: list[EconetNumber] = []
-    dynamic_entities: list[EconetNumber | MixerDynamicNumber] = []
-
-    # Check if we should skip params edits for certain controllers
-    sys_params = coordinator.data.get("sysParams", {})
-    if skip_params_edits(sys_params):
-        _LOGGER.info("Skipping number entity setup for controllerID: ecoMAX360i")
-        return async_add_entities(entities)
-
-    # Always create basic NUMBER_MAP entities first
+    """
+    entities: list[EconetNumber] = []
     _LOGGER.info("Creating basic NUMBER_MAP entities (always shown)")
     for key in NUMBER_MAP:
         # Skip mixer entities as they are created dynamically
@@ -639,15 +705,404 @@ async def async_setup_entry(
 
         if can_add(key, coordinator):
             entity_description = create_number_entity_description(key, number_limits)
-            basic_entities.append(EconetNumber(entity_description, coordinator, api))
+            entities.append(EconetNumber(entity_description, coordinator, api))
             _LOGGER.info("Created basic number entity: %s (%s)", key, map_value)
         else:
             _LOGGER.info(
                 "Cannot add basic number entity - availability key: %s does not exist",
                 key,
             )
+    _LOGGER.info("Created %d basic NUMBER_MAP entities", len(entities))
+    return entities
+
+
+def _create_mixer_entity_by_category(
+    entity_description: EconetNumberEntityDescription,
+    coordinator: EconetDataCoordinator,
+    api: Econet300Api,
+    mixer_num: int,
+    param_type: str,
+    param_name: str,
+    category: str,
+) -> MixerDynamicNumber:
+    """Create mixer entity based on category type.
+
+    Args:
+        entity_description: Entity description
+        coordinator: Data coordinator
+        api: API instance
+        mixer_num: Mixer number
+        param_type: Parameter type (service/advanced/basic)
+        param_name: Parameter name
+        category: Category name
+
+    Returns:
+        Mixer dynamic number entity
+
+    """
+    if param_type == "service":
+        entity = cast(
+            "MixerDynamicNumber",
+            ServiceMixerDynamicNumber(entity_description, coordinator, api, mixer_num),
+        )
+        _LOGGER.info(
+            "Created service mixer-related dynamic number entity: %s (Mixer %d, category: %s)",
+            param_name,
+            mixer_num,
+            category,
+        )
+    elif param_type == "advanced":
+        entity = cast(
+            "MixerDynamicNumber",
+            AdvancedMixerDynamicNumber(entity_description, coordinator, api, mixer_num),
+        )
+        _LOGGER.info(
+            "Created advanced mixer-related dynamic number entity: %s (Mixer %d, category: %s)",
+            param_name,
+            mixer_num,
+            category,
+        )
+    else:
+        entity = MixerDynamicNumber(entity_description, coordinator, api, mixer_num)
+        _LOGGER.info(
+            "Created mixer-related dynamic number entity: %s (Mixer %d, category: %s)",
+            param_name,
+            mixer_num,
+            category,
+        )
+    return entity
+
+
+def _create_regular_entity_by_category(
+    entity_description: EconetNumberEntityDescription,
+    coordinator: EconetDataCoordinator,
+    api: Econet300Api,
+    param_type: str,
+    param_name: str,
+    param_id: str,
+    category: str,
+    param: dict,
+) -> EconetNumber:
+    """Create regular entity based on category type.
+
+    Args:
+        entity_description: Entity description
+        coordinator: Data coordinator
+        api: API instance
+        param_type: Parameter type (service/advanced/basic)
+        param_name: Parameter name
+        param_id: Parameter ID
+        category: Category name
+        param: Parameter dictionary
+
+    Returns:
+        Regular number entity
+
+    """
+    if param_type == "service":
+        entity = cast(
+            "EconetNumber",
+            ServiceParameterNumber(entity_description, coordinator, api),
+        )
+        _LOGGER.info(
+            "Created service dynamic number entity: %s (%s) - category: %s, %s to %s %s",
+            param_name,
+            param_id,
+            category,
+            param.get("minv", 0),
+            param.get("maxv", 100),
+            param.get("unit_name", ""),
+        )
+    elif param_type == "advanced":
+        entity = cast(
+            "EconetNumber",
+            AdvancedParameterNumber(entity_description, coordinator, api),
+        )
+        _LOGGER.info(
+            "Created advanced dynamic number entity: %s (%s) - category: %s, %s to %s %s",
+            param_name,
+            param_id,
+            category,
+            param.get("minv", 0),
+            param.get("maxv", 100),
+            param.get("unit_name", ""),
+        )
+    else:
+        entity = EconetNumber(entity_description, coordinator, api)
+        _LOGGER.info(
+            "Created dynamic number entity: %s (%s) - category: %s, %s to %s %s, translation_key=%s",
+            param_name,
+            param_id,
+            category,
+            param.get("minv", 0),
+            param.get("maxv", 100),
+            param.get("unit_name", ""),
+            entity_description.translation_key,
+        )
+    return entity
+
+
+def _create_dynamic_entity_from_param(
+    param_id: str,
+    param: dict,
+    coordinator: EconetDataCoordinator,
+    api: Econet300Api,
+    basic_param_ids: set[str],
+    show_advanced: bool,
+) -> NumberEntity | None:
+    """Create a dynamic entity from a parameter.
+
+    Args:
+        param_id: Parameter ID
+        param: Parameter dictionary
+        coordinator: Data coordinator
+        api: API instance
+        basic_param_ids: Set of basic parameter IDs to skip
+        show_advanced: Whether to show advanced parameters
+
+    Returns:
+        Created entity or None if skipped
+
+    """
+    # Skip basic parameters (already created from NUMBER_MAP)
+    if param_id in basic_param_ids:
+        _LOGGER.debug(
+            "Skipping parameter %s - already created as basic NUMBER_MAP entity",
+            param_id,
+        )
+        return None
+
+    # Skip advanced parameters if show_advanced is False
+    if not show_advanced:
+        _LOGGER.debug(
+            "Skipping advanced parameter %s - show_advanced_parameters is False",
+            param_id,
+        )
+        return None
+
+    if not should_be_number_entity(param):
+        return None
+
+    # Get category and determine parameter type
+    category = param.get("category", "")
+    param_type = get_parameter_type_from_category(category)
+    param_name = param.get("name", f"Parameter {param_id}")
+
+    _LOGGER.info(
+        "DEBUG: Parameter %s qualifies as number entity: name=%s, unit_name=%s, edit=%s, category=%s, type=%s",
+        param_id,
+        param_name,
+        param.get("unit_name", "No unit"),
+        param.get("edit", False),
+        category,
+        param_type,
+    )
+
+    try:
+        entity_description = create_dynamic_number_entity_description(param_id, param)
+
+        # Check if this is a mixer-related entity
+        param_key = param.get("key", f"parameter_{param_id}")
+        is_mixer_related, mixer_num = is_mixer_related_entity(param_name, param_key)
+
+        if is_mixer_related:
+            _LOGGER.info(
+                "DEBUG: Found mixer-related entity: '%s' -> Mixer %d",
+                param_name,
+                mixer_num,
+            )
+
+        # Create entity based on type and category
+        if is_mixer_related and mixer_num is not None:
+            # Check if the mixer exists (same logic as mixer sensors)
+            mixer_keys = SENSOR_MIXER_KEY.get(mixer_num, set())
+            if any(
+                coordinator.data.get("regParams", {}).get(mixer_key) is None
+                for mixer_key in mixer_keys
+            ):
+                _LOGGER.info(
+                    "Mixer-related dynamic entity '%s' will not be created due to invalid mixer %d data.",
+                    param_name,
+                    mixer_num,
+                )
+                return None
+
+            return _create_mixer_entity_by_category(
+                entity_description,
+                coordinator,
+                api,
+                mixer_num,
+                param_type,
+                param_name,
+                category,
+            )
+
+        return _create_regular_entity_by_category(
+            entity_description,
+            coordinator,
+            api,
+            param_type,
+            param_name,
+            param_id,
+            category,
+            param,
+        )
+
+    except (ValueError, KeyError, TypeError) as e:
+        _LOGGER.warning(
+            "Failed to create dynamic number entity for parameter %s: %s",
+            param_id,
+            e,
+        )
+        return None
+
+
+async def _create_dynamic_entities_from_merged_data(
+    merged_data: dict,
+    coordinator: EconetDataCoordinator,
+    api: Econet300Api,
+    basic_param_ids: set[str],
+    show_advanced: bool,
+) -> list[NumberEntity]:
+    """Create dynamic entities from merged parameter data.
+
+    Args:
+        merged_data: Merged parameter data
+        coordinator: Data coordinator
+        api: API instance
+        basic_param_ids: Set of basic parameter IDs to skip
+        show_advanced: Whether to show advanced parameters
+
+    Returns:
+        List of dynamic entities
+
+    """
+    entities: list[NumberEntity] = []
+    _LOGGER.info("Using dynamic number entity creation from merged parameter data")
+
+    _LOGGER.info(
+        "DEBUG: Starting dynamic entity creation. Total parameters: %d",
+        len(merged_data["parameters"]),
+    )
+
+    # Debug: Log first few parameters to understand structure
+    for param_count, (param_id, param) in enumerate(merged_data["parameters"].items()):
+        if param_count < 5:  # Log first 5 parameters for debugging
+            _LOGGER.info(
+                "DEBUG: Sample parameter %s: name=%s, unit_name=%s, edit=%s, has_enum=%s, category=%s",
+                param_id,
+                param.get("name", "No name"),
+                param.get("unit_name", "No unit"),
+                param.get("edit", False),
+                "enum" in param,
+                param.get("category", "No category"),
+            )
+
+    number_entity_count = 0
+    for param_id, param in merged_data["parameters"].items():
+        _LOGGER.debug("DEBUG: Processing parameter %s: %s", param_id, param)
+
+        entity = _create_dynamic_entity_from_param(
+            param_id, param, coordinator, api, basic_param_ids, show_advanced
+        )
+        if entity:
+            entities.append(entity)
+            number_entity_count += 1
+
+    _LOGGER.info(
+        "DEBUG: Found %d parameters that qualify as number entities",
+        number_entity_count,
+    )
+    if show_advanced:
+        _LOGGER.info(
+            "Created %d advanced dynamic number entities (show_advanced_parameters=True)",
+            len(entities),
+        )
+    else:
+        _LOGGER.info(
+            "Skipped advanced dynamic entities (show_advanced_parameters=False). "
+            "Only basic NUMBER_MAP entities are shown."
+        )
+
+    return entities
+
+
+async def _create_legacy_entities(
+    api: Econet300Api, coordinator: EconetDataCoordinator
+) -> list[NumberEntity]:
+    """Create legacy entities from NUMBER_MAP (fallback).
+
+    Args:
+        api: API instance
+        coordinator: Data coordinator
+
+    Returns:
+        List of legacy entities
+
+    """
+    entities: list[NumberEntity] = []
+    _LOGGER.info("Falling back to legacy number entity creation from NUMBER_MAP")
+
+    # Create mixer number entities dynamically
+    _LOGGER.info("DEBUG: Creating mixer number entities...")
+    mixer_entities = await create_mixer_number_entities(coordinator, api)
+    _LOGGER.info("DEBUG: Created %d mixer number entities", len(mixer_entities))
+    entities.extend(mixer_entities)
+
+    # Create other number entities from NUMBER_MAP (excluding mixer entities)
+    for key in NUMBER_MAP:
+        # Skip mixer entities as they are created dynamically above
+        map_value = NUMBER_MAP.get(key)
+        if map_value and map_value.startswith("mixerSetTemp"):
+            continue
+        number_limits = await api.get_param_limits(key)
+        if number_limits is None:
+            _LOGGER.info(
+                "Cannot add number entity: %s, numeric limits for this entity is None",
+                key,
+            )
+            continue
+
+        if can_add(key, coordinator):
+            entity_description = create_number_entity_description(key, number_limits)
+            entities.append(EconetNumber(entity_description, coordinator, api))
+        else:
+            _LOGGER.info(
+                "Cannot add number entity - availability key: %s does not exist",
+                key,
+            )
+
+    return entities
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the number platform."""
+    coordinator = hass.data[DOMAIN][entry.entry_id][SERVICE_COORDINATOR]
+    api = hass.data[DOMAIN][entry.entry_id][SERVICE_API]
+
+    entities: list[NumberEntity] = []
+
+    # Read options for entity filtering
+    options = dict(entry.options) if entry.options else {}  # type: ignore[arg-type]
+    show_advanced = options.get("show_advanced_parameters", False)
+    enable_dynamic = options.get("enable_dynamic_entities", True)
+
+    # Define basic parameter IDs from NUMBER_MAP (always shown)
+    basic_param_ids = set(NUMBER_MAP.keys())
+
+    # Check if we should skip params edits for certain controllers
+    sys_params = coordinator.data.get("sysParams", {})
+    if skip_params_edits(sys_params):
+        _LOGGER.info("Skipping number entity setup for controllerID: ecoMAX360i")
+        return async_add_entities(entities)
+
+    # Always create basic NUMBER_MAP entities first
+    basic_entities = await _create_basic_entities(api, coordinator)
     entities.extend(basic_entities)
-    _LOGGER.info("Created %d basic NUMBER_MAP entities", len(basic_entities))
 
     # Try to get merged parameter data for dynamic entity creation
     if not enable_dynamic:
@@ -661,138 +1116,11 @@ async def async_setup_entry(
         merged_data = None
 
     if merged_data and "parameters" in merged_data:
-        _LOGGER.info("Using dynamic number entity creation from merged parameter data")
-
-        # Create number entities dynamically from merged data
-        _LOGGER.info(
-            "DEBUG: Starting dynamic entity creation. Total parameters: %d",
-            len(merged_data["parameters"]),
-        )
-
-        # Debug: Log first few parameters to understand structure
-        for param_count, (param_id, param) in enumerate(
-            merged_data["parameters"].items()
-        ):
-            if param_count < 5:  # Log first 5 parameters for debugging
-                _LOGGER.info(
-                    "DEBUG: Sample parameter %s: name=%s, unit_name=%s, edit=%s, has_enum=%s",
-                    param_id,
-                    param.get("name", "No name"),
-                    param.get("unit_name", "No unit"),
-                    param.get("edit", False),
-                    "enum" in param,
-                )
-
-        number_entity_count = 0
-        for param_id, param in merged_data["parameters"].items():
-            _LOGGER.debug("DEBUG: Processing parameter %s: %s", param_id, param)
-
-            # Skip basic parameters (already created from NUMBER_MAP)
-            if param_id in basic_param_ids:
-                _LOGGER.debug(
-                    "Skipping parameter %s - already created as basic NUMBER_MAP entity",
-                    param_id,
-                )
-                continue
-
-            # Skip advanced parameters if show_advanced is False
-            if not show_advanced:
-                _LOGGER.debug(
-                    "Skipping advanced parameter %s - show_advanced_parameters is False",
-                    param_id,
-                )
-                continue
-
-            if should_be_number_entity(param):
-                number_entity_count += 1
-                _LOGGER.info(
-                    "DEBUG: Parameter %s qualifies as number entity: name=%s, unit_name=%s, edit=%s",
-                    param_id,
-                    param.get("name", "No name"),
-                    param.get("unit_name", "No unit"),
-                    param.get("edit", False),
-                )
-                try:
-                    entity_description = create_dynamic_number_entity_description(
-                        param_id, param
-                    )
-
-                    # Check if this is a mixer-related entity
-                    param_name = param.get("name", f"Parameter {param_id}")
-                    param_key = param.get("key", f"parameter_{param_id}")
-                    is_mixer_related, mixer_num = is_mixer_related_entity(
-                        param_name, param_key
-                    )
-
-                    if is_mixer_related:
-                        _LOGGER.info(
-                            "DEBUG: Found mixer-related entity: '%s' -> Mixer %d",
-                            param_name,
-                            mixer_num,
-                        )
-
-                    # Create entity based on type
-                    if is_mixer_related and mixer_num is not None:
-                        # Check if the mixer exists (same logic as mixer sensors)
-                        mixer_keys = SENSOR_MIXER_KEY.get(mixer_num, set())
-                        if any(
-                            coordinator.data.get("regParams", {}).get(mixer_key) is None
-                            for mixer_key in mixer_keys
-                        ):
-                            _LOGGER.info(
-                                "Mixer-related dynamic entity '%s' will not be created due to invalid mixer %d data.",
-                                param_name,
-                                mixer_num,
-                            )
-                            continue
-
-                        # Create mixer-related dynamic entity
-                        mixer_entity = MixerDynamicNumber(
-                            entity_description, coordinator, api, mixer_num
-                        )
-                        _LOGGER.info(
-                            "Created mixer-related dynamic number entity: %s (Mixer %d)",
-                            param_name,
-                            mixer_num,
-                        )
-                        dynamic_entities.append(mixer_entity)
-                    else:
-                        # Create regular dynamic entity
-                        regular_entity = EconetNumber(
-                            entity_description, coordinator, api
-                        )
-                        _LOGGER.info(
-                            "Created dynamic number entity: %s (%s) - %s to %s %s, translation_key=%s",
-                            param_name,
-                            param_id,
-                            param.get("minv", 0),
-                            param.get("maxv", 100),
-                            param.get("unit_name", ""),
-                            entity_description.translation_key,
-                        )
-                        dynamic_entities.append(regular_entity)
-                except (ValueError, KeyError, TypeError) as e:
-                    _LOGGER.warning(
-                        "Failed to create dynamic number entity for parameter %s: %s",
-                        param_id,
-                        e,
-                    )
-
-        _LOGGER.info(
-            "DEBUG: Found %d parameters that qualify as number entities",
-            number_entity_count,
+        # Create dynamic entities from merged data
+        dynamic_entities = await _create_dynamic_entities_from_merged_data(
+            merged_data, coordinator, api, basic_param_ids, show_advanced
         )
         entities.extend(dynamic_entities)
-        if show_advanced:
-            _LOGGER.info(
-                "Created %d advanced dynamic number entities (show_advanced_parameters=True)",
-                len(dynamic_entities),
-            )
-        else:
-            _LOGGER.info(
-                "Skipped advanced dynamic entities (show_advanced_parameters=False). "
-                "Only basic NUMBER_MAP entities are shown."
-            )
 
         # Create mixer number entities dynamically (even in dynamic mode)
         _LOGGER.info("DEBUG: About to call create_mixer_number_entities...")
@@ -802,55 +1130,24 @@ async def async_setup_entry(
             len(mixer_entities),
         )
         entities.extend(mixer_entities)
-
-        # Debug: Log total entities after adding mixer entities
         _LOGGER.info(
             "DEBUG: Total entities after adding mixer entities: %d", len(entities)
         )
-
     else:
-        _LOGGER.info("Falling back to legacy number entity creation from NUMBER_MAP")
-
-        # Create mixer number entities dynamically
-        _LOGGER.info("DEBUG: Creating mixer number entities...")
-        mixer_entities = await create_mixer_number_entities(coordinator, api)
-        _LOGGER.info("DEBUG: Created %d mixer number entities", len(mixer_entities))
-        entities.extend(mixer_entities)
-
-        # Create other number entities from NUMBER_MAP (excluding mixer entities)
-        for key in NUMBER_MAP:
-            # Skip mixer entities as they are created dynamically above
-            map_value = NUMBER_MAP.get(key)
-            if map_value and map_value.startswith("mixerSetTemp"):
-                continue
-            number_limits = await api.get_param_limits(key)
-            if number_limits is None:
-                _LOGGER.info(
-                    "Cannot add number entity: %s, numeric limits for this entity is None",
-                    key,
-                )
-                continue
-
-            if can_add(key, coordinator):
-                entity_description = create_number_entity_description(
-                    key, number_limits
-                )
-                entities.append(EconetNumber(entity_description, coordinator, api))
-            else:
-                _LOGGER.info(
-                    "Cannot add number entity - availability key: %s does not exist",
-                    key,
-                )
+        # Fallback to legacy entity creation
+        legacy_entities = await _create_legacy_entities(api, coordinator)
+        entities.extend(legacy_entities)
 
     # Final check - if no entities were created, log a warning
     mixer_count = len(
         [e for e in entities if isinstance(e, (MixerNumber, MixerDynamicNumber))]
     )
+    dynamic_count = len([e for e in entities if e not in basic_entities])
     _LOGGER.info(
         "Final entity count: %d total entities created (%d basic + %d advanced + %d mixer)",
         len(entities),
         len(basic_entities),
-        len(dynamic_entities),
+        dynamic_count,
         mixer_count,
     )
     if not entities:

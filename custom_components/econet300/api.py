@@ -1277,11 +1277,12 @@ class Econet300Api:
             if not step2_data:
                 return None
 
-            # Fetch additional data in parallel
+            # Fetch additional data in parallel (always include categories for dynamic entities)
             tasks = [
                 self.fetch_rm_structure(lang),
                 self.fetch_rm_params_enums(lang),
                 self.fetch_rm_params_units_names(lang),
+                self.fetch_rm_cats_names(lang),
             ]
 
             results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -1289,6 +1290,7 @@ class Econet300Api:
             structure: list[dict[str, Any]] = []
             enums: list[dict[str, Any]] = []
             units: list[str] = []
+            categories: list[str] = []
 
             if (
                 not isinstance(results[0], Exception)
@@ -1308,6 +1310,12 @@ class Econet300Api:
                 and isinstance(results[2], list)
             ):
                 units = results[2]  # type: ignore[assignment]
+            if (
+                not isinstance(results[3], Exception)
+                and results[3] is not None
+                and isinstance(results[3], list)
+            ):
+                categories = results[3]  # type: ignore[assignment]
 
             # Add parameter numbers, units, and keys using helper methods
             self._add_parameter_numbers(step2_data["parameters"], structure)
@@ -1333,9 +1341,19 @@ class Econet300Api:
             )
             smart_enum_count = self._add_smart_enum_detection(parameters_dict, enums)
 
-            # Update version to reflect cleaned structure
+            # Always add category information (for dynamic entity generation)
+            category_count = 0
+            if categories:
+                category_count = self._add_parameter_categories(
+                    parameters_dict, structure, categories
+                )
+                _LOGGER.debug(
+                    "Added category information to %d parameters", category_count
+                )
+
+            # Update version to include categories
             step2_data["version"] = (
-                "1.0-names-descs-structure-units-indexed-enums-cleaned"
+                "1.0-names-descs-structure-units-indexed-enums-categories-cleaned"
             )
 
             # Extract parameter entries from structure for logging
@@ -1346,11 +1364,12 @@ class Econet300Api:
             ]
 
             _LOGGER.debug(
-                "Added parameter numbers (%d), units (%d types), enum mappings (%d structure + %d smart) from rmStructure + rmParamsEnums + rmParamsUnitsNames. Converted to indexed format with cleaned structure.",
+                "Added parameter numbers (%d), units (%d types), enum mappings (%d structure + %d smart), categories (%d) from rmStructure + rmParamsEnums + rmParamsUnitsNames + rmCatsNames. Converted to indexed format with cleaned structure.",
                 len(param_structure_entries),
                 len(units),
                 enum_count,
                 smart_enum_count,
+                category_count,
             )
         except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
             _LOGGER.error(
@@ -1533,6 +1552,64 @@ class Econet300Api:
                 param["unit_name"] = units[unit_index]
             else:
                 param["unit_name"] = ""
+
+    def _add_parameter_categories(
+        self,
+        parameters_dict: dict[str, dict[str, Any]],
+        structure: list[dict[str, Any]],
+        categories: list[str],
+    ) -> int:
+        """Add category information to parameters based on structure data.
+
+        Maps parameters to their categories by parsing the structure:
+        - type 7 = category/menu group (index maps to rmCatsNames array)
+        - type 1 = parameter (index is the parameter number)
+        - Parameters follow their category in the structure
+
+        Args:
+            parameters_dict: Dictionary of parameters indexed by string keys
+            structure: Structure data from rmStructure endpoint
+            categories: Category names from rmCatsNames endpoint
+
+        Returns:
+            Number of parameters with category information added
+
+        """
+        if not categories:
+            return 0
+
+        # Map parameter numbers to their categories
+        # Structure: type 7 = category, type 1 = parameter
+        # Parameters follow their category in the structure
+        param_to_category: dict[int, str] = {}
+        current_category_index: int | None = None
+
+        for entry in structure:
+            if not isinstance(entry, dict):
+                continue
+
+            entry_type = entry.get("type")
+            entry_index = entry.get("index")
+
+            if entry_type == 7:  # Category/menu group
+                # This is a category - store it
+                if isinstance(entry_index, int) and entry_index < len(categories):
+                    current_category_index = entry_index
+            elif entry_type == 1:  # Parameter
+                # This is a parameter - map it to current category
+                if isinstance(entry_index, int) and current_category_index is not None:
+                    category_name = categories[current_category_index]
+                    param_to_category[entry_index] = category_name
+
+        # Add category to parameters
+        category_count = 0
+        for param in parameters_dict.values():
+            param_number = param.get("number")
+            if isinstance(param_number, int) and param_number in param_to_category:
+                param["category"] = param_to_category[param_number]
+                category_count += 1
+
+        return category_count
 
     def _add_enum_data_from_structure(
         self,

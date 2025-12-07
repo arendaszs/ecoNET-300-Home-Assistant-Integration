@@ -44,6 +44,31 @@ def generate_translation_key(name: str) -> str:
     key = re.sub(r"(\w+)_(\d+)_(\w+)", r"\1\2_\3", key)
 
     # Handle other similar patterns: word + number + space + word -> word + number + underscore + word
-    key = re.sub(r"(\w+)(\d+)_(\w+)", r"\1\2_\3", key)
+    return re.sub(r"(\w+)(\d+)_(\w+)", r"\1\2_\3", key)
 
-    return key
+
+def get_parameter_type_from_category(category_name: str | None) -> str:
+    """Determine parameter type (basic/service/advanced) from category name.
+
+    Args:
+        category_name: Category name from rmCatsNames (e.g., "Service Settings")
+
+    Returns:
+        'basic', 'service', or 'advanced'
+
+    """
+    if not category_name:
+        return "basic"
+
+    category_lower = category_name.lower()
+
+    # Service categories
+    if "service" in category_lower:
+        return "service"
+
+    # Advanced categories
+    if "advanced" in category_lower:
+        return "advanced"
+
+    # Basic categories (user-friendly)
+    return "basic"
