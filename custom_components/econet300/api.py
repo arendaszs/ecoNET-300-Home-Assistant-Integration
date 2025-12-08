@@ -1351,9 +1351,13 @@ class Econet300Api:
                     "Added category information to %d parameters", category_count
                 )
 
-            # Update version to include categories
+            # Add lock status to parameters
+            lock_count = self._add_parameter_locks(parameters_dict, structure)
+            _LOGGER.debug("Added lock status to %d locked parameters", lock_count)
+
+            # Update version to include categories and locks
             step2_data["version"] = (
-                "1.0-names-descs-structure-units-indexed-enums-categories-cleaned"
+                "1.0-names-descs-structure-units-indexed-enums-categories-locks-cleaned"
             )
 
             # Extract parameter entries from structure for logging
@@ -1610,6 +1614,49 @@ class Econet300Api:
                 category_count += 1
 
         return category_count
+
+    def _add_parameter_locks(
+        self,
+        parameters_dict: dict[str, dict[str, Any]],
+        structure: list[dict[str, Any]],
+    ) -> int:
+        """Add lock status to parameters based on structure data.
+
+        Args:
+            parameters_dict: Dictionary of parameters indexed by string keys
+            structure: Structure data from rmStructure endpoint
+
+        Returns:
+            Number of parameters with lock status added
+
+        """
+        # Build mapping: parameter_number -> lock_status
+        param_to_lock: dict[int, bool] = {}
+
+        for entry in structure:
+            if not isinstance(entry, dict):
+                continue
+
+            entry_type = entry.get("type")
+            entry_index = entry.get("index")
+            entry_lock = entry.get("lock", False)
+
+            if entry_type == 1:  # Parameter
+                if entry_index is not None:
+                    param_to_lock[entry_index] = entry_lock
+
+        # Add lock status to parameters based on their number
+        lock_count = 0
+        for param in parameters_dict.values():
+            param_number = param.get("number")
+            if isinstance(param_number, int) and param_number in param_to_lock:
+                param["locked"] = param_to_lock[param_number]
+                if param_to_lock[param_number]:
+                    lock_count += 1
+            else:
+                param["locked"] = False
+
+        return lock_count
 
     def _add_enum_data_from_structure(
         self,

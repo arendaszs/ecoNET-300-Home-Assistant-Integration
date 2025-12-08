@@ -162,9 +162,59 @@ class EconetNumber(EconetEntity, NumberEntity):
         _LOGGER.debug("Apply number limits: %s", self)
         self.async_write_ha_state()
 
+    def _is_parameter_locked(self) -> bool:
+        """Check if the parameter is locked.
+
+        Returns:
+            True if parameter is locked, False otherwise
+
+        """
+        if self.coordinator.data is None:
+            return False
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return False
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return False
+
+        # Try to find parameter by key (string or int)
+        entity_key = self.entity_description.key
+        param_data = None
+
+        if entity_key in merged_parameters:
+            param_data = merged_parameters[entity_key]
+        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
+            param_data = merged_parameters[int(entity_key)]
+
+        if param_data:
+            return param_data.get("locked", False)
+
+        return False
+
+    @property
+    def icon(self) -> str | None:
+        """Return icon for entity."""
+        if self._is_parameter_locked():
+            return "mdi:lock"  # Show lock icon for locked parameters
+        return None
+
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value."""
         _LOGGER.debug("Set value: %s", value)
+
+        # Check if parameter is locked
+        if self._is_parameter_locked():
+            _LOGGER.warning(
+                "Cannot set value for locked parameter: %s (%s)",
+                self.entity_description.key,
+                self.entity_description.name,
+            )
+            raise ValueError(
+                f"Parameter '{self.entity_description.name}' is locked and cannot be modified"
+            )
 
         # Skip processing if the value is unchanged.
         if value == self._attr_native_value:
@@ -228,9 +278,59 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
         # Ensure the state is updated in Home Assistant.
         self.async_write_ha_state()
 
+    def _is_parameter_locked(self) -> bool:
+        """Check if the parameter is locked.
+
+        Returns:
+            True if parameter is locked, False otherwise
+
+        """
+        if self.coordinator.data is None:
+            return False
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return False
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return False
+
+        # Try to find parameter by key (string or int)
+        entity_key = self.entity_description.key
+        param_data = None
+
+        if entity_key in merged_parameters:
+            param_data = merged_parameters[entity_key]
+        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
+            param_data = merged_parameters[int(entity_key)]
+
+        if param_data:
+            return param_data.get("locked", False)
+
+        return False
+
+    @property
+    def icon(self) -> str | None:
+        """Return icon for entity."""
+        if self._is_parameter_locked():
+            return "mdi:lock"  # Show lock icon for locked parameters
+        return None
+
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value."""
         _LOGGER.debug("Set mixer dynamic value: %s", value)
+
+        # Check if parameter is locked
+        if self._is_parameter_locked():
+            _LOGGER.warning(
+                "Cannot set value for locked parameter: %s (%s)",
+                self.entity_description.key,
+                self.entity_description.name,
+            )
+            raise ValueError(
+                f"Parameter '{self.entity_description.name}' is locked and cannot be modified"
+            )
 
         # Skip processing if the value is unchanged.
         if value == self._attr_native_value:
@@ -385,9 +485,59 @@ class MixerNumber(MixerEntity, NumberEntity):
         _LOGGER.debug("Apply mixer number limits: %s", self)
         self.async_write_ha_state()
 
+    def _is_parameter_locked(self) -> bool:
+        """Check if the parameter is locked.
+
+        Returns:
+            True if parameter is locked, False otherwise
+
+        """
+        if self.coordinator.data is None:
+            return False
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return False
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return False
+
+        # Try to find parameter by key (string or int)
+        entity_key = self.entity_description.key
+        param_data = None
+
+        if entity_key in merged_parameters:
+            param_data = merged_parameters[entity_key]
+        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
+            param_data = merged_parameters[int(entity_key)]
+
+        if param_data:
+            return param_data.get("locked", False)
+
+        return False
+
+    @property
+    def icon(self) -> str | None:
+        """Return icon for entity."""
+        if self._is_parameter_locked():
+            return "mdi:lock"  # Show lock icon for locked parameters
+        return None
+
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value."""
         _LOGGER.debug("Set mixer value: %s", value)
+
+        # Check if parameter is locked
+        if self._is_parameter_locked():
+            _LOGGER.warning(
+                "Cannot set value for locked parameter: %s (%s)",
+                self.entity_description.key,
+                self.entity_description.name,
+            )
+            raise ValueError(
+                f"Parameter '{self.entity_description.name}' is locked and cannot be modified"
+            )
 
         # Skip processing if the value is unchanged.
         if value == self._attr_native_value:
