@@ -9,10 +9,6 @@
         }
       }
     },
-    "options": {
-      "enable_dynamic_entities": "Povolit dynamické entity",
-      "show_service_parameters": "Zobrazit servisní parametry"
-    },
     "error": {
       "cannot_connect": "Nepodařilo se připojit",
       "invalid_auth": "Neplatné ověření",
