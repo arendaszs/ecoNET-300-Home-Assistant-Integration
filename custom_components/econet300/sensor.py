@@ -157,11 +157,20 @@ def create_controller_sensors(
     entities: list[EconetSensor] = []
 
     # Get the system and regular parameters from the coordinator
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no controller sensors will be created")
+        return entities
+
     data_regParams = coordinator.data.get("regParams", {})
+    if data_regParams is None:
+        data_regParams = {}
+
     data_sysParams = coordinator.data.get("sysParams", {})
+    if data_sysParams is None:
+        data_sysParams = {}
 
     # Extract the controllerID from sysParams
-    controller_id = data_sysParams.get("controllerID", None)
+    controller_id = data_sysParams.get("controllerID")
 
     # Always use default sensor mapping for all controllers
     sensor_keys = SENSOR_MAP_KEY["_default"].copy()
@@ -227,15 +236,19 @@ def create_controller_sensors(
 
 def can_add_mixer(key: str, coordinator: EconetDataCoordinator) -> bool:
     """Check if a mixer can be added."""
+    if coordinator.data is None:
+        return False
+
+    reg_params = coordinator.data.get("regParams")
+    if reg_params is None:
+        reg_params = {}
+
     _LOGGER.debug(
         "Checking if mixer can be added for key: %s, data %s",
         key,
-        coordinator.data.get("regParams", {}),
+        reg_params,
     )
-    return (
-        coordinator.has_reg_data(key)
-        and coordinator.data.get("regParams", {}).get(key) is not None
-    )
+    return coordinator.has_reg_data(key) and reg_params.get(key) is not None
 
 
 def create_mixer_sensor_entity_description(key: str) -> EconetSensorEntityDescription:
@@ -260,12 +273,17 @@ def create_mixer_sensors(
     """Create individual sensor descriptions for mixer sensors."""
     entities: list[MixerSensor] = []
 
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no mixer sensors will be created")
+        return entities
+
+    reg_params = coordinator.data.get("regParams")
+    if reg_params is None:
+        reg_params = {}
+
     for key, mixer_keys in SENSOR_MIXER_KEY.items():
         # Check if all required mixer keys have valid (non-null) values
-        if any(
-            coordinator.data.get("regParams", {}).get(mixer_key) is None
-            for mixer_key in mixer_keys
-        ):
+        if any(reg_params.get(mixer_key) is None for mixer_key in mixer_keys):
             _LOGGER.info("Mixer: %s will not be created due to invalid data.", key)
             continue
 
@@ -300,7 +318,13 @@ def create_lambda_sensor_entity_description(key: str) -> EconetSensorEntityDescr
 def create_lambda_sensors(coordinator: EconetDataCoordinator, api: Econet300Api):
     """Create controller sensor entities."""
     entities: list[LambdaSensors] = []
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no lambda sensors will be created")
+        return entities
+
     sys_params = coordinator.data.get("sysParams", {})
+    if sys_params is None:
+        sys_params = {}
 
     # Check if moduleLambdaSoftVer is None
     if sys_params.get("moduleLambdaSoftVer") is None:
@@ -308,6 +332,8 @@ def create_lambda_sensors(coordinator: EconetDataCoordinator, api: Econet300Api)
         return entities
 
     coordinator_data = coordinator.data.get("regParams", {})
+    if coordinator_data is None:
+        coordinator_data = {}
 
     for data_key in SENSOR_MAP_KEY["lambda"]:
         if data_key in coordinator_data:
@@ -348,7 +374,13 @@ def create_ecoster_sensor_entity_description(key: str) -> EconetSensorEntityDesc
 def create_ecoster_sensors(coordinator: EconetDataCoordinator, api: Econet300Api):
     """Create ecoSTER sensor entities."""
     entities: list[EcoSterSensor] = []
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no ecoSTER sensors will be created")
+        return entities
+
     sys_params = coordinator.data.get("sysParams", {})
+    if sys_params is None:
+        sys_params = {}
 
     # Check if moduleEcoSTERSoftVer is None
     if sys_params.get("moduleEcoSTERSoftVer") is None:
@@ -356,6 +388,8 @@ def create_ecoster_sensors(coordinator: EconetDataCoordinator, api: Econet300Api
         return entities
 
     coordinator_data = coordinator.data.get("regParams", {})
+    if coordinator_data is None:
+        coordinator_data = {}
 
     # Create ecoSTER sensors for each thermostat (1-8)
     for thermostat_idx in range(1, 9):  # 1-8

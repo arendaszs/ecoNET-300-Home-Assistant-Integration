@@ -18,8 +18,10 @@ from .const import DOMAIN, ECOSOL_CONTROLLER_IDS
 _LOGGER = logging.getLogger(__name__)
 
 
-def skip_params_edits(sys_params: dict[str, Any]) -> bool:
+def skip_params_edits(sys_params: dict[str, Any] | None) -> bool:
     """Determine whether paramsEdits should be skipped based on controllerID."""
+    if sys_params is None:
+        return False
     controller_id = sys_params.get("controllerID")
 
     # Controllers that don't support rmCurrentDataParamsEdits endpoint

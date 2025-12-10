@@ -124,7 +124,9 @@ class EconetSelect(EconetEntity, SelectEntity):
             _LOGGER.debug("🔥 Processing heater_mode in async_added_to_hass")
             # For heater mode, get current state from regParamsData parameter 2049
             if self.coordinator.data is not None:
-                reg_params_data = self.coordinator.data.get("regParamsData", {})
+                reg_params_data = self.coordinator.data.get("regParamsData")
+                if reg_params_data is None:
+                    reg_params_data = {}
 
                 heater_mode_value = reg_params_data.get(
                     SELECT_KEY_GET_INDEX.get(self.select_key, "unknown")

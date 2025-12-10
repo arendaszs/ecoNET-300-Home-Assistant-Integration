@@ -156,6 +156,10 @@ def create_binary_entity_description(key: str) -> EconetBinarySensorEntityDescri
 def create_binary_sensors(coordinator: EconetDataCoordinator, api: Econet300Api):
     """Create binary sensors."""
     entities: list[EconetBinarySensor] = []
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no binary sensors will be created")
+        return entities
+
     data_regParams = coordinator.data.get("regParams") or {}
     data_sysParams = coordinator.data.get("sysParams") or {}
 
@@ -213,6 +217,10 @@ def create_binary_sensors(coordinator: EconetDataCoordinator, api: Econet300Api)
 def create_mixer_binary_sensors(coordinator: EconetDataCoordinator, api: Econet300Api):
     """Create mixer binary sensors."""
     entities: list[MixerBinarySensor] = []
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no mixer binary sensors will be created")
+        return entities
+
     data_regParams = coordinator.data.get("regParams") or {}
 
     # Create mixer pump status sensors using the dynamic keys
@@ -251,7 +259,15 @@ def create_ecoster_binary_sensors(
 ):
     """Create ecoSTER binary sensor entities."""
     entities: list[EcoSterBinarySensor] = []
+    if coordinator.data is None:
+        _LOGGER.info(
+            "Coordinator data is None, no ecoSTER binary sensors will be created"
+        )
+        return entities
+
     sys_params = coordinator.data.get("sysParams", {})
+    if sys_params is None:
+        sys_params = {}
 
     # Check if moduleEcoSTERSoftVer is None
     if sys_params.get("moduleEcoSTERSoftVer") is None:

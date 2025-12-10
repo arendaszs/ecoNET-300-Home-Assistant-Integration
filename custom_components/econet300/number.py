@@ -1251,7 +1251,11 @@ async def async_setup_entry(
     basic_param_ids = set(NUMBER_MAP.keys())
 
     # Check if we should skip params edits for certain controllers
-    sys_params = coordinator.data.get("sysParams", {})
+    sys_params = None
+    if coordinator.data is not None:
+        sys_params = coordinator.data.get("sysParams")
+    if sys_params is None:
+        sys_params = {}
     if skip_params_edits(sys_params):
         _LOGGER.info("Skipping number entity setup for controllerID: ecoMAX360i")
         return async_add_entities(entities)
