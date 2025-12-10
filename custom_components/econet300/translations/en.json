@@ -9,6 +9,10 @@
         }
       }
     },
+    "options": {
+      "enable_dynamic_entities": "Enable dynamic entities",
+      "show_service_parameters": "Show service parameters"
+    },
     "error": {
       "cannot_connect": "Failed to connect",
       "invalid_auth": "Invalid authentication",

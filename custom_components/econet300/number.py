@@ -1004,7 +1004,7 @@ def _create_dynamic_entity_from_param(
     coordinator: EconetDataCoordinator,
     api: Econet300Api,
     basic_param_ids: set[str],
-    show_advanced: bool,
+    show_service: bool,
 ) -> NumberEntity | None:
     """Create a dynamic entity from a parameter.
 
@@ -1014,7 +1014,7 @@ def _create_dynamic_entity_from_param(
         coordinator: Data coordinator
         api: API instance
         basic_param_ids: Set of basic parameter IDs to skip
-        show_advanced: Whether to show advanced parameters
+        show_service: Whether to show service parameters
 
     Returns:
         Created entity or None if skipped
@@ -1028,10 +1028,10 @@ def _create_dynamic_entity_from_param(
         )
         return None
 
-    # Skip advanced parameters if show_advanced is False
-    if not show_advanced:
+    # Skip service parameters if show_service is False
+    if not show_service:
         _LOGGER.debug(
-            "Skipping advanced parameter %s - show_advanced_parameters is False",
+            "Skipping service parameter %s - show_service_parameters is False",
             param_id,
         )
         return None
@@ -1118,7 +1118,7 @@ async def _create_dynamic_entities_from_merged_data(
     coordinator: EconetDataCoordinator,
     api: Econet300Api,
     basic_param_ids: set[str],
-    show_advanced: bool,
+    show_service: bool,
 ) -> list[NumberEntity]:
     """Create dynamic entities from merged parameter data.
 
@@ -1127,7 +1127,7 @@ async def _create_dynamic_entities_from_merged_data(
         coordinator: Data coordinator
         api: API instance
         basic_param_ids: Set of basic parameter IDs to skip
-        show_advanced: Whether to show advanced parameters
+        show_service: Whether to show service parameters
 
     Returns:
         List of dynamic entities
@@ -1159,7 +1159,7 @@ async def _create_dynamic_entities_from_merged_data(
         _LOGGER.debug("DEBUG: Processing parameter %s: %s", param_id, param)
 
         entity = _create_dynamic_entity_from_param(
-            param_id, param, coordinator, api, basic_param_ids, show_advanced
+            param_id, param, coordinator, api, basic_param_ids, show_service
         )
         if entity:
             entities.append(entity)
@@ -1169,14 +1169,14 @@ async def _create_dynamic_entities_from_merged_data(
         "DEBUG: Found %d parameters that qualify as number entities",
         number_entity_count,
     )
-    if show_advanced:
+    if show_service:
         _LOGGER.info(
-            "Created %d advanced dynamic number entities (show_advanced_parameters=True)",
+            "Created %d service dynamic number entities (show_service_parameters=True)",
             len(entities),
         )
     else:
         _LOGGER.info(
-            "Skipped advanced dynamic entities (show_advanced_parameters=False). "
+            "Skipped service dynamic entities (show_service_parameters=False). "
             "Only basic NUMBER_MAP entities are shown."
         )
 
@@ -1244,7 +1244,7 @@ async def async_setup_entry(
 
     # Read options for entity filtering
     options = dict(entry.options) if entry.options else {}  # type: ignore[arg-type]
-    show_advanced = options.get("show_advanced_parameters", False)
+    show_service = options.get("show_service_parameters", False)
     enable_dynamic = options.get("enable_dynamic_entities", True)
 
     # Define basic parameter IDs from NUMBER_MAP (always shown)
@@ -1274,7 +1274,7 @@ async def async_setup_entry(
     if merged_data and "parameters" in merged_data:
         # Create dynamic entities from merged data
         dynamic_entities = await _create_dynamic_entities_from_merged_data(
-            merged_data, coordinator, api, basic_param_ids, show_advanced
+            merged_data, coordinator, api, basic_param_ids, show_service
         )
         entities.extend(dynamic_entities)
 

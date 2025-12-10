@@ -9,6 +9,10 @@
         }
       }
     },
+    "options": {
+      "enable_dynamic_entities": "Увімкнути динамічні сутності",
+      "show_service_parameters": "Показати сервісні параметри"
+    },
     "error": {
       "cannot_connect": "Не вдалося підключитися",
       "invalid_auth": "Недійсна автентифікація",

@@ -106,7 +106,7 @@ class InvalidAuth(HomeAssistantError):
 OPTIONS_SCHEMA = vol.Schema(
     {
         vol.Required("enable_dynamic_entities", default=True): bool,
-        vol.Required("show_advanced_parameters", default=False): bool,
+        vol.Required("show_service_parameters", default=False): bool,
     }
 )
 

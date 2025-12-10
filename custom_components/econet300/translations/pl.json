@@ -9,6 +9,10 @@
         }
       }
     },
+    "options": {
+      "enable_dynamic_entities": "Włącz dynamiczne encje",
+      "show_service_parameters": "Pokaż parametry serwisowe"
+    },
     "error": {
       "cannot_connect": "Błąd połączenia",
       "invalid_auth": "Błąd autoryzacji",
