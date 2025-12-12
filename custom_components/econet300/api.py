@@ -1569,6 +1569,7 @@ class Econet300Api:
         - type 7 = category/menu group (index maps to rmCatsNames array)
         - type 1 = parameter (index is the parameter number)
         - Parameters follow their category in the structure
+        - Parameters can appear in multiple categories (collects all)
 
         Args:
             parameters_dict: Dictionary of parameters indexed by string keys
@@ -1576,16 +1577,16 @@ class Econet300Api:
             categories: Category names from rmCatsNames endpoint
 
         Returns:
-            Number of parameters with category information added
+            Total number of category assignments (may be > number of parameters)
 
         """
         if not categories:
             return 0
 
-        # Map parameter numbers to their categories
+        # Map parameter numbers to their categories (can have multiple)
         # Structure: type 7 = category, type 1 = parameter
         # Parameters follow their category in the structure
-        param_to_category: dict[int, str] = {}
+        param_to_categories: dict[int, list[str]] = {}
         current_category_index: int | None = None
 
         for entry in structure:
@@ -1603,15 +1604,24 @@ class Econet300Api:
                 # This is a parameter - map it to current category
                 if isinstance(entry_index, int) and current_category_index is not None:
                     category_name = categories[current_category_index]
-                    param_to_category[entry_index] = category_name
+                    # Collect all categories for this parameter
+                    if entry_index not in param_to_categories:
+                        param_to_categories[entry_index] = []
+                    # Avoid duplicates
+                    if category_name not in param_to_categories[entry_index]:
+                        param_to_categories[entry_index].append(category_name)
 
-        # Add category to parameters
+        # Add categories to parameters
         category_count = 0
         for param in parameters_dict.values():
             param_number = param.get("number")
-            if isinstance(param_number, int) and param_number in param_to_category:
-                param["category"] = param_to_category[param_number]
-                category_count += 1
+            if isinstance(param_number, int) and param_number in param_to_categories:
+                param_categories = param_to_categories[param_number]
+                # Add categories list (all categories)
+                param["categories"] = param_categories
+                # Add category (first/primary category for backward compatibility)
+                param["category"] = param_categories[0] if param_categories else ""
+                category_count += len(param_categories)
 
         return category_count
 

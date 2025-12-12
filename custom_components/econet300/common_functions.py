@@ -74,6 +74,26 @@ def get_parameter_type_from_category(category_name: str | None) -> str:
     return "basic"
 
 
+def is_information_category(category_name: str | None) -> bool:
+    """Check if category is an Information category (read-only sensor).
+
+    Information categories should create read-only sensor entities,
+    not editable number entities.
+
+    Args:
+        category_name: Category name from rmCatsNames (e.g., "Information")
+
+    Returns:
+        True if category is Information type
+
+    """
+    if not category_name:
+        return False
+
+    category_lower = category_name.lower()
+    return "information" in category_lower
+
+
 def sanitize_category_for_device_id(category_name: str) -> str:
     """Sanitize category name for use in device identifiers.
 

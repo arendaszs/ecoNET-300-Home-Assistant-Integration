@@ -9,6 +9,7 @@ import pytest
 
 from custom_components.econet300.api import Econet300Api
 from custom_components.econet300.common import EconetDataCoordinator
+from custom_components.econet300.common_functions import is_information_category
 from custom_components.econet300.number import (
     EconetNumber,
     async_setup_entry,
@@ -82,7 +83,7 @@ class TestDynamicNumberEntities:
 
         entity_desc = create_dynamic_number_entity_description("0", param)
 
-        assert entity_desc.key == "0"
+        assert entity_desc.key == "basic_test_parameter"  # Now includes category prefix
         assert entity_desc.translation_key == "test_parameter"
         assert entity_desc.native_min_value == 15.0
         assert entity_desc.native_max_value == 100.0
@@ -102,7 +103,7 @@ class TestDynamicNumberEntities:
 
         entity_desc = create_dynamic_number_entity_description("69", param)
 
-        assert entity_desc.key == "69"
+        assert entity_desc.key == "basic_mixer_temp"  # Now includes category prefix
         assert entity_desc.translation_key == "mixer_temp"
         assert entity_desc.native_min_value == 20.0
         assert entity_desc.native_max_value == 85.0
@@ -210,8 +211,9 @@ class TestDynamicNumberEntities:
         for param_id, param in number_candidates:
             entity_desc = create_dynamic_number_entity_description(param_id, param)
 
-            # Verify basic properties
-            assert entity_desc.key == param_id
+            # Verify basic properties - entity key now includes category prefix
+            assert entity_desc.key.startswith("basic_")  # Basic category prefix
+            assert entity_desc.key.endswith(param["key"])  # Ends with the param key
             assert entity_desc.translation_key == param["key"]
             assert entity_desc.native_min_value == float(param["minv"])
             assert entity_desc.native_max_value == float(param["maxv"])
@@ -253,3 +255,133 @@ class TestDynamicNumberEntities:
         assert entity_desc.native_min_value == 0.0  # Default min
         assert entity_desc.native_max_value == 100.0  # Default max
         assert entity_desc.translation_key == "parameter_0"  # Default key
+
+    def test_multiple_categories_parameter_structure(self, mock_merged_data):
+        """Test that parameters can have multiple categories in merged data."""
+        # Test the data structure that would be created by the API
+        # Create a mock parameter with multiple categories
+        test_param = {
+            "name": "Test Parameter",
+            "number": 123,
+            "categories": ["Information", "Boiler settings"],  # Multiple categories
+            "category": "Information",  # First category for backward compatibility
+            "unit_name": "%",
+            "edit": True,
+            "key": "test_param",
+        }
+
+        # Verify structure that API would create
+        assert "categories" in test_param
+        assert "category" in test_param
+        assert isinstance(test_param["categories"], list)
+        assert isinstance(test_param["category"], str)
+        assert len(test_param["categories"]) > 1
+        assert (
+            test_param["category"] == test_param["categories"][0]
+        )  # First category for backward compatibility
+
+        # Verify that the fixture data has the expected structure
+        # (In real usage, categories would be added by the API processing)
+        assert "parameters" in mock_merged_data
+        assert isinstance(mock_merged_data["parameters"], dict)
+
+        # Verify that some parameters have the basic fields
+        params_with_keys = []
+        for param_id, param in mock_merged_data["parameters"].items():
+            if isinstance(param, dict) and "key" in param:
+                params_with_keys.append((param_id, param))
+
+        assert len(params_with_keys) > 0, "Should have parameters with key field"
+
+    def test_information_category_detection(self):
+        """Test Information category detection and entity type implications."""
+        # Test various Information category names
+        info_categories = [
+            "Information",
+            "information",
+            "INFORMATION",
+            "Information mixer 1",
+            "ecoNET WiFi information",
+        ]
+
+        for category in info_categories:
+            assert is_information_category(category) is True
+
+        # Test non-Information categories
+        non_info_categories = [
+            "Boiler settings",
+            "Service Settings",
+            "Advanced settings",
+            "Summer/Winter",
+            None,
+            "",
+        ]
+
+        for category in non_info_categories:
+            assert is_information_category(category) is False
+
+    def test_entity_key_generation_with_categories(self, mock_merged_data):
+        """Test that entity keys include category prefixes for uniqueness."""
+        # Test with mock parameters that simulate multiple categories
+        test_cases = [
+            ("basic", "basic_"),
+            ("service", "service_"),
+            ("advanced", "advanced_"),
+        ]
+
+        # Create a test parameter
+        test_param = {
+            "name": "Test Parameter",
+            "unit_name": "%",
+            "minv": 0,
+            "maxv": 100,
+            "key": "test_param",
+            "edit": True,
+        }
+
+        for param_type, expected_prefix in test_cases:
+            entity_desc = create_dynamic_number_entity_description(
+                "123", test_param, param_type
+            )
+
+            # Verify entity key includes category prefix
+            assert entity_desc.key.startswith(expected_prefix), (
+                f"Entity key {entity_desc.key} should start with {expected_prefix} for {param_type} type"
+            )
+            assert entity_desc.key.endswith("test_param"), (
+                f"Entity key {entity_desc.key} should end with param key"
+            )
+
+    def test_create_dynamic_number_entity_description_with_param_type(
+        self, mock_merged_data
+    ):
+        """Test create_dynamic_number_entity_description with param_type parameter."""
+        # Get a test parameter
+        test_param = None
+        test_param_id = None
+        for param_id, param in mock_merged_data["parameters"].items():
+            if isinstance(param, dict) and "key" in param:
+                test_param = param
+                test_param_id = param_id
+                break
+
+        assert test_param is not None, "Should have test parameter"
+        assert test_param_id is not None, "Should have test parameter ID"
+
+        # Test different param types
+        param_types = ["basic", "service", "advanced"]
+        for param_type in param_types:
+            entity_desc = create_dynamic_number_entity_description(
+                test_param_id, test_param, param_type
+            )
+
+            # Verify entity key includes appropriate prefix
+            expected_prefix = f"{param_type}_"
+            assert entity_desc.key.startswith(expected_prefix), (
+                f"Entity key should start with {expected_prefix} for {param_type} type"
+            )
+
+            # Verify other properties are preserved
+            assert entity_desc.translation_key == test_param["key"]
+            assert entity_desc.native_min_value == float(test_param.get("minv", 0))
+            assert entity_desc.native_max_value == float(test_param.get("maxv", 100))

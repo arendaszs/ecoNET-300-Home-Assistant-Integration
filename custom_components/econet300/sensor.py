@@ -16,7 +16,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
-from .common_functions import camel_to_snake
+from .common_functions import camel_to_snake, is_information_category
 from .const import (
     DOMAIN,
     ENTITY_CATEGORY,
@@ -131,6 +131,82 @@ class EcoSterSensor(EcoSterEntity, SensorEntity):
         _LOGGER.debug("EcoSter sensor sync state: %s", value)
         self._attr_native_value = self.entity_description.process_val(value)
         self.async_write_ha_state()
+
+
+class InformationDynamicSensor(EconetEntity, SensorEntity):
+    """Dynamic sensor entity for Information category parameters (read-only)."""
+
+    entity_description: EconetSensorEntityDescription
+
+    def __init__(
+        self,
+        entity_description: EconetSensorEntityDescription,
+        coordinator: EconetDataCoordinator,
+        api: Econet300Api,
+        param_number: int,
+    ):
+        """Initialize a new Information dynamic sensor entity.
+
+        Args:
+            entity_description: Entity description
+            coordinator: Data coordinator
+            api: API instance
+            param_number: Parameter number from merged data
+        """
+        self.entity_description = entity_description
+        self.api = api
+        self._param_number = param_number
+        self._attr_native_value = None
+        super().__init__(coordinator, api)
+
+    def _sync_state(self, value) -> None:
+        """Synchronize the state of the Information sensor entity."""
+        _LOGGER.debug(
+            "InformationDynamicSensor _sync_state for entity %s: %s",
+            self.entity_description.key,
+            value,
+        )
+
+        # Handle both dict and direct value
+        if isinstance(value, dict) and "value" in value:
+            val = value.get("value")
+            self._attr_native_value = float(val) if val is not None else None
+        elif isinstance(value, (int, float, str)) and value is not None:
+            try:
+                self._attr_native_value = float(value)
+            except (ValueError, TypeError):
+                self._attr_native_value = value
+        else:
+            self._attr_native_value = None
+
+        self.async_write_ha_state()
+
+    @property
+    def native_value(self) -> float | None:
+        """Return the native value of the sensor."""
+        if self.coordinator.data is None:
+            return None
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return None
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return None
+
+        # Find parameter by number
+        for param_id, param in merged_parameters.items():
+            if isinstance(param, dict) and param.get("number") == self._param_number:
+                param_value = param.get("value")
+                if param_value is not None:
+                    try:
+                        return float(param_value)
+                    except (ValueError, TypeError):
+                        return param_value
+                break
+
+        return None
 
 
 def create_sensor_entity_description(key: str) -> EconetSensorEntityDescription:
@@ -439,6 +515,101 @@ def create_ecoster_sensors(coordinator: EconetDataCoordinator, api: Econet300Api
     return entities
 
 
+def create_dynamic_information_sensor_entity_description(
+    param_id: str, param: dict[str, Any]
+) -> EconetSensorEntityDescription:
+    """Create sensor entity description for Information category parameter.
+
+    Args:
+        param_id: Parameter ID
+        param: Parameter dictionary from merged data
+
+    Returns:
+        Sensor entity description
+    """
+    param_name = param.get("name", f"Parameter {param_id}")
+    unit_name = param.get("unit_name", "")
+    param_key = param.get("key", f"info_{param_id}")
+
+    entity_description = EconetSensorEntityDescription(
+        key=f"info_{param_key}",
+        name=param_name,
+        translation_key=param_key,
+        native_unit_of_measurement=unit_name if unit_name else None,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1 if unit_name else 0,
+    )
+
+    return entity_description
+
+
+def create_information_sensors(
+    merged_data: dict[str, Any],
+    coordinator: EconetDataCoordinator,
+    api: Econet300Api,
+) -> list[InformationDynamicSensor]:
+    """Create read-only sensor entities for Information category parameters.
+
+    Args:
+        merged_data: Merged parameter data
+        coordinator: Data coordinator
+        api: API instance
+
+    Returns:
+        List of Information sensor entities
+    """
+    entities: list[InformationDynamicSensor] = []
+
+    if not merged_data or "parameters" not in merged_data:
+        return entities
+
+    parameters = merged_data.get("parameters", {})
+    _LOGGER.info(
+        "Creating Information sensor entities from %d parameters", len(parameters)
+    )
+
+    for param_id, param in parameters.items():
+        if not isinstance(param, dict):
+            continue
+
+        # Get all categories for this parameter
+        categories = param.get("categories", [param.get("category", "")])
+        if not categories:
+            continue
+
+        # Check if any category is Information
+        has_information_category = any(
+            is_information_category(cat) for cat in categories
+        )
+
+        if not has_information_category:
+            continue
+
+        # Create sensor entity for Information category
+        param_number = param.get("number")
+        if param_number is None:
+            continue
+
+        entity_description = create_dynamic_information_sensor_entity_description(
+            param_id, param
+        )
+
+        entity = InformationDynamicSensor(
+            entity_description, coordinator, api, param_number
+        )
+        entities.append(entity)
+
+        _LOGGER.debug(
+            "Created Information sensor entity: %s (param %d, categories: %s)",
+            entity_description.key,
+            param_number,
+            categories,
+        )
+
+    _LOGGER.info("Created %d Information sensor entities", len(entities))
+    return entities
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -472,6 +643,18 @@ async def async_setup_entry(
         ecoster_sensors = create_ecoster_sensors(coordinator, api)
         _LOGGER.info("Collected %d ecoSTER sensors", len(ecoster_sensors))
         entities.extend(ecoster_sensors)
+
+        # Gather Information category sensors (read-only from merged data)
+        if coordinator.data:
+            merged_data = coordinator.data.get("mergedData")
+            if merged_data:
+                information_sensors = create_information_sensors(
+                    merged_data, coordinator, api
+                )
+                _LOGGER.info(
+                    "Collected %d Information sensors", len(information_sensors)
+                )
+                entities.extend(information_sensors)
 
         _LOGGER.info("Total entities collected: %d", len(entities))
         return entities

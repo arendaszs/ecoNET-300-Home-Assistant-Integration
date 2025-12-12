@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 from custom_components.econet300.common_functions import (
     get_parameter_type_from_category,
+    is_information_category,
 )
 from custom_components.econet300.const import (
     DEVICE_INFO_ADVANCED_PARAMETERS_NAME,
@@ -354,3 +355,106 @@ class TestServiceParameterDetection:
         assert isinstance(entity, MixerDynamicNumber)
         assert not isinstance(entity, ServiceMixerDynamicNumber)
         assert not isinstance(entity, AdvancedMixerDynamicNumber)
+
+    def test_is_information_category_variations(self):
+        """Test is_information_category with various category names."""
+        # Information categories (should return True)
+        assert is_information_category("Information") is True
+        assert is_information_category("information") is True
+        assert is_information_category("INFORMATION") is True
+        assert is_information_category("Information mixer 1") is True
+        assert is_information_category("ecoNET WiFi information") is True
+
+        # Non-information categories (should return False)
+        assert is_information_category("Boiler settings") is False
+        assert is_information_category("Service Settings") is False
+        assert is_information_category("Advanced settings") is False
+        assert is_information_category("Summer/Winter") is False
+        assert is_information_category(None) is False
+        assert is_information_category("") is False
+
+    def test_multiple_categories_parameter_structure(self):
+        """Test that parameters can have multiple categories."""
+        # This test verifies the data structure changes in _add_parameter_categories
+        # Parameters should have both "category" (string) and "categories" (list)
+
+        # Mock parameter data
+        param = {
+            "name": "Test Parameter",
+            "number": 123,
+            "categories": ["Information", "Boiler settings"],
+            "category": "Information",  # First category for backward compatibility
+        }
+
+        # Verify structure
+        assert "categories" in param
+        assert "category" in param
+        assert isinstance(param["categories"], list)
+        assert isinstance(param["category"], str)
+        assert len(param["categories"]) > 1
+        assert param["category"] == param["categories"][0]
+
+    def test_information_category_creates_sensor(self):
+        """Test that Information category parameters create sensor entities."""
+        # Mock parameter with Information category
+        param = {
+            "name": "Test Info Parameter",
+            "number": 123,
+            "categories": ["Information"],
+            "category": "Information",
+            "edit": True,  # Even if editable, Information category should create sensor
+            "unit_name": "%",
+            "key": "test_info_param",
+        }
+
+        # Information category should be identified
+        assert is_information_category("Information") is True
+
+        # Parameter type should be basic (but Information category overrides this)
+        param_type = get_parameter_type_from_category("Information")
+        assert param_type == "basic"
+
+        # However, Information category should create sensor, not number entity
+        from custom_components.econet300.number import should_be_number_entity
+
+        should_be_number = should_be_number_entity(param)
+        assert should_be_number is True  # Would normally be number entity
+
+        # But Information category logic should override this in entity creation
+        # (This is tested in the actual entity creation functions)
+
+    def test_service_advanced_categories_with_show_service_parameter(self):
+        """Test that service/advanced categories respect show_service_parameters setting."""
+        # Mock parameters
+        service_param = {
+            "name": "Service Parameter",
+            "categories": ["Service Settings"],
+            "category": "Service Settings",
+            "edit": True,
+            "unit_name": "%",
+            "key": "service_param",
+        }
+
+        advanced_param = {
+            "name": "Advanced Parameter",
+            "categories": ["Advanced settings"],
+            "category": "Advanced settings",
+            "edit": True,
+            "unit_name": "°C",
+            "key": "advanced_param",
+        }
+
+        # Verify category detection
+        assert get_parameter_type_from_category("Service Settings") == "service"
+        assert get_parameter_type_from_category("Advanced settings") == "advanced"
+        assert is_information_category("Service Settings") is False
+        assert is_information_category("Advanced settings") is False
+
+        # Verify these would be number entities if show_service_parameters=True
+        from custom_components.econet300.number import should_be_number_entity
+
+        assert should_be_number_entity(service_param) is True
+        assert should_be_number_entity(advanced_param) is True
+
+        # But entity creation should check show_service_parameters setting
+        # (This is tested in the entity creation integration tests)

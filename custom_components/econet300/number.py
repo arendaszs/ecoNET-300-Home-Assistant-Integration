@@ -21,7 +21,11 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Limits
 from .common import Econet300Api, EconetDataCoordinator, skip_params_edits
-from .common_functions import camel_to_snake, get_parameter_type_from_category
+from .common_functions import (
+    camel_to_snake,
+    get_parameter_type_from_category,
+    is_information_category,
+)
 from .const import (
     AVAILABLE_NUMBER_OF_MIXERS,
     DEVICE_INFO_ADVANCED_PARAMETERS_NAME,
@@ -778,13 +782,14 @@ async def create_mixer_number_entities(
 
 
 def create_dynamic_number_entity_description(
-    param_id: str, param: dict
+    param_id: str, param: dict, param_type: str = "basic"
 ) -> EconetNumberEntityDescription:
     """Create a number entity description from parameter data.
 
     Args:
         param_id: Parameter ID (string)
         param: Parameter dictionary from merged data
+        param_type: Parameter type (basic/service/advanced) for entity ID prefix
 
     Returns:
         EconetNumberEntityDescription for the parameter
@@ -806,18 +811,30 @@ def create_dynamic_number_entity_description(
     else:
         step = 1.0
 
-    # Debug translation key generation
-    translation_key = param.get("key", f"parameter_{param_id}")
+    # Generate translation key with category prefix
+    param_key = param.get("key", f"parameter_{param_id}")
+    translation_key = param_key
+
+    # Generate entity key with category prefix to avoid conflicts
+    if param_type == "service":
+        entity_key = f"service_{param_key}"
+    elif param_type == "advanced":
+        entity_key = f"advanced_{param_key}"
+    else:
+        entity_key = f"basic_{param_key}"
+
     _LOGGER.debug(
-        "DEBUG: Creating entity description for param_id=%s, name=%s, key=%s, translation_key=%s",
+        "DEBUG: Creating entity description for param_id=%s, name=%s, key=%s, translation_key=%s, entity_key=%s, type=%s",
         param_id,
         param.get("name", "No name"),
-        param.get("key", "No key"),
+        param_key,
         translation_key,
+        entity_key,
+        param_type,
     )
 
     return EconetNumberEntityDescription(
-        key=str(param_id),  # Ensure key is always a string
+        key=entity_key,  # Use category-prefixed key
         name=param.get("name", f"Parameter {param_id}"),  # Add explicit name
         translation_key=translation_key,
         device_class=None,  # No specific device class for dynamic entities
@@ -1001,20 +1018,24 @@ def _create_regular_entity_by_category(
 def _create_dynamic_entity_from_param(
     param_id: str,
     param: dict,
+    category: str,
     coordinator: EconetDataCoordinator,
     api: Econet300Api,
     basic_param_ids: set[str],
     show_service: bool,
+    created_entity_ids: set[str] | None = None,
 ) -> NumberEntity | None:
     """Create a dynamic entity from a parameter.
 
     Args:
         param_id: Parameter ID
         param: Parameter dictionary
+        category: Category name for this entity
         coordinator: Data coordinator
         api: API instance
         basic_param_ids: Set of basic parameter IDs to skip
         show_service: Whether to show service parameters
+        created_entity_ids: Set of already created entity IDs to avoid duplicates
 
     Returns:
         Created entity or None if skipped
@@ -1028,10 +1049,23 @@ def _create_dynamic_entity_from_param(
         )
         return None
 
-    # Skip service parameters if show_service is False
-    if not show_service:
+    # Skip Information categories (handled by sensors)
+    if is_information_category(category):
         _LOGGER.debug(
-            "Skipping service parameter %s - show_service_parameters is False",
+            "Skipping Information category '%s' for parameter %s",
+            category,
+            param_id,
+        )
+        return None
+
+    # Determine parameter type from category
+    param_type = get_parameter_type_from_category(category)
+
+    # Skip service/advanced parameters if show_service is False
+    if param_type in ("service", "advanced") and not show_service:
+        _LOGGER.debug(
+            "Skipping %s parameter %s - show_service_parameters is False",
+            param_type,
             param_id,
         )
         return None
@@ -1039,9 +1073,6 @@ def _create_dynamic_entity_from_param(
     if not should_be_number_entity(param):
         return None
 
-    # Get category and determine parameter type
-    category = param.get("category", "")
-    param_type = get_parameter_type_from_category(category)
     param_name = param.get("name", f"Parameter {param_id}")
 
     _LOGGER.info(
@@ -1055,7 +1086,9 @@ def _create_dynamic_entity_from_param(
     )
 
     try:
-        entity_description = create_dynamic_number_entity_description(param_id, param)
+        entity_description = create_dynamic_number_entity_description(
+            param_id, param, param_type
+        )
 
         # Check if this is a mixer-related entity
         param_key = param.get("key", f"parameter_{param_id}")
@@ -1144,40 +1177,78 @@ async def _create_dynamic_entities_from_merged_data(
     # Debug: Log first few parameters to understand structure
     for param_count, (param_id, param) in enumerate(merged_data["parameters"].items()):
         if param_count < 5:  # Log first 5 parameters for debugging
+            categories = param.get("categories", [param.get("category", "")])
             _LOGGER.info(
-                "DEBUG: Sample parameter %s: name=%s, unit_name=%s, edit=%s, has_enum=%s, category=%s",
+                "DEBUG: Sample parameter %s: name=%s, unit_name=%s, edit=%s, has_enum=%s, categories=%s",
                 param_id,
                 param.get("name", "No name"),
                 param.get("unit_name", "No unit"),
                 param.get("edit", False),
                 "enum" in param,
-                param.get("category", "No category"),
+                categories,
             )
 
     number_entity_count = 0
+    created_entity_ids: set[str] = set()  # Track created entities to avoid duplicates
+
     for param_id, param in merged_data["parameters"].items():
         _LOGGER.debug("DEBUG: Processing parameter %s: %s", param_id, param)
 
-        entity = _create_dynamic_entity_from_param(
-            param_id, param, coordinator, api, basic_param_ids, show_service
+        # Get all categories for this parameter
+        categories = param.get("categories", [param.get("category", "")])
+        if not categories:
+            categories = [param.get("category", "")]
+
+        _LOGGER.debug(
+            "Parameter %s has categories: %s", param_id, categories
         )
-        if entity:
-            entities.append(entity)
-            number_entity_count += 1
+
+        # Iterate through all categories, skip Information (handled by sensors)
+        for category in categories:
+            # Skip Information categories (create read-only sensors instead)
+            if is_information_category(category):
+                _LOGGER.debug(
+                    "Skipping Information category '%s' for parameter %s (will be created as sensor)",
+                    category,
+                    param_id,
+                )
+                continue
+
+            # Create number entity for this category
+            entity = _create_dynamic_entity_from_param(
+                param_id,
+                param,
+                category,
+                coordinator,
+                api,
+                basic_param_ids,
+                show_service,
+                created_entity_ids,
+            )
+            if entity:
+                entities.append(entity)
+                number_entity_count += 1
+                # Track entity ID to avoid duplicates
+                if hasattr(entity, "entity_id"):
+                    created_entity_ids.add(entity.entity_id)
+                break  # Only create one number entity per parameter (first non-Information category)
 
     _LOGGER.info(
         "DEBUG: Found %d parameters that qualify as number entities",
         number_entity_count,
     )
+    _LOGGER.info(
+        "Created %d dynamic number entities (Information categories handled as sensors)",
+        len(entities),
+    )
     if show_service:
         _LOGGER.info(
-            "Created %d service dynamic number entities (show_service_parameters=True)",
-            len(entities),
+            "Service/advanced parameters enabled (show_service_parameters=True)"
         )
     else:
         _LOGGER.info(
-            "Skipped service dynamic entities (show_service_parameters=False). "
-            "Only basic NUMBER_MAP entities are shown."
+            "Service/advanced parameters disabled (show_service_parameters=False). "
+            "Only basic parameters are shown."
         )
 
     return entities

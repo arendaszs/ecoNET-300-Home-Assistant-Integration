@@ -218,7 +218,9 @@ def create_mixer_binary_sensors(coordinator: EconetDataCoordinator, api: Econet3
     """Create mixer binary sensors."""
     entities: list[MixerBinarySensor] = []
     if coordinator.data is None:
-        _LOGGER.info("Coordinator data is None, no mixer binary sensors will be created")
+        _LOGGER.info(
+            "Coordinator data is None, no mixer binary sensors will be created"
+        )
         return entities
 
     data_regParams = coordinator.data.get("regParams") or {}

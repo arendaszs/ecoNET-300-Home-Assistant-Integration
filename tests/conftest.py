@@ -40,4 +40,8 @@ def mock_config_entry():
         "username": "test_user",
         "password": "test_password",
     }
+    entry.options = {
+        "enable_dynamic_entities": True,
+        "show_service_parameters": True,
+    }
     return entry
