@@ -152,6 +152,7 @@ class InformationDynamicSensor(EconetEntity, SensorEntity):
             coordinator: Data coordinator
             api: API instance
             param_number: Parameter number from merged data
+
         """
         self.entity_description = entity_description
         self.api = api
@@ -196,7 +197,7 @@ class InformationDynamicSensor(EconetEntity, SensorEntity):
             return None
 
         # Find parameter by number
-        for param_id, param in merged_parameters.items():
+        for param in merged_parameters.values():
             if isinstance(param, dict) and param.get("number") == self._param_number:
                 param_value = param.get("value")
                 if param_value is not None:
@@ -526,12 +527,13 @@ def create_dynamic_information_sensor_entity_description(
 
     Returns:
         Sensor entity description
+
     """
     param_name = param.get("name", f"Parameter {param_id}")
     unit_name = param.get("unit_name", "")
     param_key = param.get("key", f"info_{param_id}")
 
-    entity_description = EconetSensorEntityDescription(
+    return EconetSensorEntityDescription(
         key=f"info_{param_key}",
         name=param_name,
         translation_key=param_key,
@@ -539,8 +541,6 @@ def create_dynamic_information_sensor_entity_description(
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1 if unit_name else 0,
     )
-
-    return entity_description
 
 
 def create_information_sensors(
@@ -557,6 +557,7 @@ def create_information_sensors(
 
     Returns:
         List of Information sensor entities
+
     """
     entities: list[InformationDynamicSensor] = []
 
@@ -568,8 +569,23 @@ def create_information_sensors(
         "Creating Information sensor entities from %d parameters", len(parameters)
     )
 
+    # Track created entity keys to avoid duplicates
+    created_entity_keys: set[str] = set()
+
     for param_id, param in parameters.items():
         if not isinstance(param, dict):
+            continue
+
+        # Get parameter key - this is what determines uniqueness
+        param_key = param.get("key", f"info_{param_id}")
+
+        # Skip if we've already created an entity for this parameter key
+        if param_key in created_entity_keys:
+            _LOGGER.debug(
+                "Skipping parameter %s - sensor for key '%s' already created",
+                param_id,
+                param_key,
+            )
             continue
 
         # Get all categories for this parameter
@@ -598,6 +614,9 @@ def create_information_sensors(
             entity_description, coordinator, api, param_number
         )
         entities.append(entity)
+
+        # Track parameter key to avoid duplicates
+        created_entity_keys.add(param_key)
 
         _LOGGER.debug(
             "Created Information sensor entity: %s (param %d, categories: %s)",

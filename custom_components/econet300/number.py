@@ -15,7 +15,7 @@ from homeassistant.components.number import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -627,6 +627,7 @@ class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc
         api: Econet300Api,
         category_index: int,
         category_name: str,
+        param_id: str,
     ):
         """Initialize a new instance of the MenuCategoryNumber class.
 
@@ -636,9 +637,11 @@ class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc
             api: API instance for setting values
             category_index: Index into rmCatsNames array
             category_name: Human-readable category name from rmCatsNames
+            param_id: Parameter ID for looking up value in merged data
 
         """
         super().__init__(description, coordinator, api, category_index, category_name)
+        self._param_id = param_id
         # Set attributes with defaults for None values
         self._attr_native_min_value = (
             description.native_min_value
@@ -659,22 +662,69 @@ class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc
         self._attr_native_unit_of_measurement = description.native_unit_of_measurement
         self._attr_native_value: float | None = None
 
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        if self.coordinator.data is None:
+            return
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return
+
+        # Look up value using param_id
+        param_data = merged_parameters.get(self._param_id)
+        if param_data and isinstance(param_data, dict):
+            value = param_data.get("value")
+            if value is not None:
+                self._sync_state(value)
+                self.async_write_ha_state()
+
     def _sync_state(self, value) -> None:
         """Sync the state of the menu category number entity."""
         _LOGGER.debug(
-            "MenuCategoryNumber _sync_state for entity %s: %s",
+            "MenuCategoryNumber _sync_state for entity %s (param_id=%s): %s",
             self.entity_description.key,
+            self._param_id,
             value,
         )
         if value is not None:
-            # Handle dict values from merged data
-            if isinstance(value, dict):
-                raw_value = value.get("value")
-                self._attr_native_value = (
-                    float(raw_value) if raw_value is not None else None
-                )
-            else:
+            try:
                 self._attr_native_value = float(value)
+            except (ValueError, TypeError):
+                _LOGGER.warning(
+                    "Could not convert value %s to float for entity %s",
+                    value,
+                    self.entity_description.key,
+                )
+
+    async def async_added_to_hass(self) -> None:
+        """Handle entity added to Home Assistant."""
+        await super().async_added_to_hass()
+
+        # Initialize value from coordinator data
+        if self.coordinator.data is None:
+            return
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return
+
+        merged_parameters = merged_data.get("parameters", {})
+        param_data = merged_parameters.get(self._param_id)
+        if param_data and isinstance(param_data, dict):
+            value = param_data.get("value")
+            if value is not None:
+                self._sync_state(value)
+                _LOGGER.debug(
+                    "Initialized MenuCategoryNumber %s with value %s",
+                    self.entity_description.key,
+                    value,
+                )
 
     async def async_set_native_value(self, value: float) -> None:
         """Set the native value of the menu category number entity."""
@@ -1090,6 +1140,7 @@ def _create_regular_entity_by_category(
         api,
         category_index,
         category,
+        param_id,  # Pass param_id for value lookup
     )
 
     _LOGGER.info(
@@ -1115,7 +1166,6 @@ def _create_dynamic_entity_from_param(
     api: Econet300Api,
     basic_param_ids: set[str],
     show_service: bool,
-    created_entity_ids: set[str] | None = None,
 ) -> NumberEntity | None:
     """Create a dynamic entity from a parameter.
 
@@ -1127,7 +1177,6 @@ def _create_dynamic_entity_from_param(
         api: API instance
         basic_param_ids: Set of basic parameter IDs to skip
         show_service: Whether to show service parameters
-        created_entity_ids: Set of already created entity IDs to avoid duplicates
 
     Returns:
         Created entity or None if skipped
@@ -1281,10 +1330,24 @@ async def _create_dynamic_entities_from_merged_data(
             )
 
     number_entity_count = 0
-    created_entity_ids: set[str] = set()  # Track created entities to avoid duplicates
+    created_entity_keys: set[str] = (
+        set()
+    )  # Track created entity keys to avoid duplicates
 
     for param_id, param in merged_data["parameters"].items():
         _LOGGER.debug("DEBUG: Processing parameter %s: %s", param_id, param)
+
+        # Get parameter key - this is what determines uniqueness
+        param_key = param.get("key", f"parameter_{param_id}")
+
+        # Skip if we've already created an entity for this parameter key
+        if param_key in created_entity_keys:
+            _LOGGER.debug(
+                "Skipping parameter %s - entity for key '%s' already created",
+                param_id,
+                param_key,
+            )
+            continue
 
         # Get all categories for this parameter
         categories = param.get("categories", [param.get("category", "")])
@@ -1313,14 +1376,12 @@ async def _create_dynamic_entities_from_merged_data(
                 api,
                 basic_param_ids,
                 show_service,
-                created_entity_ids,
             )
             if entity:
                 entities.append(entity)
                 number_entity_count += 1
-                # Track entity ID to avoid duplicates
-                if hasattr(entity, "entity_id"):
-                    created_entity_ids.add(entity.entity_id)
+                # Track parameter key to avoid duplicates
+                created_entity_keys.add(param_key)
                 break  # Only create one number entity per parameter (first non-Information category)
 
     _LOGGER.info(
