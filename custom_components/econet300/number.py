@@ -45,7 +45,7 @@ from .const import (
     SERVICE_COORDINATOR,
     UNIT_NAME_TO_HA_UNIT,
 )
-from .entity import EconetEntity, MixerEntity
+from .entity import EconetEntity, MenuCategoryEntity, MixerEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -606,6 +606,112 @@ class AdvancedParameterNumber(EconetNumber):
         )
 
 
+class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc]
+    """Dynamic number entity grouped by menu category.
+
+    This entity type creates number entities that are grouped into
+    Home Assistant devices based on the ecoNET controller menu structure.
+    Each unique category index creates a separate device.
+
+    Note: type: ignore[misc] is used because of entity_description type
+    conflict between MenuCategoryEntity and NumberEntity base classes.
+    This is a known limitation with multiple inheritance in Python type checking.
+    """
+
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(
+        self,
+        description: EconetNumberEntityDescription,
+        coordinator: EconetDataCoordinator,
+        api: Econet300Api,
+        category_index: int,
+        category_name: str,
+    ):
+        """Initialize a new instance of the MenuCategoryNumber class.
+
+        Args:
+            description: Entity description with key, name, limits, etc.
+            coordinator: Data coordinator for updates
+            api: API instance for setting values
+            category_index: Index into rmCatsNames array
+            category_name: Human-readable category name from rmCatsNames
+
+        """
+        super().__init__(description, coordinator, api, category_index, category_name)
+        # Set attributes with defaults for None values
+        self._attr_native_min_value = (
+            description.native_min_value
+            if description.native_min_value is not None
+            else 0.0
+        )
+        self._attr_native_max_value = (
+            description.native_max_value
+            if description.native_max_value is not None
+            else 100.0
+        )
+        self._attr_native_step = (
+            description.native_step if description.native_step is not None else 1.0
+        )
+        self._attr_mode = (
+            description.mode if description.mode is not None else NumberMode.AUTO
+        )
+        self._attr_native_unit_of_measurement = description.native_unit_of_measurement
+        self._attr_native_value: float | None = None
+
+    def _sync_state(self, value) -> None:
+        """Sync the state of the menu category number entity."""
+        _LOGGER.debug(
+            "MenuCategoryNumber _sync_state for entity %s: %s",
+            self.entity_description.key,
+            value,
+        )
+        if value is not None:
+            # Handle dict values from merged data
+            if isinstance(value, dict):
+                raw_value = value.get("value")
+                self._attr_native_value = (
+                    float(raw_value) if raw_value is not None else None
+                )
+            else:
+                self._attr_native_value = float(value)
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Set the native value of the menu category number entity."""
+        _LOGGER.debug("Set menu category number value: %s", value)
+
+        try:
+            # Validate value is within bounds
+            if self._attr_native_max_value is not None:
+                if value > self._attr_native_max_value:
+                    _LOGGER.warning(
+                        "Requested value: '%s' exceeds maximum allowed value: '%s'",
+                        value,
+                        self._attr_native_max_value,
+                    )
+                    return
+
+            if self._attr_native_min_value is not None:
+                if value < self._attr_native_min_value:
+                    _LOGGER.warning(
+                        "Requested value: '%s' is below allowed value: '%s'",
+                        value,
+                        self._attr_native_min_value,
+                    )
+                    return
+
+            # Use the API to set the parameter value
+            if not await self.api.set_param(self.entity_description.key, int(value)):
+                _LOGGER.warning("Setting menu category number value failed")
+                return
+
+            self._attr_native_value = value
+            self.async_write_ha_state()
+
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+            _LOGGER.error("Error setting menu category number value: %s", e)
+
+
 def can_add(key: str, coordinator: EconetDataCoordinator) -> bool:
     """Check if a given entity can be added based on the availability of data in the coordinator."""
     try:
@@ -954,8 +1060,11 @@ def _create_regular_entity_by_category(
     param_id: str,
     category: str,
     param: dict,
-) -> EconetNumber:
+) -> NumberEntity:
     """Create regular entity based on category type.
+
+    Uses MenuCategoryNumber to group entities by their menu category index,
+    creating separate Home Assistant devices for each menu section.
 
     Args:
         entity_description: Entity description
@@ -965,53 +1074,36 @@ def _create_regular_entity_by_category(
         param_name: Parameter name
         param_id: Parameter ID
         category: Category name
-        param: Parameter dictionary
+        param: Parameter dictionary (should contain category_index)
 
     Returns:
-        Regular number entity
+        MenuCategoryNumber entity grouped by menu category
 
     """
-    if param_type == "service":
-        entity = cast(
-            "EconetNumber",
-            ServiceParameterNumber(entity_description, coordinator, api),
-        )
-        _LOGGER.info(
-            "Created service dynamic number entity: %s (%s) - category: %s, %s to %s %s",
-            param_name,
-            param_id,
-            category,
-            param.get("minv", 0),
-            param.get("maxv", 100),
-            param.get("unit_name", ""),
-        )
-    elif param_type == "advanced":
-        entity = cast(
-            "EconetNumber",
-            AdvancedParameterNumber(entity_description, coordinator, api),
-        )
-        _LOGGER.info(
-            "Created advanced dynamic number entity: %s (%s) - category: %s, %s to %s %s",
-            param_name,
-            param_id,
-            category,
-            param.get("minv", 0),
-            param.get("maxv", 100),
-            param.get("unit_name", ""),
-        )
-    else:
-        # Basic parameters: all under main device (can be organized in cards)
-        entity = EconetNumber(entity_description, coordinator, api)
-        _LOGGER.info(
-            "Created dynamic number entity: %s (%s) - category: %s, %s to %s %s, translation_key=%s",
-            param_name,
-            param_id,
-            category,
-            param.get("minv", 0),
-            param.get("maxv", 100),
-            param.get("unit_name", ""),
-            entity_description.translation_key,
-        )
+    # Get category index from param (added by API merge process)
+    category_index = param.get("category_index", 0)
+
+    # Create MenuCategoryNumber entity - grouped by menu category
+    entity = MenuCategoryNumber(
+        entity_description,
+        coordinator,
+        api,
+        category_index,
+        category,
+    )
+
+    _LOGGER.info(
+        "Created menu category number entity: %s (%s) - category[%d]: %s, type: %s, %s to %s %s",
+        param_name,
+        param_id,
+        category_index,
+        category,
+        param_type,
+        param.get("minv", 0),
+        param.get("maxv", 100),
+        param.get("unit_name", ""),
+    )
+
     return entity
 
 
@@ -1199,9 +1291,7 @@ async def _create_dynamic_entities_from_merged_data(
         if not categories:
             categories = [param.get("category", "")]
 
-        _LOGGER.debug(
-            "Parameter %s has categories: %s", param_id, categories
-        )
+        _LOGGER.debug("Parameter %s has categories: %s", param_id, categories)
 
         # Iterate through all categories, skip Information (handled by sensors)
         for category in categories:

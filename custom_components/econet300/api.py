@@ -1586,7 +1586,8 @@ class Econet300Api:
         # Map parameter numbers to their categories (can have multiple)
         # Structure: type 7 = category, type 1 = parameter
         # Parameters follow their category in the structure
-        param_to_categories: dict[int, list[str]] = {}
+        # Store both category names and indices for menu-based device creation
+        param_to_categories: dict[int, list[tuple[int, str]]] = {}
         current_category_index: int | None = None
 
         for entry in structure:
@@ -1604,24 +1605,39 @@ class Econet300Api:
                 # This is a parameter - map it to current category
                 if isinstance(entry_index, int) and current_category_index is not None:
                     category_name = categories[current_category_index]
-                    # Collect all categories for this parameter
+                    # Collect all categories for this parameter (with indices)
                     if entry_index not in param_to_categories:
                         param_to_categories[entry_index] = []
-                    # Avoid duplicates
-                    if category_name not in param_to_categories[entry_index]:
-                        param_to_categories[entry_index].append(category_name)
+                    # Avoid duplicates (check by index)
+                    existing_indices = [
+                        idx for idx, _ in param_to_categories[entry_index]
+                    ]
+                    if current_category_index not in existing_indices:
+                        param_to_categories[entry_index].append(
+                            (current_category_index, category_name)
+                        )
 
         # Add categories to parameters
         category_count = 0
         for param in parameters_dict.values():
             param_number = param.get("number")
             if isinstance(param_number, int) and param_number in param_to_categories:
-                param_categories = param_to_categories[param_number]
-                # Add categories list (all categories)
-                param["categories"] = param_categories
-                # Add category (first/primary category for backward compatibility)
-                param["category"] = param_categories[0] if param_categories else ""
-                category_count += len(param_categories)
+                category_tuples = param_to_categories[param_number]
+                # Extract names and indices separately
+                param_category_indices = [idx for idx, _ in category_tuples]
+                param_category_names = [name for _, name in category_tuples]
+                # Add categories list (all category names - backward compatible)
+                param["categories"] = param_category_names
+                # Add category (first/primary category name for backward compatibility)
+                param["category"] = (
+                    param_category_names[0] if param_category_names else ""
+                )
+                # Add category indices for menu-based device creation
+                param["category_indices"] = param_category_indices
+                param["category_index"] = (
+                    param_category_indices[0] if param_category_indices else 0
+                )
+                category_count += len(category_tuples)
 
         return category_count
 

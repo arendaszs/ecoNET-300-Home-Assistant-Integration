@@ -151,9 +151,11 @@ class TestDynamicNumberEntities:
         mock_add_entities.assert_called_once()
         entities = mock_add_entities.call_args[0][0]
 
-        # Should have created number entities
+        # Should have created number entities (can be EconetNumber or MenuCategoryNumber)
         assert len(entities) > 0
-        assert all(isinstance(entity, EconetNumber) for entity in entities)
+        # All entities should be NumberEntity instances (base class)
+        from homeassistant.components.number import NumberEntity as HANumberEntity
+        assert all(isinstance(entity, HANumberEntity) for entity in entities)
 
         # Check that we have the expected number of entities (should be around 104)
         # This is approximate since it depends on the fixture data

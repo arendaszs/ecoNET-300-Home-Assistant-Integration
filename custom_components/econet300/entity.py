@@ -26,7 +26,8 @@ class EconetEntity(CoordinatorEntity):
     """Represents EconetEntity."""
 
     api: Econet300Api
-    entity_description: EntityDescription
+    # Note: entity_description type is defined by child classes (NumberEntity, SensorEntity, etc.)
+    # to avoid MRO conflicts when multiple inheritance is used
 
     def __init__(self, coordinator: EconetDataCoordinator, api: Econet300Api):
         """Initialize the EconetEntity."""
@@ -357,6 +358,58 @@ class EcoSterEntity(EconetEntity):
         return DeviceInfo(
             identifiers={(DOMAIN, f"{self.api.uid}-ecoster-{self._idx}")},
             name=f"{DEVICE_INFO_ECOSTER_NAME} {self._idx}",
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            model_id=self.api.model_id,
+            configuration_url=self.api.host,
+            sw_version=self.api.sw_rev,
+            via_device=(DOMAIN, self.api.uid),
+        )
+
+
+class MenuCategoryEntity(EconetEntity):
+    """Entity grouped by menu category index for dynamic parameters.
+
+    This entity type creates Home Assistant devices based on the ecoNET
+    controller menu structure (rmCatsNames). Each unique category index
+    creates a separate device, allowing parameters to be grouped by their
+    menu location.
+    """
+
+    def __init__(
+        self,
+        description: EntityDescription,
+        coordinator: EconetDataCoordinator,
+        api: Econet300Api,
+        category_index: int,
+        category_name: str,
+    ):
+        """Initialize the MenuCategoryEntity.
+
+        Args:
+            description: Entity description with key, name, etc.
+            coordinator: Data coordinator for updates
+            api: API instance for device info
+            category_index: Index into rmCatsNames array
+            category_name: Human-readable category name from rmCatsNames
+
+        """
+        self.entity_description = description
+        self.api = api
+        self._category_index = category_index
+        self._category_name = category_name
+        super().__init__(coordinator, api)
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device info grouping by menu category.
+
+        Creates a unique device for each menu category index,
+        with the category name as the device name.
+        """
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{self.api.uid}-menu-{self._category_index}")},
+            name=self._category_name,
             manufacturer=DEVICE_INFO_MANUFACTURER,
             model=DEVICE_INFO_MODEL,
             model_id=self.api.model_id,

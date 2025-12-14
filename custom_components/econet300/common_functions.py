@@ -94,6 +94,26 @@ def is_information_category(category_name: str | None) -> bool:
     return "information" in category_lower
 
 
+def is_service_or_advanced_category(category_name: str | None) -> bool:
+    """Check if category requires show_service_parameters to be visible.
+
+    Service and Advanced categories are only shown when the user enables
+    show_service_parameters in the integration configuration.
+
+    Args:
+        category_name: Category name from rmCatsNames (e.g., "Service Settings")
+
+    Returns:
+        True if category is Service or Advanced type
+
+    """
+    if not category_name:
+        return False
+
+    category_lower = category_name.lower()
+    return "service" in category_lower or "advanced" in category_lower
+
+
 def sanitize_category_for_device_id(category_name: str) -> str:
     """Sanitize category name for use in device identifiers.
 
