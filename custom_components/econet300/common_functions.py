@@ -205,8 +205,20 @@ def extract_device_group_from_name(
     if "buffer" in name_lower:
         return 32, "Buffer settings"
 
-    # Check for boiler/burner/feeder (all part of boiler system)
-    if any(keyword in name_lower for keyword in ["boiler", "burner", "feeder"]):
+    # Check for boiler/burner/feed/feeder/fan/blow-in/air/fuel (all part of boiler system)
+    if any(
+        keyword in name_lower
+        for keyword in [
+            "boiler",
+            "burner",
+            "feed",
+            "feeder",
+            "fan",
+            "blow",
+            "air",
+            "fuel",
+        ]
+    ):
         return 2, "Boiler settings"
 
     return None, None
