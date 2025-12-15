@@ -104,6 +104,7 @@
     "maxv",
     "MILLIWATT",
     "minv",
+    "miscategorized",
     "mult",
     "mypy",
     "pathlib",

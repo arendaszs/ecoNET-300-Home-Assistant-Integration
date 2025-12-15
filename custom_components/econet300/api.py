@@ -1283,6 +1283,7 @@ class Econet300Api:
                 self.fetch_rm_params_enums(lang),
                 self.fetch_rm_params_units_names(lang),
                 self.fetch_rm_cats_names(lang),
+                self.fetch_rm_locks_names(lang),
             ]
 
             results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -1291,6 +1292,7 @@ class Econet300Api:
             enums: list[dict[str, Any]] = []
             units: list[str] = []
             categories: list[str] = []
+            lock_names: list[str] = []
 
             if (
                 not isinstance(results[0], Exception)
@@ -1316,6 +1318,12 @@ class Econet300Api:
                 and isinstance(results[3], list)
             ):
                 categories = results[3]  # type: ignore[assignment]
+            if (
+                not isinstance(results[4], Exception)
+                and results[4] is not None
+                and isinstance(results[4], list)
+            ):
+                lock_names = results[4]  # type: ignore[assignment]
 
             # Add parameter numbers, units, and keys using helper methods
             self._add_parameter_numbers(step2_data["parameters"], structure)
@@ -1351,8 +1359,10 @@ class Econet300Api:
                     "Added category information to %d parameters", category_count
                 )
 
-            # Add lock status to parameters
-            lock_count = self._add_parameter_locks(parameters_dict, structure)
+            # Add lock status to parameters (with lock reasons from rmLocksNames)
+            lock_count = self._add_parameter_locks(
+                parameters_dict, structure, lock_names
+            )
             _LOGGER.debug("Added lock status to %d locked parameters", lock_count)
 
             # Update version to include categories and locks
@@ -1645,19 +1655,26 @@ class Econet300Api:
         self,
         parameters_dict: dict[str, dict[str, Any]],
         structure: list[dict[str, Any]],
+        lock_names: list[str] | None = None,
     ) -> int:
         """Add lock status to parameters based on structure data.
+
+        Adds lock information including:
+        - locked: bool - Whether the parameter is currently locked
+        - lock_index: int | None - Index into rmLocksNames for lock reason
+        - lock_reason: str | None - Human-readable lock reason message
 
         Args:
             parameters_dict: Dictionary of parameters indexed by string keys
             structure: Structure data from rmStructure endpoint
+            lock_names: Lock reason messages from rmLocksNames endpoint
 
         Returns:
             Number of parameters with lock status added
 
         """
-        # Build mapping: parameter_number -> lock_status
-        param_to_lock: dict[int, bool] = {}
+        # Build mapping: parameter_number -> (lock_status, lock_index)
+        param_to_lock: dict[int, tuple[bool, int | None]] = {}
 
         for entry in structure:
             if not isinstance(entry, dict):
@@ -1666,21 +1683,36 @@ class Econet300Api:
             entry_type = entry.get("type")
             entry_index = entry.get("index")
             entry_lock = entry.get("lock", False)
+            entry_lock_index = entry.get("lock_index")
 
             if entry_type == 1:  # Parameter
                 if entry_index is not None:
-                    param_to_lock[entry_index] = entry_lock
+                    param_to_lock[entry_index] = (entry_lock, entry_lock_index)
 
         # Add lock status to parameters based on their number
         lock_count = 0
         for param in parameters_dict.values():
             param_number = param.get("number")
             if isinstance(param_number, int) and param_number in param_to_lock:
-                param["locked"] = param_to_lock[param_number]
-                if param_to_lock[param_number]:
+                locked, lock_index = param_to_lock[param_number]
+                param["locked"] = locked
+                param["lock_index"] = lock_index
+
+                # Add lock reason from rmLocksNames if available
+                if locked and lock_index is not None and lock_names:
+                    if 0 <= lock_index < len(lock_names):
+                        param["lock_reason"] = lock_names[lock_index]
+                    else:
+                        param["lock_reason"] = "Parameter locked"
+                else:
+                    param["lock_reason"] = None
+
+                if locked:
                     lock_count += 1
             else:
                 param["locked"] = False
+                param["lock_index"] = None
+                param["lock_reason"] = None
 
         return lock_count
 

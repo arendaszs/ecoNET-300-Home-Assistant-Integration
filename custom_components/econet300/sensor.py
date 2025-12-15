@@ -16,7 +16,11 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
-from .common_functions import camel_to_snake, is_information_category
+from .common_functions import (
+    camel_to_snake,
+    extract_device_group_from_name,
+    is_information_category,
+)
 from .const import (
     DOMAIN,
     ENTITY_CATEGORY,
@@ -725,18 +729,27 @@ def create_information_sensors(
         category_index = param.get("category_index")
         category_indices = param.get("category_indices", [])
 
-        # Find the first Information category index and name
-        info_category_index = None
-        info_category_name = None
-        for i, cat in enumerate(categories):
-            if is_information_category(cat):
-                # Use the corresponding index from category_indices
-                if i < len(category_indices):
-                    info_category_index = category_indices[i]
-                elif category_index is not None:
-                    info_category_index = category_index
-                info_category_name = cat
-                break
+        # First, try to extract device group from parameter name (for better grouping)
+        param_name = param.get("name", "")
+        name_based_index, name_based_category = extract_device_group_from_name(
+            param_name, for_information=True
+        )
+
+        # Use name-based grouping if found, otherwise fall back to structure-based
+        info_category_index = name_based_index
+        info_category_name = name_based_category
+
+        if info_category_index is None:
+            # Fall back to finding the first Information category from structure
+            for i, cat in enumerate(categories):
+                if is_information_category(cat):
+                    # Use the corresponding index from category_indices
+                    if i < len(category_indices):
+                        info_category_index = category_indices[i]
+                    elif category_index is not None:
+                        info_category_index = category_index
+                    info_category_name = cat
+                    break
 
         # Create entity - use MenuCategorySensor if we have category info
         entity: SensorEntity

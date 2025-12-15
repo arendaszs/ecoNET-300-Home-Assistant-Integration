@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import logging
 import re
 import traceback
-from typing import cast
+from typing import Any
 
 import aiohttp
 from homeassistant.components.number import (
@@ -16,6 +16,7 @@ from homeassistant.components.number import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -23,8 +24,10 @@ from .api import Limits
 from .common import Econet300Api, EconetDataCoordinator, skip_params_edits
 from .common_functions import (
     camel_to_snake,
+    extract_device_group_from_name,
     get_parameter_type_from_category,
     is_information_category,
+    mixer_exists,
 )
 from .const import (
     AVAILABLE_NUMBER_OF_MIXERS,
@@ -348,42 +351,6 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
         self.async_write_ha_state()
 
 
-class ServiceMixerDynamicNumber(MixerDynamicNumber):
-    """Service mixer dynamic number entity - disabled by default."""
-
-    _attr_entity_category = EntityCategory.CONFIG
-    _attr_entity_registry_enabled_default = False
-
-    @property
-    def device_info(self) -> DeviceInfo | None:
-        """Return device info for service mixer parameters."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{self.api.uid}-service-parameters")},
-            name=DEVICE_INFO_SERVICE_PARAMETERS_NAME,
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            via_device=(DOMAIN, self.api.uid),
-        )
-
-
-class AdvancedMixerDynamicNumber(MixerDynamicNumber):
-    """Advanced mixer dynamic number entity - disabled by default."""
-
-    _attr_entity_category = EntityCategory.CONFIG
-    _attr_entity_registry_enabled_default = False
-
-    @property
-    def device_info(self) -> DeviceInfo | None:
-        """Return device info for advanced mixer parameters."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{self.api.uid}-advanced-parameters")},
-            name=DEVICE_INFO_ADVANCED_PARAMETERS_NAME,
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            via_device=(DOMAIN, self.api.uid),
-        )
-
-
 class MixerNumber(MixerEntity, NumberEntity):
     """Mixer number class."""
 
@@ -661,6 +628,9 @@ class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc
         )
         self._attr_native_unit_of_measurement = description.native_unit_of_measurement
         self._attr_native_value: float | None = None
+        # Lock state tracking
+        self._locked: bool = False
+        self._lock_reason: str | None = None
 
     @callback
     def _handle_coordinator_update(self) -> None:
@@ -682,7 +652,12 @@ class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc
             value = param_data.get("value")
             if value is not None:
                 self._sync_state(value)
-                self.async_write_ha_state()
+
+            # Update lock state
+            self._locked = param_data.get("locked", False)
+            self._lock_reason = param_data.get("lock_reason")
+
+            self.async_write_ha_state()
 
     def _sync_state(self, value) -> None:
         """Sync the state of the menu category number entity."""
@@ -720,15 +695,41 @@ class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc
             value = param_data.get("value")
             if value is not None:
                 self._sync_state(value)
-                _LOGGER.debug(
-                    "Initialized MenuCategoryNumber %s with value %s",
-                    self.entity_description.key,
-                    value,
-                )
+
+            # Initialize lock state
+            self._locked = param_data.get("locked", False)
+            self._lock_reason = param_data.get("lock_reason")
+
+            _LOGGER.debug(
+                "Initialized MenuCategoryNumber %s with value %s (locked=%s)",
+                self.entity_description.key,
+                value,
+                self._locked,
+            )
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra state attributes including lock information."""
+        attrs: dict[str, Any] = {}
+        if self._locked:
+            attrs["locked"] = True
+            if self._lock_reason:
+                attrs["lock_reason"] = self._lock_reason
+        return attrs
 
     async def async_set_native_value(self, value: float) -> None:
         """Set the native value of the menu category number entity."""
         _LOGGER.debug("Set menu category number value: %s", value)
+
+        # Check if parameter is locked
+        if self._locked:
+            reason = self._lock_reason or "Parameter is locked"
+            _LOGGER.warning(
+                "Cannot set value for %s: %s",
+                self.entity_description.key,
+                reason,
+            )
+            raise HomeAssistantError(f"Cannot change value: {reason}")
 
         try:
             # Validate value is within bounds
@@ -1052,52 +1053,53 @@ def _create_mixer_entity_by_category(
     param_type: str,
     param_name: str,
     category: str,
-) -> MixerDynamicNumber:
+    param_id: str,
+) -> NumberEntity:
     """Create mixer entity based on category type.
+
+    All mixer entities are now grouped into their respective "Mixer X settings"
+    devices using MenuCategoryNumber. Service/advanced params are disabled by default.
 
     Args:
         entity_description: Entity description
         coordinator: Data coordinator
         api: API instance
-        mixer_num: Mixer number
+        mixer_num: Mixer number (1-4)
         param_type: Parameter type (service/advanced/basic)
         param_name: Parameter name
         category: Category name
+        param_id: Parameter ID for value lookup
 
     Returns:
-        Mixer dynamic number entity
+        MenuCategoryNumber entity grouped under Mixer device
 
     """
-    if param_type == "service":
-        entity = cast(
-            "MixerDynamicNumber",
-            ServiceMixerDynamicNumber(entity_description, coordinator, api, mixer_num),
-        )
-        _LOGGER.info(
-            "Created service mixer-related dynamic number entity: %s (Mixer %d, category: %s)",
-            param_name,
-            mixer_num,
-            category,
-        )
-    elif param_type == "advanced":
-        entity = cast(
-            "MixerDynamicNumber",
-            AdvancedMixerDynamicNumber(entity_description, coordinator, api, mixer_num),
-        )
-        _LOGGER.info(
-            "Created advanced mixer-related dynamic number entity: %s (Mixer %d, category: %s)",
-            param_name,
-            mixer_num,
-            category,
-        )
-    else:
-        entity = MixerDynamicNumber(entity_description, coordinator, api, mixer_num)
-        _LOGGER.info(
-            "Created mixer-related dynamic number entity: %s (Mixer %d, category: %s)",
-            param_name,
-            mixer_num,
-            category,
-        )
+    # Mixer settings devices are at index 5-8 (4 + mixer_num)
+    category_index = 4 + mixer_num
+    category_name = f"Mixer {mixer_num} settings"
+
+    # Create MenuCategoryNumber entity - grouped by mixer device
+    entity = MenuCategoryNumber(
+        entity_description,
+        coordinator,
+        api,
+        category_index,
+        category_name,
+        param_id,
+    )
+
+    # Set disabled by default for service/advanced params
+    if param_type in ("service", "advanced"):
+        entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
+
+    _LOGGER.info(
+        "Created mixer number entity: %s (Mixer %d, type: %s, category: %s)",
+        param_name,
+        mixer_num,
+        param_type,
+        category_name,
+    )
+
     return entity
 
 
@@ -1116,6 +1118,10 @@ def _create_regular_entity_by_category(
     Uses MenuCategoryNumber to group entities by their menu category index,
     creating separate Home Assistant devices for each menu section.
 
+    First tries to extract device group from parameter name (for better grouping
+    when parameters are miscategorized in rmStructure), then falls back to
+    structure-based category.
+
     Args:
         entity_description: Entity description
         coordinator: Data coordinator
@@ -1130,8 +1136,25 @@ def _create_regular_entity_by_category(
         MenuCategoryNumber entity grouped by menu category
 
     """
-    # Get category index from param (added by API merge process)
-    category_index = param.get("category_index", 0)
+    # First, try to extract device group from parameter name (for better grouping)
+    name_based_index, name_based_category = extract_device_group_from_name(
+        param_name, for_information=False
+    )
+
+    # Use name-based grouping if found, otherwise fall back to structure-based
+    if name_based_index is not None and name_based_category is not None:
+        category_index = name_based_index
+        effective_category = name_based_category
+        _LOGGER.debug(
+            "Using name-based grouping for %s: %s (index %d)",
+            param_name,
+            effective_category,
+            category_index,
+        )
+    else:
+        # Get category index from param (added by API merge process)
+        category_index = param.get("category_index", 0)
+        effective_category = category
 
     # Create MenuCategoryNumber entity - grouped by menu category
     entity = MenuCategoryNumber(
@@ -1139,7 +1162,7 @@ def _create_regular_entity_by_category(
         coordinator,
         api,
         category_index,
-        category,
+        effective_category,
         param_id,  # Pass param_id for value lookup
     )
 
@@ -1148,7 +1171,7 @@ def _create_regular_entity_by_category(
         param_name,
         param_id,
         category_index,
-        category,
+        effective_category,
         param_type,
         param.get("minv", 0),
         param.get("maxv", 100),
@@ -1244,14 +1267,10 @@ def _create_dynamic_entity_from_param(
 
         # Create entity based on type and category
         if is_mixer_related and mixer_num is not None:
-            # Check if the mixer exists (same logic as mixer sensors)
-            mixer_keys = SENSOR_MIXER_KEY.get(mixer_num, set())
-            if any(
-                coordinator.data.get("regParams", {}).get(mixer_key) is None
-                for mixer_key in mixer_keys
-            ):
-                _LOGGER.info(
-                    "Mixer-related dynamic entity '%s' will not be created due to invalid mixer %d data.",
+            # Check if the mixer actually exists in the boiler
+            if not mixer_exists(coordinator.data, mixer_num):
+                _LOGGER.debug(
+                    "Skipping mixer entity '%s' - Mixer %d does not exist",
                     param_name,
                     mixer_num,
                 )
@@ -1265,6 +1284,7 @@ def _create_dynamic_entity_from_param(
                 param_type,
                 param_name,
                 category,
+                param_id,
             )
 
         return _create_regular_entity_by_category(

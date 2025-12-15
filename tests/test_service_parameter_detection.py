@@ -12,13 +12,13 @@ from custom_components.econet300.const import (
     DOMAIN,
 )
 from custom_components.econet300.number import (
-    AdvancedMixerDynamicNumber,
     AdvancedParameterNumber,
     EconetNumber,
     EconetNumberEntityDescription,
+    MenuCategoryNumber,
     MixerDynamicNumber,
-    ServiceMixerDynamicNumber,
     ServiceParameterNumber,
+    should_be_number_entity,
 )
 
 
@@ -164,77 +164,37 @@ class TestServiceParameterDetection:
 
         assert entity.entity_registry_enabled_default is False
 
-    def test_service_mixer_dynamic_number_device_info(self):
-        """Test that ServiceMixerDynamicNumber has correct device_info."""
+    def test_menu_category_number_for_mixer_device_info(self):
+        """Test that MenuCategoryNumber for mixer has correct device_info."""
         mock_api = MagicMock()
         mock_api.uid = "test-device-uid"
+        mock_api.model_id = "test-model"
+        mock_api.host = "http://test-host"
+        mock_api.sw_rev = "1.0.0"
         mock_coordinator = MagicMock()
+        mock_coordinator.data = {"mergedData": {"parameters": {}}}
 
         entity_desc = EconetNumberEntityDescription(
             key="test_key",
             translation_key="test_translation",
         )
 
-        entity = ServiceMixerDynamicNumber(entity_desc, mock_coordinator, mock_api, 1)
+        # Mixer 1 uses category_index 5 (4 + mixer_num)
+        entity = MenuCategoryNumber(
+            entity_desc,
+            mock_coordinator,
+            mock_api,
+            category_index=5,
+            category_name="Mixer 1 settings",
+            param_id="test_param",
+        )
 
         device_info = entity.device_info
 
         assert device_info is not None
-        assert device_info.get("identifiers") == {
-            (DOMAIN, "test-device-uid-service-parameters")
-        }
-        assert device_info.get("name") == DEVICE_INFO_SERVICE_PARAMETERS_NAME
+        assert device_info.get("identifiers") == {(DOMAIN, "test-device-uid-menu-5")}
+        assert device_info.get("name") == "Mixer 1 settings"
         assert device_info.get("via_device") == (DOMAIN, "test-device-uid")
-
-    def test_advanced_mixer_dynamic_number_device_info(self):
-        """Test that AdvancedMixerDynamicNumber has correct device_info."""
-        mock_api = MagicMock()
-        mock_api.uid = "test-device-uid"
-        mock_coordinator = MagicMock()
-
-        entity_desc = EconetNumberEntityDescription(
-            key="test_key",
-            translation_key="test_translation",
-        )
-
-        entity = AdvancedMixerDynamicNumber(entity_desc, mock_coordinator, mock_api, 1)
-
-        device_info = entity.device_info
-
-        assert device_info is not None
-        assert device_info.get("identifiers") == {
-            (DOMAIN, "test-device-uid-advanced-parameters")
-        }  # type: ignore[typeddict-item]
-        assert device_info.get("name") == DEVICE_INFO_ADVANCED_PARAMETERS_NAME  # type: ignore[typeddict-item]
-        assert device_info.get("via_device") == (DOMAIN, "test-device-uid")  # type: ignore[typeddict-item]
-
-    def test_service_mixer_dynamic_number_enabled_default(self):
-        """Test that ServiceMixerDynamicNumber is disabled by default."""
-        mock_api = MagicMock()
-        mock_coordinator = MagicMock()
-
-        entity_desc = EconetNumberEntityDescription(
-            key="test_key",
-            translation_key="test_translation",
-        )
-
-        entity = ServiceMixerDynamicNumber(entity_desc, mock_coordinator, mock_api, 1)
-
-        assert entity.entity_registry_enabled_default is False
-
-    def test_advanced_mixer_dynamic_number_enabled_default(self):
-        """Test that AdvancedMixerDynamicNumber is disabled by default."""
-        mock_api = MagicMock()
-        mock_coordinator = MagicMock()
-
-        entity_desc = EconetNumberEntityDescription(
-            key="test_key",
-            translation_key="test_translation",
-        )
-
-        entity = AdvancedMixerDynamicNumber(entity_desc, mock_coordinator, mock_api, 1)
-
-        assert entity.entity_registry_enabled_default is False
 
     def test_entity_type_selection_service(self):
         """Test that service category selects ServiceParameterNumber."""
@@ -296,54 +256,42 @@ class TestServiceParameterDetection:
         assert not isinstance(entity, ServiceParameterNumber)
         assert not isinstance(entity, AdvancedParameterNumber)
 
-    def test_mixer_entity_type_selection_service(self):
-        """Test that service mixer category selects ServiceMixerDynamicNumber."""
-        category = "Service Settings"
-        param_type = get_parameter_type_from_category(category)
-
-        assert param_type == "service"
-
-        # Verify entity type would be ServiceMixerDynamicNumber
+    def test_mixer_entity_uses_menu_category_number(self):
+        """Test that all mixer entities use MenuCategoryNumber for device grouping."""
+        # All mixer parameters (basic, service, advanced) now use MenuCategoryNumber
+        # to group into their respective "Mixer X settings" devices
         mock_api = MagicMock()
+        mock_api.uid = "test-device-uid"
+        mock_api.model_id = "test-model"
+        mock_api.host = "http://test-host"
+        mock_api.sw_rev = "1.0.0"
         mock_coordinator = MagicMock()
+        mock_coordinator.data = {"mergedData": {"parameters": {}}}
+
         entity_desc = EconetNumberEntityDescription(
             key="test_key",
             translation_key="test_translation",
         )
 
-        entity = ServiceMixerDynamicNumber(entity_desc, mock_coordinator, mock_api, 1)
-        assert isinstance(entity, ServiceMixerDynamicNumber)
-        assert not isinstance(entity, AdvancedMixerDynamicNumber)
-        assert isinstance(entity, MixerDynamicNumber)
-
-    def test_mixer_entity_type_selection_advanced(self):
-        """Test that advanced mixer category selects AdvancedMixerDynamicNumber."""
-        category = "Advanced settings"
-        param_type = get_parameter_type_from_category(category)
-
-        assert param_type == "advanced"
-
-        # Verify entity type would be AdvancedMixerDynamicNumber
-        mock_api = MagicMock()
-        mock_coordinator = MagicMock()
-        entity_desc = EconetNumberEntityDescription(
-            key="test_key",
-            translation_key="test_translation",
+        # Create MenuCategoryNumber for Mixer 1
+        entity = MenuCategoryNumber(
+            entity_desc,
+            mock_coordinator,
+            mock_api,
+            category_index=5,  # 4 + mixer_num (1)
+            category_name="Mixer 1 settings",
+            param_id="test_param",
         )
 
-        entity = AdvancedMixerDynamicNumber(entity_desc, mock_coordinator, mock_api, 1)
-        assert isinstance(entity, AdvancedMixerDynamicNumber)
-        assert not isinstance(entity, ServiceMixerDynamicNumber)
-        assert isinstance(entity, MixerDynamicNumber)
+        assert isinstance(entity, MenuCategoryNumber)
+        # Verify device info is for the mixer device
+        device_info = entity.device_info
+        assert device_info is not None
+        assert "Mixer 1 settings" in str(device_info.get("name"))
 
-    def test_mixer_entity_type_selection_basic(self):
-        """Test that basic mixer category selects MixerDynamicNumber."""
-        category = "Mixer 1 settings"
-        param_type = get_parameter_type_from_category(category)
-
-        assert param_type == "basic"
-
-        # Verify entity type would be MixerDynamicNumber (not Service/Advanced)
+    def test_mixer_dynamic_number_still_exists_for_legacy(self):
+        """Test that MixerDynamicNumber still exists for legacy mixer entities."""
+        # MixerDynamicNumber is still used for legacy mixer set temperature entities
         mock_api = MagicMock()
         mock_coordinator = MagicMock()
         entity_desc = EconetNumberEntityDescription(
@@ -353,8 +301,6 @@ class TestServiceParameterDetection:
 
         entity = MixerDynamicNumber(entity_desc, mock_coordinator, mock_api, 1)
         assert isinstance(entity, MixerDynamicNumber)
-        assert not isinstance(entity, ServiceMixerDynamicNumber)
-        assert not isinstance(entity, AdvancedMixerDynamicNumber)
 
     def test_is_information_category_variations(self):
         """Test is_information_category with various category names."""
@@ -415,8 +361,6 @@ class TestServiceParameterDetection:
         assert param_type == "basic"
 
         # However, Information category should create sensor, not number entity
-        from custom_components.econet300.number import should_be_number_entity
-
         should_be_number = should_be_number_entity(param)
         assert should_be_number is True  # Would normally be number entity
 
@@ -451,8 +395,6 @@ class TestServiceParameterDetection:
         assert is_information_category("Advanced settings") is False
 
         # Verify these would be number entities if show_service_parameters=True
-        from custom_components.econet300.number import should_be_number_entity
-
         assert should_be_number_entity(service_param) is True
         assert should_be_number_entity(advanced_param) is True
 
