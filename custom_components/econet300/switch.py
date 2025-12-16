@@ -15,10 +15,13 @@ from .common import Econet300Api, EconetDataCoordinator
 from .common_functions import (
     extract_device_group_from_name,
     generate_translation_key,
+    get_lock_reason,
     get_on_off_values,
     is_information_category,
+    is_parameter_locked,
     mixer_exists,
     should_be_switch_entity,
+    validate_parameter_data,
 )
 from .const import BOILER_CONTROL, DOMAIN, SERVICE_API, SERVICE_COORDINATOR
 from .entity import EconetEntity, MenuCategoryEntity
@@ -219,6 +222,19 @@ class MenuCategorySwitch(MenuCategoryEntity, SwitchEntity):  # type: ignore[misc
                 attrs["lock_reason"] = self._lock_reason
         return attrs
 
+    @property
+    def available(self) -> bool:
+        """Return True if entity is available (not locked).
+
+        When a parameter is locked by the device (e.g., "Weather control enabled"),
+        the entity becomes unavailable in Home Assistant, preventing user interaction.
+        """
+        # Base availability check (coordinator connected, etc.)
+        if not super().available:
+            return False
+        # Check if parameter is locked
+        return not self._locked
+
     @staticmethod
     def _raise_switch_error(message: str) -> None:
         """Raise a MenuCategorySwitchError with the given message."""
@@ -335,8 +351,26 @@ def create_dynamic_switches(
         if not isinstance(param, dict):
             continue
 
-        # Check if this should be a switch entity
+        # Validate parameter data first
+        is_valid, error_msg = validate_parameter_data(param)
+        if not is_valid:
+            _LOGGER.debug(
+                "Skipping invalid switch parameter %s: %s", param_id, error_msg
+            )
+            continue
+
+        # Check if this should be a switch entity (includes lock check)
         if not should_be_switch_entity(param):
+            continue
+
+        # Log if parameter is locked (should not reach here due to should_be_switch_entity)
+        if is_parameter_locked(param):
+            lock_reason = get_lock_reason(param) or "Parameter is locked"
+            _LOGGER.debug(
+                "Skipping locked switch parameter %s (reason: %s)",
+                param_id,
+                lock_reason,
+            )
             continue
 
         # Skip Information categories (read-only)

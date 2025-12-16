@@ -10,6 +10,7 @@
 - `.cursor/rules/translation-requirements.mdc` - Translation requirements
 - `.cursor/rules/code-style-ruff.mdc` - **Code formatting with Ruff** 🚨
 - `.cursor/rules/api-endpoint-validation.mdc` - **API response validation** 🚨
+- `docs/DYNAMIC_ENTITY_VALIDATION.md` - **Dynamic entity validation layer** 🆕
 
 ### 2. ALWAYS FOLLOW HA DOCUMENTATION
 
@@ -52,3 +53,13 @@
 - Ensure no blank line whitespace issues
 - **Validate API documentation** against test fixtures
 - Test your changes work as expected
+
+### 8. DYNAMIC ENTITY CHANGES
+
+When modifying dynamic entity creation from `mergedData` API:
+
+- **Read**: `docs/DYNAMIC_ENTITY_VALIDATION.md` first
+- **Update**: Documentation if adding new entity types or validation
+- **Test**: Run `pytest tests/test_validation_functions.py -v`
+- **Check**: Validation functions in `common_functions.py`
+- **Verify**: Lock handling in entity classes (number.py, switch.py, select.py)

@@ -1,4 +1,14 @@
-"""Functions used in Econet300 integration,."""
+"""Common utility functions for the ecoNET-300 integration.
+
+This module contains helper functions for:
+- Name conversion (camelCase to snake_case)
+- Translation key generation
+- Parameter type detection (number, switch, select, sensor)
+- Parameter validation and locking
+
+For detailed documentation on the validation layer and entity type detection,
+see: docs/DYNAMIC_ENTITY_VALIDATION.md
+"""
 
 import re
 
@@ -322,6 +332,10 @@ def should_be_select_entity(param: dict) -> bool:
     if not param.get("edit", False):
         return False
 
+    # Locked parameters should not be editable selects
+    if is_parameter_locked(param):
+        return False
+
     enum_data = param.get("enum")
     if not enum_data:
         return False
@@ -363,6 +377,10 @@ def should_be_switch_entity(param: dict) -> bool:
     if not param.get("edit", False):
         return False
 
+    # Locked parameters should not be editable switches
+    if is_parameter_locked(param):
+        return False
+
     enum_data = param.get("enum")
     if not enum_data:
         return False
@@ -382,6 +400,37 @@ def should_be_switch_entity(param: dict) -> bool:
     # Check if enum values represent binary pattern
     enum_values = enum_data.get("values", [])
     return is_binary_enum(enum_values)
+
+
+def should_be_read_only_sensor(param: dict, category_name: str | None = None) -> bool:
+    """Check if parameter should be a read-only sensor entity.
+
+    A parameter should be a read-only sensor if any of these conditions are true:
+    - It is not editable (edit=False)
+    - It is locked (locked=True)
+    - It belongs to an Information category
+
+    Args:
+        param: Parameter dictionary from mergedData
+        category_name: Optional category name to check for Information type
+
+    Returns:
+        True if parameter should be a read-only sensor
+
+    """
+    # Not editable -> read-only sensor
+    if not param.get("edit", False):
+        return True
+
+    # Locked parameters -> read-only sensor
+    if is_parameter_locked(param):
+        return True
+
+    # Information category -> read-only sensor
+    if category_name and is_information_category(category_name):
+        return True
+
+    return False
 
 
 def mixer_exists(coordinator_data: dict | None, mixer_num: int) -> bool:
@@ -408,3 +457,98 @@ def mixer_exists(coordinator_data: dict | None, mixer_num: int) -> bool:
 
     mixer_temp_key = f"mixerTemp{mixer_num}"
     return reg_params.get(mixer_temp_key) is not None
+
+
+def validate_parameter_data(param: dict) -> tuple[bool, str]:
+    """Validate parameter from mergedData before entity creation.
+
+    Performs comprehensive validation of parameter data to ensure
+    it has all required fields and valid values before creating entities.
+
+    Args:
+        param: Parameter dictionary from mergedData
+
+    Returns:
+        Tuple of (is_valid, error_message). If valid, error_message is empty.
+
+    """
+    # Check required fields
+    if not param.get("key"):
+        return False, "Missing parameter key"
+
+    if not param.get("name"):
+        return False, "Missing parameter name"
+
+    # Validate numeric range if editable number (has unit_name, no enum)
+    is_editable = param.get("edit", False)
+    has_unit = bool(param.get("unit_name"))
+    has_enum = "enum" in param and param.get("enum") is not None
+
+    if is_editable and has_unit and not has_enum:
+        minv = param.get("minv")
+        maxv = param.get("maxv")
+
+        if minv is None or maxv is None:
+            return False, "Missing min/max for editable number parameter"
+
+        try:
+            min_float = float(minv)
+            max_float = float(maxv)
+            if min_float >= max_float:
+                return False, f"Invalid min/max range: {minv} >= {maxv}"
+        except (ValueError, TypeError):
+            return False, f"Non-numeric min/max values: {minv}, {maxv}"
+
+    # Validate enum if present
+    enum_data = param.get("enum")
+    if enum_data is not None:
+        if not isinstance(enum_data, dict):
+            return False, "Invalid enum structure (not a dict)"
+
+        enum_values = enum_data.get("values")
+        if enum_values is not None and not isinstance(enum_values, list):
+            return False, "Invalid enum values (not a list)"
+
+        if enum_values is not None and len(enum_values) == 0:
+            return False, "Empty enum values list"
+
+    return True, ""
+
+
+def is_parameter_locked(param: dict) -> bool:
+    """Check if parameter is locked using existing mergedData field.
+
+    The lock status is determined by the rmStructure endpoint and
+    added to parameters during the merge process in api.py.
+
+    Args:
+        param: Parameter dictionary from mergedData
+
+    Returns:
+        True if parameter is locked and cannot be modified
+
+    """
+    return param.get("locked", False)
+
+
+def get_lock_reason(param: dict) -> str | None:
+    """Get human-readable lock reason from mergedData.
+
+    Lock reasons come from the rmLocksNames endpoint and provide
+    user-friendly explanations for why a parameter is locked.
+
+    Examples of lock reasons:
+        - "Requires turn off the controller."
+        - "Weather control enabled."
+        - "HUW mode off."
+        - "Function unavailable."
+        - "Lambda sensor calibration in progress"
+
+    Args:
+        param: Parameter dictionary from mergedData
+
+    Returns:
+        Lock reason string if available, None otherwise
+
+    """
+    return param.get("lock_reason")

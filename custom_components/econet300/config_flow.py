@@ -107,6 +107,8 @@ OPTIONS_SCHEMA = vol.Schema(
     {
         vol.Required("enable_dynamic_entities", default=True): bool,
         vol.Required("show_service_parameters", default=False): bool,
+        vol.Required("show_locked_as_sensors", default=True): bool,
+        vol.Required("include_lock_reasons", default=True): bool,
     }
 )
 

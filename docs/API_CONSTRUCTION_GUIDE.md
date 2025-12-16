@@ -221,3 +221,7 @@ this.getRemoteMenuParamsNames = function(responseMethod, lang) {
 5. **Optimize Performance**: Add caching and request optimization
 
 This guide provides a complete understanding of how to construct API calls that will work with real ecoNET controllers, using the official ecoNET24 interface as your reference implementation.
+
+## 📚 Related Documentation
+
+- **[Dynamic Entity Validation](DYNAMIC_ENTITY_VALIDATION.md)** - Validation layer for dynamic entities created from `mergedData` endpoint, including parameter locking and entity type detection

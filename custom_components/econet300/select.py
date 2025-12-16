@@ -19,9 +19,12 @@ from .common_functions import (
     camel_to_snake,
     extract_device_group_from_name,
     generate_translation_key,
+    get_lock_reason,
     is_information_category,
+    is_parameter_locked,
     mixer_exists,
     should_be_select_entity,
+    validate_parameter_data,
 )
 from .const import (
     DOMAIN,
@@ -447,6 +450,19 @@ class MenuCategorySelect(MenuCategoryEntity, SelectEntity):  # type: ignore[misc
                 attrs["lock_reason"] = self._lock_reason
         return attrs
 
+    @property
+    def available(self) -> bool:
+        """Return True if entity is available (not locked).
+
+        When a parameter is locked by the device (e.g., "Weather control enabled"),
+        the entity becomes unavailable in Home Assistant, preventing user interaction.
+        """
+        # Base availability check (coordinator connected, etc.)
+        if not super().available:
+            return False
+        # Check if parameter is locked
+        return not self._locked
+
     @staticmethod
     def _raise_select_error(message: str) -> None:
         """Raise a MenuCategorySelectError with the given message."""
@@ -551,8 +567,26 @@ def create_dynamic_selects(
         if not isinstance(param, dict):
             continue
 
-        # Check if this should be a select entity
+        # Validate parameter data first
+        is_valid, error_msg = validate_parameter_data(param)
+        if not is_valid:
+            _LOGGER.debug(
+                "Skipping invalid select parameter %s: %s", param_id, error_msg
+            )
+            continue
+
+        # Check if this should be a select entity (includes lock check)
         if not should_be_select_entity(param):
+            continue
+
+        # Log if parameter is locked (should not reach here due to should_be_select_entity)
+        if is_parameter_locked(param):
+            lock_reason = get_lock_reason(param) or "Parameter is locked"
+            _LOGGER.debug(
+                "Skipping locked select parameter %s (reason: %s)",
+                param_id,
+                lock_reason,
+            )
             continue
 
         # Skip Information categories (read-only)

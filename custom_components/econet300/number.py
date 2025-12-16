@@ -25,9 +25,12 @@ from .common import Econet300Api, EconetDataCoordinator, skip_params_edits
 from .common_functions import (
     camel_to_snake,
     extract_device_group_from_name,
+    get_lock_reason,
     get_parameter_type_from_category,
     is_information_category,
+    is_parameter_locked,
     mixer_exists,
+    validate_parameter_data,
 )
 from .const import (
     AVAILABLE_NUMBER_OF_MIXERS,
@@ -208,6 +211,19 @@ class EconetNumber(EconetEntity, NumberEntity):
             return "mdi:lock"  # Show lock icon for locked parameters
         return None
 
+    @property
+    def available(self) -> bool:
+        """Return True if entity is available (not locked).
+
+        When a parameter is locked by the device (e.g., "Weather control enabled"),
+        the entity becomes unavailable in Home Assistant, preventing user interaction.
+        """
+        # Base availability check (coordinator connected, etc.)
+        if not super().available:
+            return False
+        # Check if parameter is locked
+        return not self._is_parameter_locked()
+
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value."""
         _LOGGER.debug("Set value: %s", value)
@@ -323,6 +339,19 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
         if self._is_parameter_locked():
             return "mdi:lock"  # Show lock icon for locked parameters
         return None
+
+    @property
+    def available(self) -> bool:
+        """Return True if entity is available (not locked).
+
+        When a parameter is locked by the device (e.g., "Weather control enabled"),
+        the entity becomes unavailable in Home Assistant, preventing user interaction.
+        """
+        # Base availability check (coordinator connected, etc.)
+        if not super().available:
+            return False
+        # Check if parameter is locked
+        return not self._is_parameter_locked()
 
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value."""
@@ -494,6 +523,19 @@ class MixerNumber(MixerEntity, NumberEntity):
         if self._is_parameter_locked():
             return "mdi:lock"  # Show lock icon for locked parameters
         return None
+
+    @property
+    def available(self) -> bool:
+        """Return True if entity is available (not locked).
+
+        When a parameter is locked by the device (e.g., "Weather control enabled"),
+        the entity becomes unavailable in Home Assistant, preventing user interaction.
+        """
+        # Base availability check (coordinator connected, etc.)
+        if not super().available:
+            return False
+        # Check if parameter is locked
+        return not self._is_parameter_locked()
 
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value."""
@@ -1205,6 +1247,16 @@ def _create_dynamic_entity_from_param(
         Created entity or None if skipped
 
     """
+    # Validate parameter data first
+    is_valid, error_msg = validate_parameter_data(param)
+    if not is_valid:
+        _LOGGER.debug(
+            "Skipping invalid parameter %s: %s",
+            param_id,
+            error_msg,
+        )
+        return None
+
     # Skip basic parameters (already created from NUMBER_MAP)
     if param_id in basic_param_ids:
         _LOGGER.debug(
@@ -1219,6 +1271,16 @@ def _create_dynamic_entity_from_param(
             "Skipping Information category '%s' for parameter %s",
             category,
             param_id,
+        )
+        return None
+
+    # Skip locked parameters - they should be read-only sensors instead
+    if is_parameter_locked(param):
+        lock_reason = get_lock_reason(param) or "Parameter is locked"
+        _LOGGER.debug(
+            "Skipping locked parameter %s for number entity (reason: %s) - should be sensor",
+            param_id,
+            lock_reason,
         )
         return None
 

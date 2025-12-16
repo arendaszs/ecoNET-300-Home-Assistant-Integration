@@ -18,6 +18,24 @@
       "already_configured": "Urządzenie zostało już skonfigutowane"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "enable_dynamic_entities": "Włącz dynamiczne encje",
+          "show_service_parameters": "Pokaż parametry serwisowe",
+          "show_locked_as_sensors": "Pokaż zablokowane parametry jako czujniki tylko do odczytu",
+          "include_lock_reasons": "Dołącz powody blokady w atrybutach encji"
+        },
+        "data_description": {
+          "enable_dynamic_entities": "Twórz encje dynamicznie na podstawie możliwości urządzenia",
+          "show_service_parameters": "Pokaż parametry serwisowe i zaawansowane (wymaga dostępu serwisowego)",
+          "show_locked_as_sensors": "Wyświetlaj zablokowane parametry jako czujniki tylko do odczytu zamiast je ukrywać",
+          "include_lock_reasons": "Dodaj atrybut lock_reason wyjaśniający dlaczego parametr jest zablokowany"
+        }
+      }
+    }
+  },
   "entity": {
     "switch": {
       "boiler_control": {
