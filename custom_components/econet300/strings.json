@@ -18,24 +18,6 @@
       "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
     }
   },
-  "options": {
-    "step": {
-      "init": {
-        "data": {
-          "enable_dynamic_entities": "Enable dynamic entities",
-          "show_service_parameters": "Show service parameters",
-          "show_locked_as_sensors": "Show locked parameters as read-only sensors",
-          "include_lock_reasons": "Include lock reasons in entity attributes"
-        },
-        "data_description": {
-          "enable_dynamic_entities": "Create entities dynamically from device capabilities",
-          "show_service_parameters": "Show service and advanced parameters (requires service access)",
-          "show_locked_as_sensors": "Display locked parameters as read-only sensors instead of hiding them",
-          "include_lock_reasons": "Add lock_reason attribute explaining why parameter is locked"
-        }
-      }
-    }
-  },
   "entity": {
     "switch": {
       "boiler_control": {

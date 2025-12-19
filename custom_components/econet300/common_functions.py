@@ -105,10 +105,11 @@ def is_information_category(category_name: str | None) -> bool:
 
 
 def is_service_or_advanced_category(category_name: str | None) -> bool:
-    """Check if category requires show_service_parameters to be visible.
+    """Check if category is Service or Advanced type.
 
-    Service and Advanced categories are only shown when the user enables
-    show_service_parameters in the integration configuration.
+    Service and Advanced categories are created but hidden by default
+    using entity_registry_visible_default = False per Home Assistant
+    documentation. Users can enable them in the entity registry.
 
     Args:
         category_name: Category name from rmCatsNames (e.g., "Service Settings")
@@ -215,7 +216,7 @@ def extract_device_group_from_name(
     if "buffer" in name_lower:
         return 32, "Buffer settings"
 
-    # Check for boiler/burner/feed/feeder/fan/blow-in/air/fuel (all part of boiler system)
+    # Check for boiler/burner/feed/feeder/fan/blow-in/air/fuel/oxygen (all part of boiler system)
     if any(
         keyword in name_lower
         for keyword in [
@@ -227,9 +228,14 @@ def extract_device_group_from_name(
             "blow",
             "air",
             "fuel",
+            "oxygen",
         ]
     ):
         return 2, "Boiler settings"
+
+    # Check for alarm-related parameters (system-wide)
+    if "alarm" in name_lower:
+        return 1, "Information"
 
     return None, None
 

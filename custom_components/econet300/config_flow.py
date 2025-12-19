@@ -1,4 +1,4 @@
-"""Config flow for Example Integration integration."""
+"""Config flow for ecoNET300 integration."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ import logging
 from typing import Any
 
 from homeassistant import config_entries
-from homeassistant.config_entries import ConfigFlowResult, OptionsFlow
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.config_entries import ConfigFlowResult
+from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 import voluptuous as vol
 
@@ -29,7 +29,6 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
-
     cache = MemCache()
     info = {}
 
@@ -45,17 +44,9 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Example Integration."""
+    """Handle a config flow for ecoNET300 integration."""
 
     VERSION = 1
-
-    @staticmethod
-    @callback
-    def async_get_options_flow(
-        config_entry: config_entries.ConfigEntry,
-    ) -> OptionsFlow:
-        """Create the options flow."""
-        return OptionsFlowHandler()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -100,34 +91,3 @@ class CannotConnect(HomeAssistantError):
 
 class InvalidAuth(HomeAssistantError):
     """Error to indicate there is invalid auth."""
-
-
-# Options Flow Schema
-OPTIONS_SCHEMA = vol.Schema(
-    {
-        vol.Required("enable_dynamic_entities", default=True): bool,
-        vol.Required("show_service_parameters", default=False): bool,
-        vol.Required("show_locked_as_sensors", default=True): bool,
-        vol.Required("include_lock_reasons", default=True): bool,
-    }
-)
-
-
-class OptionsFlowHandler(OptionsFlow):
-    """Handle options flow for ecoNET300 integration."""
-
-    async def async_step_init(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
-        """Manage the options."""
-        if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
-
-        # Convert MappingProxyType to dict for schema
-        # config_entry is provided by OptionsFlow base class
-        entry_options = self.config_entry.options
-        options = dict(entry_options) if entry_options else {}
-        return self.async_show_form(
-            step_id="init",
-            data_schema=self.add_suggested_values_to_schema(OPTIONS_SCHEMA, options),
-        )

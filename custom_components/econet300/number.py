@@ -204,6 +204,37 @@ class EconetNumber(EconetEntity, NumberEntity):
 
         return False
 
+    def _get_lock_reason(self) -> str | None:
+        """Get the lock reason for the parameter.
+
+        Returns:
+            Lock reason string if available, None otherwise
+
+        """
+        if self.coordinator.data is None:
+            return None
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return None
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return None
+
+        entity_key = self.entity_description.key
+        param_data = None
+
+        if entity_key in merged_parameters:
+            param_data = merged_parameters[entity_key]
+        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
+            param_data = merged_parameters[int(entity_key)]
+
+        if param_data:
+            return param_data.get("lock_reason")
+
+        return None
+
     @property
     def icon(self) -> str | None:
         """Return icon for entity."""
@@ -212,17 +243,15 @@ class EconetNumber(EconetEntity, NumberEntity):
         return None
 
     @property
-    def available(self) -> bool:
-        """Return True if entity is available (not locked).
-
-        When a parameter is locked by the device (e.g., "Weather control enabled"),
-        the entity becomes unavailable in Home Assistant, preventing user interaction.
-        """
-        # Base availability check (coordinator connected, etc.)
-        if not super().available:
-            return False
-        # Check if parameter is locked
-        return not self._is_parameter_locked()
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra state attributes including lock information."""
+        attrs: dict[str, Any] = {}
+        if self._is_parameter_locked():
+            attrs["locked"] = True
+            lock_reason = self._get_lock_reason()
+            if lock_reason:
+                attrs["lock_reason"] = lock_reason
+        return attrs
 
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value."""
@@ -230,14 +259,14 @@ class EconetNumber(EconetEntity, NumberEntity):
 
         # Check if parameter is locked
         if self._is_parameter_locked():
+            lock_reason = self._get_lock_reason() or "Parameter is locked"
             _LOGGER.warning(
-                "Cannot set value for locked parameter: %s (%s)",
+                "Cannot set value for locked parameter: %s (%s) - %s",
                 self.entity_description.key,
                 self.entity_description.name,
+                lock_reason,
             )
-            raise ValueError(
-                f"Parameter '{self.entity_description.name}' is locked and cannot be modified"
-            )
+            raise HomeAssistantError(f"Cannot change value: {lock_reason}")
 
         # Skip processing if the value is unchanged.
         if value == self._attr_native_value:
@@ -333,6 +362,37 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
 
         return False
 
+    def _get_lock_reason(self) -> str | None:
+        """Get the lock reason for the parameter.
+
+        Returns:
+            Lock reason string if available, None otherwise
+
+        """
+        if self.coordinator.data is None:
+            return None
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return None
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return None
+
+        entity_key = self.entity_description.key
+        param_data = None
+
+        if entity_key in merged_parameters:
+            param_data = merged_parameters[entity_key]
+        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
+            param_data = merged_parameters[int(entity_key)]
+
+        if param_data:
+            return param_data.get("lock_reason")
+
+        return None
+
     @property
     def icon(self) -> str | None:
         """Return icon for entity."""
@@ -341,17 +401,15 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
         return None
 
     @property
-    def available(self) -> bool:
-        """Return True if entity is available (not locked).
-
-        When a parameter is locked by the device (e.g., "Weather control enabled"),
-        the entity becomes unavailable in Home Assistant, preventing user interaction.
-        """
-        # Base availability check (coordinator connected, etc.)
-        if not super().available:
-            return False
-        # Check if parameter is locked
-        return not self._is_parameter_locked()
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra state attributes including lock information."""
+        attrs: dict[str, Any] = {}
+        if self._is_parameter_locked():
+            attrs["locked"] = True
+            lock_reason = self._get_lock_reason()
+            if lock_reason:
+                attrs["lock_reason"] = lock_reason
+        return attrs
 
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value."""
@@ -359,14 +417,14 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
 
         # Check if parameter is locked
         if self._is_parameter_locked():
+            lock_reason = self._get_lock_reason() or "Parameter is locked"
             _LOGGER.warning(
-                "Cannot set value for locked parameter: %s (%s)",
+                "Cannot set value for locked parameter: %s (%s) - %s",
                 self.entity_description.key,
                 self.entity_description.name,
+                lock_reason,
             )
-            raise ValueError(
-                f"Parameter '{self.entity_description.name}' is locked and cannot be modified"
-            )
+            raise HomeAssistantError(f"Cannot change value: {lock_reason}")
 
         # Skip processing if the value is unchanged.
         if value == self._attr_native_value:
@@ -517,6 +575,37 @@ class MixerNumber(MixerEntity, NumberEntity):
 
         return False
 
+    def _get_lock_reason(self) -> str | None:
+        """Get the lock reason for the parameter.
+
+        Returns:
+            Lock reason string if available, None otherwise
+
+        """
+        if self.coordinator.data is None:
+            return None
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return None
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return None
+
+        entity_key = self.entity_description.key
+        param_data = None
+
+        if entity_key in merged_parameters:
+            param_data = merged_parameters[entity_key]
+        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
+            param_data = merged_parameters[int(entity_key)]
+
+        if param_data:
+            return param_data.get("lock_reason")
+
+        return None
+
     @property
     def icon(self) -> str | None:
         """Return icon for entity."""
@@ -525,17 +614,15 @@ class MixerNumber(MixerEntity, NumberEntity):
         return None
 
     @property
-    def available(self) -> bool:
-        """Return True if entity is available (not locked).
-
-        When a parameter is locked by the device (e.g., "Weather control enabled"),
-        the entity becomes unavailable in Home Assistant, preventing user interaction.
-        """
-        # Base availability check (coordinator connected, etc.)
-        if not super().available:
-            return False
-        # Check if parameter is locked
-        return not self._is_parameter_locked()
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra state attributes including lock information."""
+        attrs: dict[str, Any] = {}
+        if self._is_parameter_locked():
+            attrs["locked"] = True
+            lock_reason = self._get_lock_reason()
+            if lock_reason:
+                attrs["lock_reason"] = lock_reason
+        return attrs
 
     async def async_set_native_value(self, value: float) -> None:
         """Update the current value."""
@@ -543,14 +630,14 @@ class MixerNumber(MixerEntity, NumberEntity):
 
         # Check if parameter is locked
         if self._is_parameter_locked():
+            lock_reason = self._get_lock_reason() or "Parameter is locked"
             _LOGGER.warning(
-                "Cannot set value for locked parameter: %s (%s)",
+                "Cannot set value for locked parameter: %s (%s) - %s",
                 self.entity_description.key,
                 self.entity_description.name,
+                lock_reason,
             )
-            raise ValueError(
-                f"Parameter '{self.entity_description.name}' is locked and cannot be modified"
-            )
+            raise HomeAssistantError(f"Cannot change value: {lock_reason}")
 
         # Skip processing if the value is unchanged.
         if value == self._attr_native_value:
@@ -580,10 +667,10 @@ class MixerNumber(MixerEntity, NumberEntity):
 
 
 class ServiceParameterNumber(EconetNumber):
-    """Service parameter number entity - disabled by default."""
+    """Service parameter number entity - hidden by default per HA documentation."""
 
     _attr_entity_category = EntityCategory.CONFIG
-    _attr_entity_registry_enabled_default = False
+    _attr_entity_registry_visible_default = False
 
     @property
     def device_info(self) -> DeviceInfo | None:
@@ -598,10 +685,10 @@ class ServiceParameterNumber(EconetNumber):
 
 
 class AdvancedParameterNumber(EconetNumber):
-    """Advanced parameter number entity - disabled by default."""
+    """Advanced parameter number entity - hidden by default per HA documentation."""
 
     _attr_entity_category = EntityCategory.CONFIG
-    _attr_entity_registry_enabled_default = False
+    _attr_entity_registry_visible_default = False
 
     @property
     def device_info(self) -> DeviceInfo | None:
@@ -748,6 +835,13 @@ class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc
                 value,
                 self._locked,
             )
+
+    @property
+    def icon(self) -> str | None:
+        """Return icon for entity."""
+        if self._locked:
+            return "mdi:lock"  # Show lock icon for locked parameters
+        return None
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
@@ -1130,9 +1224,9 @@ def _create_mixer_entity_by_category(
         param_id,
     )
 
-    # Set disabled by default for service/advanced params
+    # Hide service/advanced params by default per HA documentation
     if param_type in ("service", "advanced"):
-        entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
+        entity._attr_entity_registry_visible_default = False  # noqa: SLF001
 
     _LOGGER.info(
         "Created mixer number entity: %s (Mixer %d, type: %s, category: %s)",
@@ -1208,12 +1302,12 @@ def _create_regular_entity_by_category(
         param_id,  # Pass param_id for value lookup
     )
 
-    # Set disabled by default for service/advanced params
+    # Hide service/advanced params by default per HA documentation
     if param_type in ("service", "advanced"):
-        entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
+        entity._attr_entity_registry_visible_default = False  # noqa: SLF001
 
     _LOGGER.info(
-        "Created menu category number entity: %s (%s) - category[%d]: %s, type: %s, %s to %s %s, enabled_default: %s",
+        "Created menu category number entity: %s (%s) - category[%d]: %s, type: %s, %s to %s %s, visible_default: %s",
         param_name,
         param_id,
         category_index,
@@ -1222,7 +1316,7 @@ def _create_regular_entity_by_category(
         param.get("minv", 0),
         param.get("maxv", 100),
         param.get("unit_name", ""),
-        getattr(entity, "_attr_entity_registry_enabled_default", True),
+        getattr(entity, "_attr_entity_registry_visible_default", True),
     )
 
     return entity
@@ -1235,9 +1329,11 @@ def _create_dynamic_entity_from_param(
     coordinator: EconetDataCoordinator,
     api: Econet300Api,
     basic_param_ids: set[str],
-    show_service: bool,
 ) -> NumberEntity | None:
     """Create a dynamic entity from a parameter.
+
+    Service and advanced parameters are created but disabled by default
+    using entity_registry_visible_default = False per HA documentation.
 
     Args:
         param_id: Parameter ID
@@ -1246,7 +1342,6 @@ def _create_dynamic_entity_from_param(
         coordinator: Data coordinator
         api: API instance
         basic_param_ids: Set of basic parameter IDs to skip
-        show_service: Whether to show service parameters
 
     Returns:
         Created entity or None if skipped
@@ -1289,21 +1384,11 @@ def _create_dynamic_entity_from_param(
         )
         return None
 
-    # Determine parameter type from category
-    param_type = get_parameter_type_from_category(category)
-
-    # Skip service/advanced parameters if show_service is False
-    if param_type in ("service", "advanced") and not show_service:
-        _LOGGER.debug(
-            "Skipping %s parameter %s - show_service_parameters is False",
-            param_type,
-            param_id,
-        )
-        return None
-
     if not should_be_number_entity(param):
         return None
 
+    # Determine parameter type from category
+    param_type = get_parameter_type_from_category(category)
     param_name = param.get("name", f"Parameter {param_id}")
 
     _LOGGER.info(
@@ -1379,16 +1464,17 @@ async def _create_dynamic_entities_from_merged_data(
     coordinator: EconetDataCoordinator,
     api: Econet300Api,
     basic_param_ids: set[str],
-    show_service: bool,
 ) -> list[NumberEntity]:
     """Create dynamic entities from merged parameter data.
+
+    Service and advanced parameters are created but hidden by default
+    using entity_registry_visible_default = False per HA documentation.
 
     Args:
         merged_data: Merged parameter data
         coordinator: Data coordinator
         api: API instance
         basic_param_ids: Set of basic parameter IDs to skip
-        show_service: Whether to show service parameters
 
     Returns:
         List of dynamic entities
@@ -1462,7 +1548,6 @@ async def _create_dynamic_entities_from_merged_data(
                 coordinator,
                 api,
                 basic_param_ids,
-                show_service,
             )
             if entity:
                 entities.append(entity)
@@ -1476,18 +1561,10 @@ async def _create_dynamic_entities_from_merged_data(
         number_entity_count,
     )
     _LOGGER.info(
-        "Created %d dynamic number entities (Information categories handled as sensors)",
+        "Created %d dynamic number entities (Information categories handled as sensors). "
+        "Service/advanced parameters are hidden by default (entity_registry_visible_default=False).",
         len(entities),
     )
-    if show_service:
-        _LOGGER.info(
-            "Service/advanced parameters enabled (show_service_parameters=True)"
-        )
-    else:
-        _LOGGER.info(
-            "Service/advanced parameters disabled (show_service_parameters=False). "
-            "Only basic parameters are shown."
-        )
 
     return entities
 
@@ -1545,16 +1622,16 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the number platform."""
+    """Set up the number platform.
+
+    Dynamic entities are always created. Service and advanced parameters
+    are hidden by default using entity_registry_visible_default = False,
+    following Home Assistant documentation recommendations.
+    """
     coordinator = hass.data[DOMAIN][entry.entry_id][SERVICE_COORDINATOR]
     api = hass.data[DOMAIN][entry.entry_id][SERVICE_API]
 
     entities: list[NumberEntity] = []
-
-    # Read options for entity filtering
-    options = dict(entry.options) if entry.options else {}  # type: ignore[arg-type]
-    show_service = options.get("show_service_parameters", False)
-    enable_dynamic = options.get("enable_dynamic_entities", True)
 
     # Define basic parameter IDs from NUMBER_MAP (always shown)
     basic_param_ids = set(NUMBER_MAP.keys())
@@ -1574,10 +1651,6 @@ async def async_setup_entry(
     entities.extend(basic_entities)
 
     # Try to get merged parameter data for dynamic entity creation
-    if not enable_dynamic:
-        _LOGGER.info("Dynamic entities disabled in options, skipping dynamic creation")
-        return async_add_entities(entities)
-
     try:
         merged_data = await api.fetch_merged_rm_data_with_names_descs_and_structure()
     except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
@@ -1587,7 +1660,7 @@ async def async_setup_entry(
     if merged_data and "parameters" in merged_data:
         # Create dynamic entities from merged data
         dynamic_entities = await _create_dynamic_entities_from_merged_data(
-            merged_data, coordinator, api, basic_param_ids, show_service
+            merged_data, coordinator, api, basic_param_ids
         )
         entities.extend(dynamic_entities)
 

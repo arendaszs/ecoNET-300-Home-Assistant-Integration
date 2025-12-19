@@ -214,6 +214,13 @@ class MenuCategorySwitch(MenuCategoryEntity, SwitchEntity):  # type: ignore[misc
             )
 
     @property
+    def icon(self) -> str | None:
+        """Return icon for entity."""
+        if self._locked:
+            return "mdi:lock"  # Show lock icon for locked parameters
+        return None
+
+    @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return extra state attributes including lock information."""
         attrs: dict[str, Any] = {}
@@ -222,19 +229,6 @@ class MenuCategorySwitch(MenuCategoryEntity, SwitchEntity):  # type: ignore[misc
             if self._lock_reason:
                 attrs["lock_reason"] = self._lock_reason
         return attrs
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available (not locked).
-
-        When a parameter is locked by the device (e.g., "Weather control enabled"),
-        the entity becomes unavailable in Home Assistant, preventing user interaction.
-        """
-        # Base availability check (coordinator connected, etc.)
-        if not super().available:
-            return False
-        # Check if parameter is locked
-        return not self._locked
 
     @staticmethod
     def _raise_switch_error(message: str) -> None:
@@ -448,10 +442,10 @@ def create_dynamic_switches(
             on_value=on_value,
         )
 
-        # Set disabled by default for service/advanced params
+        # Hide service/advanced params by default per HA documentation
         param_type = get_parameter_type_from_category(category_name)
         if param_type in ("service", "advanced"):
-            entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
+            entity._attr_entity_registry_visible_default = False  # noqa: SLF001
 
         entities.append(entity)
         created_keys.add(param_key)
