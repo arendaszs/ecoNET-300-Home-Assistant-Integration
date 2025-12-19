@@ -11,7 +11,6 @@ from custom_components.econet300.api import Econet300Api
 from custom_components.econet300.common import EconetDataCoordinator
 from custom_components.econet300.common_functions import is_information_category
 from custom_components.econet300.number import (
-    EconetNumber,
     async_setup_entry,
     create_dynamic_number_entity_description,
     should_be_number_entity,
@@ -25,10 +24,7 @@ class TestDynamicNumberEntities:
     def mock_merged_data(self):
         """Load mock merged parameter data."""
         fixture_path = (
-            Path(__file__).parent
-            / "fixtures"
-            / "ecoMAX810P-L"
-            / "rmParamsComplete.json"
+            Path(__file__).parent / "fixtures" / "ecoMAX810P-L" / "mergedData.json"
         )
         with fixture_path.open(encoding="utf-8") as f:
             return json.load(f)
@@ -155,6 +151,7 @@ class TestDynamicNumberEntities:
         assert len(entities) > 0
         # All entities should be NumberEntity instances (base class)
         from homeassistant.components.number import NumberEntity as HANumberEntity
+
         assert all(isinstance(entity, HANumberEntity) for entity in entities)
 
         # Check that we have the expected number of entities (should be around 104)

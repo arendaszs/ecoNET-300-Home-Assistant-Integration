@@ -39,9 +39,14 @@ from .const import (
     API_SYS_PARAMS_PARAM_SW_REV,
     API_SYS_PARAMS_PARAM_UID,
     API_SYS_PARAMS_URI,
+    CATEGORY_MODE_NONE,
+    CATEGORY_MODE_SIMPLIFIED,
+    CATEGORY_OTHER,
     CONTROL_PARAMS,
+    DEFAULT_CATEGORY_MODE,
     NUMBER_MAP,
     RMNEWPARAM_PARAMS,
+    SIMPLIFIED_CATEGORY_KEYWORDS,
 )
 from .mem_cache import MemCache
 
@@ -1192,7 +1197,7 @@ class Econet300Api:
             return step1_data
 
     async def fetch_merged_rm_data_with_names_descs_and_structure(
-        self, lang: str = "en"
+        self, lang: str = "en", category_mode: str = DEFAULT_CATEGORY_MODE
     ) -> dict[str, Any] | None:
         """Merge rmParamsData with rmParamsNames, rmParamsDescs, rmStructure, and rmParamsEnums.
 
@@ -1201,6 +1206,7 @@ class Econet300Api:
 
         Args:
             lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+            category_mode: Category assignment mode (simplified/api/none). Defaults to simplified.
 
         Returns:
             Dictionary containing fully merged parameter data.
@@ -1350,15 +1356,15 @@ class Econet300Api:
             )
             smart_enum_count = self._add_smart_enum_detection(parameters_dict, enums)
 
-            # Always add category information (for dynamic entity generation)
-            category_count = 0
-            if categories:
-                category_count = self._add_parameter_categories(
-                    parameters_dict, structure, categories
-                )
-                _LOGGER.debug(
-                    "Added category information to %d parameters", category_count
-                )
+            # Add category information based on selected mode
+            category_count = self._add_parameter_categories(
+                parameters_dict, structure, categories, category_mode
+            )
+            _LOGGER.debug(
+                "Added category information to %d parameters (mode: %s)",
+                category_count,
+                category_mode,
+            )
 
             # Add lock status to parameters (with lock reasons from rmLocksNames)
             lock_count = self._add_parameter_locks(
@@ -1573,8 +1579,89 @@ class Econet300Api:
         parameters_dict: dict[str, dict[str, Any]],
         structure: list[dict[str, Any]],
         categories: list[str],
+        category_mode: str = DEFAULT_CATEGORY_MODE,
     ) -> int:
-        """Add category information to parameters based on structure data.
+        """Add category information to parameters based on selected mode.
+
+        Supports three modes:
+        - simplified: Groups into Boiler/HUW/Mixer/Other using keyword matching
+        - api: Uses device menu structure from rmStructure (as-is)
+        - none: No categories assigned
+
+        Args:
+            parameters_dict: Dictionary of parameters indexed by string keys
+            structure: Structure data from rmStructure endpoint
+            categories: Category names from rmCatsNames endpoint
+            category_mode: Category mode (simplified/api/none)
+
+        Returns:
+            Total number of category assignments
+
+        """
+        if category_mode == CATEGORY_MODE_NONE:
+            # No categories - set empty values for all parameters
+            for param in parameters_dict.values():
+                param["categories"] = []
+                param["category"] = ""
+                param["category_indices"] = []
+                param["category_index"] = 0
+            return 0
+
+        if category_mode == CATEGORY_MODE_SIMPLIFIED:
+            return self._apply_simplified_categories(parameters_dict)
+
+        # Default: CATEGORY_MODE_API - use structure-based mapping
+        return self._apply_api_categories(parameters_dict, structure, categories)
+
+    def _apply_simplified_categories(
+        self,
+        parameters_dict: dict[str, dict[str, Any]],
+    ) -> int:
+        """Apply simplified category assignment using keyword matching.
+
+        Groups parameters into: Boiler settings, HUW settings, Mixer settings, Other
+
+        Args:
+            parameters_dict: Dictionary of parameters indexed by string keys
+
+        Returns:
+            Number of category assignments
+
+        """
+        category_count = 0
+
+        for param in parameters_dict.values():
+            param_name = param.get("name", "").lower()
+            param_desc = param.get("description", "").lower()
+            combined_text = f"{param_name} {param_desc}"
+
+            # Find matching category
+            matched_category = CATEGORY_OTHER  # Default fallback
+
+            for category, keywords in SIMPLIFIED_CATEGORY_KEYWORDS.items():
+                for keyword in keywords:
+                    if keyword in combined_text:
+                        matched_category = category
+                        break
+                if matched_category != CATEGORY_OTHER:
+                    break
+
+            # Assign category
+            param["categories"] = [matched_category]
+            param["category"] = matched_category
+            param["category_indices"] = []
+            param["category_index"] = 0
+            category_count += 1
+
+        return category_count
+
+    def _apply_api_categories(
+        self,
+        parameters_dict: dict[str, dict[str, Any]],
+        structure: list[dict[str, Any]],
+        categories: list[str],
+    ) -> int:
+        """Apply category assignment from API structure (menu-based).
 
         Maps parameters to their categories by parsing the structure:
         - type 7 = category/menu group (index maps to rmCatsNames array)
@@ -1595,9 +1682,6 @@ class Econet300Api:
             return 0
 
         # Map parameter numbers to their categories (can have multiple)
-        # Structure: type 7 = category, type 1 = parameter
-        # Parameters follow their category in the structure
-        # Store both category names and indices for menu-based device creation
         param_to_categories: dict[int, list[tuple[int, str]]] = {}
         current_category_index: int | None = None
 
@@ -1609,17 +1693,13 @@ class Econet300Api:
             entry_index = entry.get("index")
 
             if entry_type == 7:  # Category/menu group
-                # This is a category - store it
                 if isinstance(entry_index, int) and entry_index < len(categories):
                     current_category_index = entry_index
             elif entry_type == 1:  # Parameter
-                # This is a parameter - map it to current category
                 if isinstance(entry_index, int) and current_category_index is not None:
                     category_name = categories[current_category_index]
-                    # Collect all categories for this parameter (with indices)
                     if entry_index not in param_to_categories:
                         param_to_categories[entry_index] = []
-                    # Avoid duplicates (check by index)
                     existing_indices = [
                         idx for idx, _ in param_to_categories[entry_index]
                     ]
@@ -1634,21 +1714,23 @@ class Econet300Api:
             param_number = param.get("number")
             if isinstance(param_number, int) and param_number in param_to_categories:
                 category_tuples = param_to_categories[param_number]
-                # Extract names and indices separately
                 param_category_indices = [idx for idx, _ in category_tuples]
                 param_category_names = [name for _, name in category_tuples]
-                # Add categories list (all category names - backward compatible)
                 param["categories"] = param_category_names
-                # Add category (first/primary category name for backward compatibility)
                 param["category"] = (
                     param_category_names[0] if param_category_names else ""
                 )
-                # Add category indices for menu-based device creation
                 param["category_indices"] = param_category_indices
                 param["category_index"] = (
                     param_category_indices[0] if param_category_indices else 0
                 )
                 category_count += len(category_tuples)
+            else:
+                # Parameter not in structure - assign empty category
+                param["categories"] = []
+                param["category"] = ""
+                param["category_indices"] = []
+                param["category_index"] = 0
 
         return category_count
 

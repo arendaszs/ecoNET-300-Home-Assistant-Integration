@@ -8,11 +8,10 @@ This directory contains test fixtures demonstrating how the `rm...` endpoint dat
 
 ### **📊 Comprehensive Merged Data**
 
-- **`rmParamsComplete.json`** - **Complete merged data** with all 165+ parameters from real endpoint data
-  - **Size**: 3,965 lines (vs 179 lines in example version)
+- **`mergedData.json`** - **Complete merged data** matching `coordinator.data["mergedData"]`
   - **Parameters**: 165 total parameters with complete data
-  - **Structure**: 216 structure entries, 31 enum types, 9 unit types
-  - **Generated**: Using real test fixture data, not mock examples
+  - **Categories**: Smart semantic inference for correct category mapping
+  - **Generated**: Using `scripts/generate_mergedData_fixtures.py`
 
 ### **Individual Endpoint Files**
 
@@ -21,14 +20,15 @@ This directory contains test fixtures demonstrating how the `rm...` endpoint dat
 - `rmParamsDescs.json` - Parameter descriptions
 - `rmStructure.json` - Menu structure and navigation
 - `rmParamsEnums.json` - Enumeration values
+- `rmParamsUnitsNames.json` - Unit symbols (°C, %, kW, etc.)
+- `rmCatsNames.json` - Category names
 - `rmLangs.json` - Available languages
 - `rmLocksNames.json` - Lock/restriction messages
 - `rmAlarmsNames.json` - Alarm names
 
-### **Merged Data Files**
+### **Merged Data File**
 
-- `rmParamsComplete.json` - **Complete merged structure** showing how all endpoints combine
-- `rmParamsComplete_generated.json` - **Generated example** from the test script
+- `mergedData.json` - **Complete merged structure** matching what the API produces
 
 ## 🔢 Parameter Number Mapping
 
@@ -191,35 +191,35 @@ The merging is implemented through these step-by-step methods:
 
 ## 🔄 Data Generation
 
-### **Comprehensive Data Generation**
+### **Merged Data Generation**
 
-The comprehensive `rmParamsComplete.json` file is generated using real endpoint data:
+The `mergedData.json` file is generated using the same logic as `api.py`:
 
 ```bash
-# Generate comprehensive merged data (165+ parameters)
-python scripts/generate_comprehensive_rm_data.py
+# Generate merged data (165 parameters)
+python scripts/generate_mergedData_fixtures.py
+
+# Generate for specific device
+python scripts/generate_mergedData_fixtures.py ecoMAX360
 ```
 
 **Generated Data Statistics:**
 
-- **Total Parameters**: 165 (vs 5 in example)
+- **Total Parameters**: 165
 - **Named Parameters**: 165 (100% coverage)
 - **Described Parameters**: 165 (100% coverage)
 - **Editable Parameters**: 165 (100% coverage)
-- **Structure Entries**: 216
-- **Enum Types**: 31
-- **Unit Types**: 9
-- **Parameter Numbers**: 115 (mapped from structure)
+- **Enum Parameters**: 50 (smart detection)
+- **Category Inference**: 136 parameters with semantic categories
 
-### **Example vs Comprehensive**
+### **Category Inference**
 
-| Aspect          | Example Version     | Comprehensive Version  |
-| --------------- | ------------------- | ---------------------- |
-| **Parameters**  | 5                   | 165                    |
-| **File Size**   | 179 lines           | 3,965 lines            |
-| **Data Source** | Mock/test data      | Real endpoint fixtures |
-| **Coverage**    | Partial             | Complete               |
-| **Use Case**    | Testing/development | Production/analysis    |
+The generator uses smart semantic inference to correctly categorize parameters:
+- **Output modulation**: blow-in, feeder, airflow parameters
+- **Firing-up**: ignition, fire up parameters
+- **Lambda sensor**: oxygen, exhaust gas parameters
+- **Boiler settings**: boiler temp, thermostat parameters
+- **Mixer settings**: mixer-specific parameters
 
 ## 🧪 Testing
 

@@ -1,7 +1,7 @@
 """Generate a markdown table of fixture parameters as pseudo-entities.
 
 Uses ecoMAX810P-L fixtures to reconstruct parameter-to-category mapping:
-- rmParamsComplete.json: Complete parameter data with names, keys, units, etc.
+- mergedData.json: Complete merged parameter data with names, keys, units, categories, etc.
 - rmStructure.json: Structure mapping parameters to categories (supports multiple categories per parameter)
 - rmCatsNames.json: Category names
 
@@ -86,18 +86,18 @@ def main() -> None:
     fixtures_root = Path("tests/fixtures/ecoMAX810P-L")
     structure_file = fixtures_root / "rmStructure.json"
     cats_file = fixtures_root / "rmCatsNames.json"
-    params_complete_file = fixtures_root / "rmParamsComplete.json"
+    merged_data_file = fixtures_root / "mergedData.json"
 
     structure = json.loads(structure_file.read_text(encoding="utf-8"))
     cats = json.loads(cats_file.read_text(encoding="utf-8"))["data"]
 
-    # Load complete parameter data if available
+    # Load merged parameter data if available
     params_complete: dict = {}
-    if params_complete_file.exists():
-        params_complete_data = json.loads(
-            params_complete_file.read_text(encoding="utf-8")
+    if merged_data_file.exists():
+        merged_data = json.loads(
+            merged_data_file.read_text(encoding="utf-8")
         )
-        params_complete = params_complete_data.get("parameters", {})
+        params_complete = merged_data.get("parameters", {})
 
     # Map param index -> category names using rmStructure:
     # type 7 = category (index -> cats array), type 1 = parameter
@@ -129,7 +129,7 @@ def main() -> None:
 
     # Process each parameter with its categories
     for param_id, categories in sorted(param_to_cats.items(), key=lambda x: x[0]):
-        # Get parameter data from rmParamsComplete.json
+        # Get parameter data from mergedData.json
         param_data = params_complete.get(str(param_id), {})
         name = param_data.get("name", f"Parameter {param_id}")
         base_entity_key = param_data.get("key", f"param_{param_id}")

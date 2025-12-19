@@ -136,8 +136,8 @@ class TestServiceParameterDetection:
         assert device_info.get("name") == DEVICE_INFO_ADVANCED_PARAMETERS_NAME  # type: ignore[typeddict-item]
         assert device_info.get("via_device") == (DOMAIN, "test-device-uid")  # type: ignore[typeddict-item]
 
-    def test_service_parameter_number_enabled_default(self):
-        """Test that ServiceParameterNumber is disabled by default."""
+    def test_service_parameter_number_visible_default(self):
+        """Test that ServiceParameterNumber is hidden by default (visible_default=False)."""
         mock_api = MagicMock()
         mock_coordinator = MagicMock()
 
@@ -148,10 +148,11 @@ class TestServiceParameterDetection:
 
         entity = ServiceParameterNumber(entity_desc, mock_coordinator, mock_api)
 
-        assert entity.entity_registry_enabled_default is False
+        # Service parameters are hidden by default (but still enabled)
+        assert entity.entity_registry_visible_default is False
 
-    def test_advanced_parameter_number_enabled_default(self):
-        """Test that AdvancedParameterNumber is disabled by default."""
+    def test_advanced_parameter_number_visible_default(self):
+        """Test that AdvancedParameterNumber is hidden by default (visible_default=False)."""
         mock_api = MagicMock()
         mock_coordinator = MagicMock()
 
@@ -162,7 +163,8 @@ class TestServiceParameterDetection:
 
         entity = AdvancedParameterNumber(entity_desc, mock_coordinator, mock_api)
 
-        assert entity.entity_registry_enabled_default is False
+        # Advanced parameters are hidden by default (but still enabled)
+        assert entity.entity_registry_visible_default is False
 
     def test_menu_category_number_for_mixer_device_info(self):
         """Test that MenuCategoryNumber for mixer has correct device_info."""

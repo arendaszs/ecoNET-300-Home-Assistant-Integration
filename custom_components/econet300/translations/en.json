@@ -18,6 +18,20 @@
       "already_configured": "Device is already configured"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "ecoNET300 Options",
+        "description": "Configure how parameters are grouped into categories.",
+        "data": {
+          "category_mode": "Category Mode"
+        },
+        "data_description": {
+          "category_mode": "Choose how parameters are organized: Simplified groups them into Boiler/HUW/Mixer/Other, API uses the device menu structure, None shows a flat list."
+        }
+      }
+    }
+  },
   "entity": {
     "switch": {
       "boiler_control": {

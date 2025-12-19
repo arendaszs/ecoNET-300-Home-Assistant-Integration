@@ -32,7 +32,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         data: dict[str, str] = dict(entry.data)
         api = await make_api(hass, cache, data)
 
-        coordinator = EconetDataCoordinator(hass, api)
+        # Pass options to coordinator for category mode and other settings
+        options = dict(entry.options) if entry.options else {}
+        coordinator = EconetDataCoordinator(hass, api, options)
         await coordinator.async_config_entry_first_refresh()
 
         hass.data[DOMAIN][entry.entry_id] = {

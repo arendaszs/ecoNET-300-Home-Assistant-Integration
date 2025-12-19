@@ -5,7 +5,6 @@ import pytest
 from custom_components.econet300.common_functions import (
     get_lock_reason,
     is_parameter_locked,
-    should_be_read_only_sensor,
     validate_parameter_data,
 )
 
@@ -192,35 +191,6 @@ class TestGetLockReason:
         """Test returns empty string when lock_reason is empty."""
         param = {"lock_reason": ""}
         assert get_lock_reason(param) == ""
-
-
-class TestShouldBeReadOnlySensor:
-    """Tests for should_be_read_only_sensor function."""
-
-    def test_non_editable_is_read_only(self):
-        """Test non-editable parameter should be read-only sensor."""
-        param = {"edit": False}
-        assert should_be_read_only_sensor(param) is True
-
-    def test_locked_is_read_only(self):
-        """Test locked parameter should be read-only sensor."""
-        param = {"edit": True, "locked": True}
-        assert should_be_read_only_sensor(param) is True
-
-    def test_information_category_is_read_only(self):
-        """Test Information category should be read-only sensor."""
-        param = {"edit": True, "locked": False}
-        assert should_be_read_only_sensor(param, category_name="Information") is True
-
-    def test_editable_unlocked_not_information(self):
-        """Test editable, unlocked, non-Information is not read-only."""
-        param = {"edit": True, "locked": False}
-        assert should_be_read_only_sensor(param, category_name="Boiler settings") is False
-
-    def test_missing_edit_field(self):
-        """Test missing edit field defaults to non-editable (read-only)."""
-        param = {}
-        assert should_be_read_only_sensor(param) is True
 
 
 class TestLockReasonsFromFixture:

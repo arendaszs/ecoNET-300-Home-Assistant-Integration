@@ -104,27 +104,6 @@ def is_information_category(category_name: str | None) -> bool:
     return "information" in category_lower
 
 
-def is_service_or_advanced_category(category_name: str | None) -> bool:
-    """Check if category is Service or Advanced type.
-
-    Service and Advanced categories are created but hidden by default
-    using entity_registry_visible_default = False per Home Assistant
-    documentation. Users can enable them in the entity registry.
-
-    Args:
-        category_name: Category name from rmCatsNames (e.g., "Service Settings")
-
-    Returns:
-        True if category is Service or Advanced type
-
-    """
-    if not category_name:
-        return False
-
-    category_lower = category_name.lower()
-    return "service" in category_lower or "advanced" in category_lower
-
-
 def sanitize_category_for_device_id(category_name: str) -> str:
     """Sanitize category name for use in device identifiers.
 
@@ -406,37 +385,6 @@ def should_be_switch_entity(param: dict) -> bool:
     # Check if enum values represent binary pattern
     enum_values = enum_data.get("values", [])
     return is_binary_enum(enum_values)
-
-
-def should_be_read_only_sensor(param: dict, category_name: str | None = None) -> bool:
-    """Check if parameter should be a read-only sensor entity.
-
-    A parameter should be a read-only sensor if any of these conditions are true:
-    - It is not editable (edit=False)
-    - It is locked (locked=True)
-    - It belongs to an Information category
-
-    Args:
-        param: Parameter dictionary from mergedData
-        category_name: Optional category name to check for Information type
-
-    Returns:
-        True if parameter should be a read-only sensor
-
-    """
-    # Not editable -> read-only sensor
-    if not param.get("edit", False):
-        return True
-
-    # Locked parameters -> read-only sensor
-    if is_parameter_locked(param):
-        return True
-
-    # Information category -> read-only sensor
-    if category_name and is_information_category(category_name):
-        return True
-
-    return False
 
 
 def mixer_exists(coordinator_data: dict | None, mixer_num: int) -> bool:

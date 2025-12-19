@@ -13,7 +13,12 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import ApiError, AuthError, Econet300Api
-from .const import DOMAIN, ECOSOL_CONTROLLER_IDS
+from .const import (
+    CONF_CATEGORY_MODE,
+    DEFAULT_CATEGORY_MODE,
+    DOMAIN,
+    ECOSOL_CONTROLLER_IDS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,7 +52,9 @@ def skip_params_edits(sys_params: dict[str, Any] | None) -> bool:
 class EconetDataCoordinator(DataUpdateCoordinator):
     """Econet data coordinator to handle data updates."""
 
-    def __init__(self, hass, api: Econet300Api) -> None:
+    def __init__(
+        self, hass, api: Econet300Api, options: dict[str, Any] | None = None
+    ) -> None:
         """Initialize my coordinator."""
         super().__init__(
             hass,
@@ -57,6 +64,10 @@ class EconetDataCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=30),
         )
         self._api = api
+        self._options = options or {}
+        self._category_mode = self._options.get(
+            CONF_CATEGORY_MODE, DEFAULT_CATEGORY_MODE
+        )
 
     def has_sys_data(self, key: str) -> bool:
         """Check if data key is present in sysParams."""
@@ -107,10 +118,13 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                 # Fetch merged parameter data for dynamic entities
                 merged_data = None
                 try:
-                    merged_data = await self._api.fetch_merged_rm_data_with_names_descs_and_structure()
+                    merged_data = await self._api.fetch_merged_rm_data_with_names_descs_and_structure(
+                        category_mode=self._category_mode
+                    )
                     _LOGGER.info(
-                        "DEBUG: Coordinator fetched merged data: %s parameters",
+                        "Coordinator fetched merged data: %s parameters (category_mode: %s)",
                         len(merged_data.get("parameters", {})) if merged_data else 0,
+                        self._category_mode,
                     )
                 except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
                     _LOGGER.warning(

@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Analyze rmParamsComplete.json and show how it relates to individual RM endpoints."""
+"""Analyze mergedData.json and show how it relates to individual RM endpoints."""
 
 import json
 from pathlib import Path
 
 
-def analyze_rm_complete():
-    """Analyze the rmParamsComplete.json fixture."""
+def analyze_merged_data():
+    """Analyze the mergedData.json fixture."""
     fixtures_root = Path("tests/fixtures/ecoMAX810P-L")
-    complete_file = fixtures_root / "rmParamsComplete.json"
+    merged_file = fixtures_root / "mergedData.json"
 
-    if not complete_file.exists():
-        print(f"Error: {complete_file} not found")
+    if not merged_file.exists():
+        print(f"Error: {merged_file} not found")
         return
 
-    # Load the complete data
-    complete_data = json.loads(complete_file.read_text(encoding="utf-8"))
+    # Load the merged data
+    complete_data = json.loads(merged_file.read_text(encoding="utf-8"))
 
-    print("[RM PARAMS COMPLETE ANALYSIS]")
+    print("[MERGED DATA ANALYSIS]")
     print("=" * 50)
 
     # Show version and metadata
@@ -103,4 +103,4 @@ def analyze_rm_complete():
 
 
 if __name__ == "__main__":
-    analyze_rm_complete()
+    analyze_merged_data()
