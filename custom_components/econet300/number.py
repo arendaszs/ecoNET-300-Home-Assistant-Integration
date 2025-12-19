@@ -775,8 +775,15 @@ class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc
         if not merged_parameters:
             return
 
-        # Look up value using param_id
+        # Look up value using param_id, trying both string and integer keys
         param_data = merged_parameters.get(self._param_id)
+        if param_data is None:
+            # Try string version of param_id (handles int param_id with string-keyed dict)
+            param_data = merged_parameters.get(str(self._param_id))
+        if param_data is None and str(self._param_id).isdigit():
+            # Try integer version (handles string param_id with int-keyed dict)
+            param_data = merged_parameters.get(int(self._param_id))
+
         if param_data and isinstance(param_data, dict):
             value = param_data.get("value")
             if value is not None:
@@ -819,7 +826,16 @@ class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc
             return
 
         merged_parameters = merged_data.get("parameters", {})
+
+        # Look up value using param_id, trying both string and integer keys
         param_data = merged_parameters.get(self._param_id)
+        if param_data is None:
+            # Try string version of param_id (handles int param_id with string-keyed dict)
+            param_data = merged_parameters.get(str(self._param_id))
+        if param_data is None and str(self._param_id).isdigit():
+            # Try integer version (handles string param_id with int-keyed dict)
+            param_data = merged_parameters.get(int(self._param_id))
+
         if param_data and isinstance(param_data, dict):
             value = param_data.get("value")
             if value is not None:

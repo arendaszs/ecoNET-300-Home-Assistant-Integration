@@ -1334,10 +1334,11 @@ class Econet300Api:
                 if "name" in param:
                     param["key"] = generate_translation_key(param["name"])
 
-            # Convert parameters array to object with index keys
+            # Convert parameters array to object with string index keys
+            # Using string keys for consistency with JSON serialization
             parameters_dict = {}
             for param in step2_data["parameters"]:
-                param_index = param.get("index", 0)
+                param_index = str(param.get("index", 0))
                 parameters_dict[param_index] = param
 
             # Replace parameters array with indexed object

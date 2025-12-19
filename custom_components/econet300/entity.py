@@ -113,10 +113,13 @@ class EconetEntity(CoordinatorEntity):
             entity_key = self.entity_description.key
             param_data = None
 
-            # Try string key first
+            # Try key as-is first
             if entity_key in merged_parameters:
                 param_data = merged_parameters[entity_key]
-            # Try integer key if string key not found
+            # Try string version of key (handles int key with string dict)
+            elif str(entity_key) in merged_parameters:
+                param_data = merged_parameters[str(entity_key)]
+            # Try integer version if key is a digit string (handles string key with int dict)
             elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
                 param_data = merged_parameters[int(entity_key)]
 
