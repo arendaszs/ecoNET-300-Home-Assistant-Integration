@@ -1208,8 +1208,12 @@ def _create_regular_entity_by_category(
         param_id,  # Pass param_id for value lookup
     )
 
+    # Set disabled by default for service/advanced params
+    if param_type in ("service", "advanced"):
+        entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
+
     _LOGGER.info(
-        "Created menu category number entity: %s (%s) - category[%d]: %s, type: %s, %s to %s %s",
+        "Created menu category number entity: %s (%s) - category[%d]: %s, type: %s, %s to %s %s, enabled_default: %s",
         param_name,
         param_id,
         category_index,
@@ -1218,6 +1222,7 @@ def _create_regular_entity_by_category(
         param.get("minv", 0),
         param.get("maxv", 100),
         param.get("unit_name", ""),
+        getattr(entity, "_attr_entity_registry_enabled_default", True),
     )
 
     return entity

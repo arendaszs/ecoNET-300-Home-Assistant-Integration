@@ -20,6 +20,7 @@ from .common_functions import (
     extract_device_group_from_name,
     generate_translation_key,
     get_lock_reason,
+    get_parameter_type_from_category,
     is_information_category,
     is_parameter_locked,
     mixer_exists,
@@ -659,6 +660,11 @@ def create_dynamic_selects(
             enum_values=enum_values,
             enum_first=enum_first,
         )
+
+        # Set disabled by default for service/advanced params
+        param_type = get_parameter_type_from_category(category_name)
+        if param_type in ("service", "advanced"):
+            entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
 
         entities.append(entity)
         created_keys.add(param_key)

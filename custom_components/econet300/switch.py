@@ -17,6 +17,7 @@ from .common_functions import (
     generate_translation_key,
     get_lock_reason,
     get_on_off_values,
+    get_parameter_type_from_category,
     is_information_category,
     is_parameter_locked,
     mixer_exists,
@@ -446,6 +447,11 @@ def create_dynamic_switches(
             off_value=off_value,
             on_value=on_value,
         )
+
+        # Set disabled by default for service/advanced params
+        param_type = get_parameter_type_from_category(category_name)
+        if param_type in ("service", "advanced"):
+            entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
 
         entities.append(entity)
         created_keys.add(param_key)
