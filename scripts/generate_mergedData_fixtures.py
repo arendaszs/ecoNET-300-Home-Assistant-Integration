@@ -103,9 +103,7 @@ def extract_data_array(json_data: dict | list | None) -> list:
     return []
 
 
-def add_parameter_numbers(
-    parameters: list[dict], structure: list[dict]
-) -> None:
+def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None:
     """Add parameter numbers based on structure data.
 
     The structure contains entries with type == 1 for parameters.
@@ -324,6 +322,51 @@ def add_parameter_locks(
     return lock_count
 
 
+def add_enum_data_from_unit_offset(
+    parameters_dict: dict[str, dict],
+    enums: list[dict],
+) -> int:
+    """Add enum data to parameters based on unit=31 and offset field.
+
+    According to ecoNET24 web interface JS code (dev_set3.js):
+    - When unit == 31 (ENUM_UNIT), the offset field contains the enum index
+    - This is the authoritative source for enum type parameters
+
+    This matches api.py _add_enum_data_from_unit_offset() method.
+    """
+    # ENUM_UNIT constant from ecoNET24 JS code
+    ENUM_UNIT = 31
+
+    enum_count = 0
+    for param in parameters_dict.values():
+        # Check if this parameter has unit=31 (ENUM_UNIT)
+        if param.get("unit") == ENUM_UNIT:
+            # The offset field contains the enum index
+            enum_id = param.get("offset", 0)
+
+            # Get enum data if available
+            if isinstance(enum_id, int) and 0 <= enum_id < len(enums):
+                enum_data = enums[enum_id]
+                if isinstance(enum_data, dict) and enum_data.get("values"):
+                    param["enum"] = {
+                        "id": enum_id,
+                        "values": enum_data.get("values", []),
+                        "first": enum_data.get("first", 0),
+                        "detection_method": "unit_offset",
+                    }
+                    # Add current enum value if applicable
+                    value = param.get("value")
+                    first = enum_data.get("first", 0)
+                    values = enum_data.get("values", [])
+                    if isinstance(value, int) and values:
+                        adjusted_index = value - first
+                        if 0 <= adjusted_index < len(values):
+                            param["enum_value"] = values[adjusted_index]
+                    enum_count += 1
+
+    return enum_count
+
+
 def add_enum_data_from_structure(
     parameters_dict: dict[str, dict],
     structure: list[dict],
@@ -331,6 +374,7 @@ def add_enum_data_from_structure(
 ) -> int:
     """Add enum data to parameters based on structure data_id references.
 
+    This is a fallback method for parameters that don't have unit=31.
     This matches api.py _add_enum_data_from_structure() method.
     """
     # Create structure enum map
@@ -345,6 +389,10 @@ def add_enum_data_from_structure(
     # Add enum data to parameters
     enum_count = 0
     for param in parameters_dict.values():
+        # Skip if already has enum data (from unit/offset method)
+        if "enum" in param:
+            continue
+
         param_number = param.get("number")
         if param_number is not None and param_number in structure_enum_map:
             enum_id = structure_enum_map[param_number]
@@ -355,6 +403,7 @@ def add_enum_data_from_structure(
                         "id": enum_id,
                         "values": enum_data.get("values", []),
                         "first": enum_data.get("first", 0),
+                        "detection_method": "structure_data_id",
                     }
                     # Add current enum value if applicable
                     value = param.get("value")
@@ -373,14 +422,15 @@ def add_smart_enum_detection(
     parameters_dict: dict[str, dict],
     enums: list[dict],
 ) -> int:
-    """Add enum data using smart detection for parameters without structure mapping.
+    """Add enum data using smart detection for parameters without prior enum mapping.
 
+    This is the last fallback method for enum detection.
     This matches api.py _add_smart_enum_detection() method.
     """
     smart_count = 0
 
     for param in parameters_dict.values():
-        # Skip if already has enum
+        # Skip if already has enum (from unit/offset or structure methods)
         if "enum" in param:
             continue
 
@@ -397,7 +447,7 @@ def add_smart_enum_detection(
                     "id": best_enum_id,
                     "values": enum_data.get("values", []),
                     "first": enum_data.get("first", 0),
-                    "smart_detected": True,
+                    "detection_method": "smart_detection",
                 }
                 # Add current enum value if applicable
                 value = param.get("value")
@@ -430,8 +480,18 @@ def should_detect_enum_smart(param: dict) -> bool:
     # Check if description contains enum-like patterns
     description = param.get("description", "").lower()
     enum_patterns = [
-        "off", "on", "auto", "manual", "enabled", "disabled",
-        "start", "stop", "open", "close", "connected", "disconnected",
+        "off",
+        "on",
+        "auto",
+        "manual",
+        "enabled",
+        "disabled",
+        "start",
+        "stop",
+        "open",
+        "close",
+        "connected",
+        "disconnected",
     ]
 
     pattern_matches = sum(1 for pattern in enum_patterns if pattern in description)
@@ -459,7 +519,9 @@ def find_best_matching_enum(param: dict, enums: list[dict]) -> int | None:
     maxv = param.get("maxv", 0)
 
     # Calculate expected enum size
-    expected_size = maxv - minv + 1 if isinstance(maxv, int) and isinstance(minv, int) else 2
+    expected_size = (
+        maxv - minv + 1 if isinstance(maxv, int) and isinstance(minv, int) else 2
+    )
 
     best_match_id = None
     best_score = 0
@@ -548,7 +610,9 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
         print("\nError: No parameter data available (rmParamsData.json)")
         return None
 
-    print("\n[MERGING DATA - Following api.py fetch_merged_rm_data_with_names_descs_and_structure()]")
+    print(
+        "\n[MERGING DATA - Following api.py fetch_merged_rm_data_with_names_descs_and_structure()]"
+    )
     print("=" * 60)
 
     # Step 1: Merge parameter data with names (fetch_merged_rm_data_with_names)
@@ -603,11 +667,14 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
         param_index = str(param.get("index", 0))
         parameters_dict[param_index] = param
 
-    # Step 7: Add enum data from structure (_add_enum_data_from_structure + _add_smart_enum_detection)
-    print("Step 7: Adding enum data from rmParamsEnums + rmStructure...")
-    enum_count = add_enum_data_from_structure(parameters_dict, structure, enums)
+    # Step 7: Add enum data (priority: unit/offset > structure > smart detection)
+    print("Step 7: Adding enum data from rmParamsEnums...")
+    unit_enum_count = add_enum_data_from_unit_offset(parameters_dict, enums)
+    struct_enum_count = add_enum_data_from_structure(parameters_dict, structure, enums)
     smart_enum_count = add_smart_enum_detection(parameters_dict, enums)
-    print(f"  - Added {enum_count} enums from structure, {smart_enum_count} smart-detected")
+    print(
+        f"  - Added {unit_enum_count} enums from unit/offset, {struct_enum_count} from structure, {smart_enum_count} smart-detected"
+    )
 
     # Step 8: Add category information (_add_parameter_categories)
     print("Step 8: Adding category information from rmCatsNames...")
@@ -631,9 +698,15 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
         "parameters": parameters_dict,
         "metadata": {
             "totalParameters": len(parameters_dict),
-            "namedParameters": len([p for p in parameters_dict.values() if p.get("name")]),
-            "describedParameters": len([p for p in parameters_dict.values() if p.get("description")]),
-            "editableParameters": len([p for p in parameters_dict.values() if p.get("edit", False)]),
+            "namedParameters": len(
+                [p for p in parameters_dict.values() if p.get("name")]
+            ),
+            "describedParameters": len(
+                [p for p in parameters_dict.values() if p.get("description")]
+            ),
+            "editableParameters": len(
+                [p for p in parameters_dict.values() if p.get("edit", False)]
+            ),
             "enumParameters": len([p for p in parameters_dict.values() if "enum" in p]),
             "lockedParameters": lock_count,
         },
@@ -734,4 +807,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

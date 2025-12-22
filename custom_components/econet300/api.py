@@ -1351,10 +1351,20 @@ class Econet300Api:
             step2_data["parameters"] = parameters_dict
 
             # Add enum data using helper methods
+            # Priority: 1) unit=31 with offset (authoritative), 2) structure data_id, 3) smart detection
+            unit_enum_count = self._add_enum_data_from_unit_offset(
+                parameters_dict, enums
+            )
             enum_count = self._add_enum_data_from_structure(
                 parameters_dict, structure, enums
             )
             smart_enum_count = self._add_smart_enum_detection(parameters_dict, enums)
+            _LOGGER.debug(
+                "Enum detection: unit/offset=%d, structure=%d, smart=%d",
+                unit_enum_count,
+                enum_count,
+                smart_enum_count,
+            )
 
             # Add category information based on selected mode
             category_count = self._add_parameter_categories(
@@ -1799,6 +1809,66 @@ class Econet300Api:
 
         return lock_count
 
+    def _add_enum_data_from_unit_offset(
+        self,
+        parameters_dict: dict[str, dict[str, Any]],
+        enums: list[dict[str, Any]],
+    ) -> int:
+        """Add enum data to parameters based on unit=31 and offset field.
+
+        According to ecoNET24 web interface JS code (dev_set3.js):
+        - When unit == 31 (ENUM_UNIT), the offset field contains the enum index
+        - This is the authoritative source for enum type parameters
+
+        Args:
+            parameters_dict: Dictionary of parameters indexed by string keys
+            enums: List of enum data from rmParamsEnums endpoint
+
+        Returns:
+            Number of enums added from unit/offset references
+
+        """
+        # ENUM_UNIT constant from ecoNET24 JS code
+        ENUM_UNIT = 31
+
+        enum_count = 0
+        for param in parameters_dict.values():
+            # Check if this parameter has unit=31 (ENUM_UNIT)
+            if param.get("unit") == ENUM_UNIT:
+                # The offset field contains the enum index
+                enum_id = param.get("offset", 0)
+
+                # Get enum data if available
+                if isinstance(enum_id, int) and 0 <= enum_id < len(enums):
+                    enum_data = enums[enum_id]
+                    param["enum"] = {
+                        "id": enum_id,
+                        "values": enum_data.get("values", []),
+                        "first": enum_data.get("first", 0),
+                        "detection_method": "unit_offset",
+                    }
+
+                    # Add current enum value if parameter has a value and it's within enum range
+                    if "value" in param and param["value"] is not None:
+                        param_value = param["value"]
+                        enum_values = enum_data.get("values", [])
+                        first_value = enum_data.get("first", 0)
+
+                        # Calculate the actual enum index
+                        enum_index = param_value - first_value
+                        if 0 <= enum_index < len(enum_values):
+                            param["enum_value"] = enum_values[enum_index]
+
+                    enum_count += 1
+                    _LOGGER.debug(
+                        "Enum from unit/offset: param=%s, enum_id=%d, values=%s",
+                        param.get("name", "unknown"),
+                        enum_id,
+                        enum_data.get("values", [])[:4],  # First 4 values for logging
+                    )
+
+        return enum_count
+
     def _add_enum_data_from_structure(
         self,
         parameters_dict: dict[str, dict[str, Any]],
@@ -1806,6 +1876,8 @@ class Econet300Api:
         enums: list[dict[str, Any]],
     ) -> int:
         """Add enum data to parameters based on structure data_id references.
+
+        This is a fallback method for parameters that don't have unit=31.
 
         Args:
             parameters_dict: Dictionary of parameters indexed by string keys
@@ -1828,6 +1900,10 @@ class Econet300Api:
         # Add enum data to parameters
         enum_count = 0
         for param_index_str, param in parameters_dict.items():
+            # Skip if already has enum data (from unit/offset method)
+            if "enum" in param:
+                continue
+
             param_index = int(param_index_str)
 
             # Check if this parameter has an enum reference AND no unit_name (enum-type parameter)
@@ -1841,6 +1917,7 @@ class Econet300Api:
                         "id": enum_id,
                         "values": enum_data.get("values", []),
                         "first": enum_data.get("first", 0),
+                        "detection_method": "structure_data_id",
                     }
 
                     # Add current enum value if parameter has a value and it's within enum range

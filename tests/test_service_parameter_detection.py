@@ -194,7 +194,10 @@ class TestServiceParameterDetection:
         device_info = entity.device_info
 
         assert device_info is not None
-        assert device_info.get("identifiers") == {(DOMAIN, "test-device-uid-menu-5")}
+        # Device identifier now uses sanitized category name instead of index
+        assert device_info.get("identifiers") == {
+            (DOMAIN, "test-device-uid-menu-mixer_1_settings")
+        }
         assert device_info.get("name") == "Mixer 1 settings"
         assert device_info.get("via_device") == (DOMAIN, "test-device-uid")
 

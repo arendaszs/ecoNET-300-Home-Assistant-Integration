@@ -1,6 +1,6 @@
 {
   "version": "1.0-names-descs-structure-units-indexed-enums-categories-locks-cleaned",
-  "timestamp": "2025-12-19T14:39:20.863763",
+  "timestamp": "2025-12-22T19:32:10.854791",
   "device": {
     "uid": "ecoMAX810P-L-device",
     "controllerId": "ecoMAX810P-L",
@@ -17,7 +17,7 @@
       "offset": 0,
       "name": "100% Blow-in output",
       "index": 0,
-      "description": "Blow-in output when the burner runs at maximum output.",
+      "description": "",
       "number": 46,
       "unit_name": "%",
       "key": "100percent_blow_in_output",
@@ -41,7 +41,7 @@
       "offset": 0,
       "name": "100% Feeder operation",
       "index": 1,
-      "description": "Feeder operation time when the burner runs at maximum output.",
+      "description": "",
       "number": 111,
       "unit_name": "sek.",
       "key": "100percent_feeder_operation",
@@ -65,7 +65,7 @@
       "offset": 0,
       "name": "100% Feeder interval",
       "index": 2,
-      "description": "Feeder interval time when the burner runs at maximum output.",
+      "description": "",
       "number": 112,
       "unit_name": "sek.",
       "key": "100percent_feeder_interval",
@@ -89,7 +89,7 @@
       "offset": 0,
       "name": "50% Blow-in output",
       "index": 3,
-      "description": "Blow-in output when the blower runs with mid output.",
+      "description": "",
       "number": 121,
       "unit_name": "%",
       "key": "50percent_blow_in_output",
@@ -113,7 +113,7 @@
       "offset": 0,
       "name": "50% Feeder operation",
       "index": 4,
-      "description": "Feeder operation time when the burner runs at mid output.",
+      "description": "",
       "number": 132,
       "unit_name": "sek.",
       "key": "50percent_feeder_operation",
@@ -137,7 +137,7 @@
       "offset": 0,
       "name": "50% Feeder interval",
       "index": 5,
-      "description": "Feeder interval time when the blower runs at mid power.",
+      "description": "",
       "number": 49,
       "unit_name": "sek.",
       "key": "50percent_feeder_interval",
@@ -161,7 +161,7 @@
       "offset": 0,
       "name": "30% Blow-in output",
       "index": 6,
-      "description": "Blow-in output when the blower runs at minimum output.",
+      "description": "",
       "number": 52,
       "unit_name": "%",
       "key": "30percent_blow_in_output",
@@ -185,7 +185,7 @@
       "offset": 0,
       "name": "30% Feeder operation",
       "index": 7,
-      "description": "Feeder operation time when the burner runs at minimum output.",
+      "description": "",
       "number": 53,
       "unit_name": "sek.",
       "key": "30percent_feeder_operation",
@@ -209,7 +209,7 @@
       "offset": 0,
       "name": "30% Feeder interval",
       "index": 8,
-      "description": "Feeder interval time when the burner runs at minimum output.",
+      "description": "",
       "number": 54,
       "unit_name": "sek.",
       "key": "30percent_feeder_interval",
@@ -233,7 +233,7 @@
       "offset": 0,
       "name": "50% H2 hysteresis",
       "index": 9,
-      "description": "50% H2 hysteresis",
+      "description": "",
       "number": 55,
       "unit_name": "°C",
       "key": "50percent_h2_hysteresis",
@@ -257,7 +257,7 @@
       "offset": 0,
       "name": "30% H1 hysteresis",
       "index": 10,
-      "description": "Temperature treshold value ",
+      "description": "",
       "number": 56,
       "unit_name": "°C",
       "key": "30percent_h1_hysteresis",
@@ -281,7 +281,7 @@
       "offset": 0,
       "name": "Boiler hysteresis",
       "index": 11,
-      "description": "If the boiler temperature drops below the present boiler temperature by the boiler hysteresis value, then the automatic burner firing up will take place.",
+      "description": "",
       "number": 57,
       "unit_name": "°C",
       "key": "boiler_hysteresis",
@@ -305,7 +305,7 @@
       "offset": 0,
       "name": "FL airfl. correction",
       "index": 12,
-      "description": "Airflow correction in Fuzzy Logic mode.",
+      "description": "",
       "number": 63,
       "unit_name": "%",
       "key": "fl_airfl_correction",
@@ -329,7 +329,7 @@
       "offset": 0,
       "name": "Minimum boiler output FL",
       "index": 13,
-      "description": "Mimimum output at witch the burner can operate in Fuzzy Logic mode.",
+      "description": "",
       "number": 75,
       "unit_name": "%",
       "key": "minimum_boiler_output_fl",
@@ -353,7 +353,7 @@
       "offset": 0,
       "name": "Maximum boiler output FL",
       "index": 14,
-      "description": "Maximum output at witch the burner can operate in Fuzzy Logic mode.",
+      "description": "",
       "number": 79,
       "unit_name": "%",
       "key": "maximum_boiler_output_fl",
@@ -377,7 +377,7 @@
       "offset": 0,
       "name": "Parametr A FuzzyLogic",
       "index": 15,
-      "description": "Param. related to aut. modul. of boiler output at remote stab. of boiler. Increas. the value acceler. the speed of boiler output increase. Too hogh value causes instab. to maintain pres. boiler temp.",
+      "description": "",
       "number": 83,
       "unit_name": "",
       "key": "parametr_a_fuzzylogic",
@@ -390,7 +390,7 @@
           "Calibration"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "smart_detection"
       },
       "categories": [
         "Boiler settings"
@@ -412,7 +412,7 @@
       "offset": 0,
       "name": "Parametr B FuzzyLogic",
       "index": 16,
-      "description": "Param. related to aut. modul. of boiler output at remot. stab. of boiler. Increas. the value acceler. the speed of boiler output increase. Too low value causes instab. to maintain pres. boiler temp.",
+      "description": "",
       "number": 122,
       "unit_name": "",
       "key": "parametr_b_fuzzylogic",
@@ -436,7 +436,7 @@
       "offset": 0,
       "name": "Parametr C FuzzyLogic",
       "index": 17,
-      "description": "Param. related to aut. modul. of boiler output at remote stab. of boiler. It is not recommended to change this parameter.",
+      "description": "",
       "number": 161,
       "unit_name": "",
       "key": "parametr_c_fuzzylogic",
@@ -460,24 +460,25 @@
       "offset": 8,
       "name": "Regulation mode ",
       "index": 18,
-      "description": "STANDARD mode involves 3-step modulation of burner output. FUZZY LOGIC mode involves stepless adjustment of burner output based on the PID algotithm.",
+      "description": "",
       "number": 162,
       "unit_name": "",
       "key": "regulation_mode_",
       "enum": {
-        "id": 1,
+        "id": 8,
         "values": [
-          "OFF",
-          "ON"
+          "Standard",
+          "FuzzyLogic",
+          "Lambda FuzzyLogic"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "OFF",
+      "enum_value": "Standard",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -494,7 +495,7 @@
       "offset": 100,
       "name": "Airflow power correction 100%",
       "index": 19,
-      "description": "Allows for airflow power correction with a burner running at maximum output.",
+      "description": "",
       "number": 19,
       "unit_name": "%",
       "key": "airflow_power_correction_100percent",
@@ -518,7 +519,7 @@
       "offset": 100,
       "name": "100% feeder work correction",
       "index": 20,
-      "description": "Allows for feeder work correction with a burner running at maximum output.",
+      "description": "",
       "number": 20,
       "unit_name": "%",
       "key": "100percent_feeder_work_correction",
@@ -542,7 +543,7 @@
       "offset": 100,
       "name": "50% Airflow power correction",
       "index": 21,
-      "description": "Allows for airflow power correction with a burner running at mid output.",
+      "description": "",
       "number": 9,
       "unit_name": "%",
       "key": "50percent_airflow_power_correction",
@@ -566,7 +567,7 @@
       "offset": 100,
       "name": "50% feeder work correction",
       "index": 22,
-      "description": "Allows for feeder work correction with a burner running at mid output.",
+      "description": "",
       "number": 21,
       "unit_name": "%",
       "key": "50percent_feeder_work_correction",
@@ -590,7 +591,7 @@
       "offset": 100,
       "name": "Airflow power correction 30%",
       "index": 23,
-      "description": "Allows for airflow power correction with a burner running at minimum output.",
+      "description": "",
       "number": 22,
       "unit_name": "%",
       "key": "airflow_power_correction_30percent",
@@ -614,7 +615,7 @@
       "offset": 100,
       "name": "30% feeder work correction",
       "index": 24,
-      "description": "Allows for feeder work correction with a burner running at minimim output.",
+      "description": "",
       "number": 10,
       "unit_name": "%",
       "key": "30percent_feeder_work_correction",
@@ -638,7 +639,7 @@
       "offset": 0,
       "name": "Firing-up airflow",
       "index": 25,
-      "description": "Airflow output durning the firing-up. Too high value slows the firing-up or causes unsuccessful attempt to fire up.",
+      "description": "",
       "number": 23,
       "unit_name": "%",
       "key": "firing_up_airflow",
@@ -662,7 +663,7 @@
       "offset": 0,
       "name": "Ignition test time",
       "index": 26,
-      "description": "Process of checking whether the furnace is already burning. Only the fan is running. If the flame is of sufficient brightness, the machine proceeds to OPERATION mode bypassing the FIRE UP mode.",
+      "description": "",
       "number": 24,
       "unit_name": "min.",
       "key": "ignition_test_time",
@@ -686,7 +687,7 @@
       "offset": 0,
       "name": "Ignition test time 2",
       "index": 27,
-      "description": "Process of cheching whether the furnace is burning; this process starts when the controller proceeds to OPERATION mode.",
+      "description": "",
       "number": 11,
       "unit_name": "min.",
       "key": "ignition_test_time_2",
@@ -710,14 +711,14 @@
       "offset": 0,
       "name": "Feeding time",
       "index": 28,
-      "description": "Fuel dose feeding time during the firing-up. Refers to the first attempt to fire up. In another attempts the fuel dose is reduced.",
+      "description": "",
       "number": 18,
       "unit_name": "sek.",
       "key": "feeding_time",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -734,7 +735,7 @@
       "offset": 0,
       "name": "Firing-up time",
       "index": 29,
-      "description": "Time of a signle attempt to fire up. After this time, controller proceeds to another attempt to fire up. After the failure of all attempts to fire up, the alarm: \"Failed to fire up\" is reported.",
+      "description": "",
       "number": 12,
       "unit_name": "min.",
       "key": "firing_up_time",
@@ -758,14 +759,14 @@
       "offset": 0,
       "name": "Ex.temp.delta",
       "index": 30,
-      "description": "Parameter defines how much the exhaust temperature must rise during the firing-up so that the firing-up of the furnace is detected.",
+      "description": "",
       "number": 45,
       "unit_name": "°C",
       "key": "extempdelta",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": true,
@@ -782,14 +783,14 @@
       "offset": 0,
       "name": "Ex.temp.delta 2",
       "index": 31,
-      "description": "Parameter defines how much the exhaust temperature must rise during the test to fire up conducted when the controller proceeds to OPERATION mode, so that the furnance is considered fired up.",
+      "description": "",
       "number": 13,
       "unit_name": "°C",
       "key": "extempdelta_2",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": true,
@@ -806,7 +807,7 @@
       "offset": 0,
       "name": "Ex. temp. at the end of firing-up",
       "index": 32,
-      "description": "Ex. temp. above which the furnace is considered to be fired up durnig the ignition test or firing-up.",
+      "description": "",
       "number": 14,
       "unit_name": "°C",
       "key": "ex_temp_at_the_end_of_firing_up",
@@ -830,14 +831,14 @@
       "offset": 0,
       "name": "Test dose",
       "index": 33,
-      "description": "Fuel dose (feeding time) that is going to be fed during the ignition test before proceeding to FIRING UP mode.",
+      "description": "",
       "number": 133,
       "unit_name": "%",
       "key": "test_dose",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -854,7 +855,7 @@
       "offset": 0,
       "name": "Supervision time",
       "index": 34,
-      "description": "It is a max. time of cont. being in SUPERV. mode. After this time, the control. proceeds to SUPERVISION mode and b. is automat. burned off. When SUPERV. TIME= 0 is set, SUPERV. mode is turned off.",
+      "description": "",
       "number": 139,
       "unit_name": "min.",
       "key": "supervision_time",
@@ -878,7 +879,7 @@
       "offset": 0,
       "name": "Feed. time",
       "index": 35,
-      "description": "F. feed. t. in SUPERV.. It influ. the b. out. in SUPERV. The val. sh. be as small as pos. so as to keep the fl. Too high val. leads to b. overh.The val. sh. be adjust. so that furn. isn't burn. off.",
+      "description": "",
       "number": 163,
       "unit_name": "sek.",
       "key": "feed_time",
@@ -902,7 +903,7 @@
       "offset": 0,
       "name": "Feed. interval",
       "index": 36,
-      "description": "F. feed. int. in SUPERV. It influ. the b. out. in SUPERV. The val. sh. be as high as pos. so as to keep the fl. Too small val. leads to b. overh. The val. sh. be adjust. so that furn. isn't burn. off.",
+      "description": "",
       "number": 149,
       "unit_name": "min.",
       "key": "feed_interval",
@@ -926,7 +927,7 @@
       "offset": 0,
       "name": "Minimum airflow output",
       "index": 37,
-      "description": "Min. airflow output that the user can set. It is used only to reduce the aval. pow. range of the cont. It should be as small as possible but allow the fan to rotate slowly and freely.",
+      "description": "",
       "number": 152,
       "unit_name": "%",
       "key": "minimum_airflow_output",
@@ -950,7 +951,7 @@
       "offset": 0,
       "name": "Parameter A Lambda",
       "index": 38,
-      "description": "Affects the adjustment speed of oxygen value present in exhaust to present oxygen value; it also affects the stability to keep the oxygen in exhaust. It is not recommended to change this value.",
+      "description": "",
       "number": 148,
       "unit_name": "",
       "key": "parameter_a_lambda",
@@ -974,7 +975,7 @@
       "offset": 0,
       "name": "Parameter B Lambda",
       "index": 39,
-      "description": "Affects the adjustment speed of oxygen value value in exhaust to present oxygen value; it also affects the stability to keep the oxygen in exhaust. It is not recommended to change this value.",
+      "description": "",
       "number": 157,
       "unit_name": "",
       "key": "parameter_b_lambda",
@@ -998,7 +999,7 @@
       "offset": 0,
       "name": "Parameter C Lambda",
       "index": 40,
-      "description": "Affects the adjustment speed of oxygen value value in exhaust to present oxygen value; it also affects the stability to keep the oxygen in exhaust. It is not recommended to change this value.",
+      "description": "",
       "number": 158,
       "unit_name": "",
       "key": "parameter_c_lambda",
@@ -1022,8 +1023,8 @@
       "offset": 0,
       "name": "100% Oxygen",
       "index": 41,
-      "description": "Present oxygen value in exhaust when the burner runs at maximum output.",
-      "number": 38,
+      "description": "",
+      "number": 47,
       "unit_name": "%",
       "key": "100percent_oxygen",
       "categories": [
@@ -1046,8 +1047,8 @@
       "offset": 0,
       "name": "50% Oxygen",
       "index": 42,
-      "description": "Present oxygen value when the burner runs at mid output.",
-      "number": 39,
+      "description": "",
+      "number": 48,
       "unit_name": "%",
       "key": "50percent_oxygen",
       "categories": [
@@ -1070,8 +1071,8 @@
       "offset": 0,
       "name": "30% Oxygen",
       "index": 43,
-      "description": "Present oxygen value when the burner runs at minimum output.",
-      "number": 40,
+      "description": "",
+      "number": 37,
       "unit_name": "%",
       "key": "30percent_oxygen",
       "categories": [
@@ -1094,8 +1095,8 @@
       "offset": 0,
       "name": "Airflow correction range",
       "index": 44,
-      "description": "Defines the acceptable airflow range variation during the operation using Lambda sensor.",
-      "number": 41,
+      "description": "",
+      "number": 140,
       "unit_name": "%",
       "key": "airflow_correction_range",
       "categories": [
@@ -1118,8 +1119,8 @@
       "offset": 0,
       "name": "FL Oxygen correction",
       "index": 45,
-      "description": "Correction of present oxygen value in exhaust in FL mode.",
-      "number": 42,
+      "description": "",
+      "number": 147,
       "unit_name": "%",
       "key": "fl_oxygen_correction",
       "categories": [
@@ -1133,7 +1134,7 @@
       "lock_reason": null
     },
     "46": {
-      "value": 43,
+      "value": 47,
       "maxv": 68,
       "minv": 27,
       "edit": true,
@@ -1142,8 +1143,8 @@
       "offset": 0,
       "name": "Preset boiler temperature",
       "index": 46,
-      "description": "Present boiler temperature when weather control is off. It can be automatically changed by the controller, for example, when present boiler temperature is lower than present HUW temperature.",
-      "number": 43,
+      "description": "",
+      "number": 146,
       "unit_name": "°C",
       "key": "preset_boiler_temperature",
       "categories": [
@@ -1166,8 +1167,8 @@
       "offset": 0,
       "name": "Min. boiler temperature",
       "index": 47,
-      "description": "Min. present boiler temperature that can be set by the user in menu and min. temperature that can be set by the controller, for example, from night time decreases, weather control, etc.",
-      "number": 47,
+      "description": "",
+      "number": 131,
       "unit_name": "°C",
       "key": "min_boiler_temperature",
       "categories": [
@@ -1190,8 +1191,8 @@
       "offset": 0,
       "name": "Max. boiler temperature",
       "index": 48,
-      "description": "Max. present boiler temperature that can be set by the user in menu and max. temperature that can be set by the controller, for example, form weather control, etc.",
-      "number": 48,
+      "description": "",
+      "number": 142,
       "unit_name": "°C",
       "key": "max_boiler_temperature",
       "categories": [
@@ -1214,8 +1215,8 @@
       "offset": 0,
       "name": "HUW preset temperature",
       "index": 49,
-      "description": "Temperature, to which the HUW tank will be heated. Note: too high temperature may cause scalding from hot tap water!",
-      "number": 37,
+      "description": "",
+      "number": 143,
       "unit_name": "°C",
       "key": "huw_preset_temperature",
       "categories": [
@@ -1238,8 +1239,8 @@
       "offset": 0,
       "name": "Minimum HUW temperature",
       "index": 50,
-      "description": "It is a parameter which can be used to limit the user's ability to set to low HUW present temperature.",
-      "number": 140,
+      "description": "",
+      "number": 113,
       "unit_name": "°C",
       "key": "minimum_huw_temperature",
       "categories": [
@@ -1262,14 +1263,14 @@
       "offset": 0,
       "name": "Maximum HUW temperature",
       "index": 51,
-      "description": "This param. determ. the max. temp. to which the HUW feed. will be heated while discharg. exceed. boiler heat in alarm states. Setting too high value can lead to the risk of scladning from hot water.",
-      "number": 146,
+      "description": "",
+      "number": 15,
       "unit_name": "°C",
       "key": "maximum_huw_temperature",
       "categories": [
-        "Boiler settings"
+        "HUW settings"
       ],
-      "category": "Boiler settings",
+      "category": "HUW settings",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -1286,8 +1287,8 @@
       "offset": 9,
       "name": "HUW pump mode",
       "index": 52,
-      "description": "Allows for the select. of oper. mode of HUW. NO PRIORITY - parallel operation of HUW pump and cent. heat. pumps, PRIORITY - only HUW pump operates, SUMMER - prep. only HUW (building heating disabled).",
-      "number": 131,
+      "description": "",
+      "number": 16,
       "unit_name": "",
       "key": "huw_pump_mode",
       "enum": {
@@ -1298,7 +1299,7 @@
           "No priority"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "Off",
       "categories": [
@@ -1321,8 +1322,8 @@
       "offset": 0,
       "name": "HUW cont. hysteresis",
       "index": 53,
-      "description": "This parameter defines after what temperature drop measured by HUW sensor, the HUW pump will be activated (HUW = hot tap water), when compared with HUW present temperature, ",
-      "number": 142,
+      "description": "",
+      "number": 17,
       "unit_name": "°C",
       "key": "huw_cont_hysteresis",
       "categories": [
@@ -1345,20 +1346,20 @@
       "offset": 10,
       "name": "HUW disinfection",
       "index": 54,
-      "description": "Once this parameter is enabled every week, on Monday, at 2:00, hot tap water will be heated to 70°C in order to disinfect the HUW tank. Note: risk of scalding form hot water!",
-      "number": 143,
+      "description": "",
+      "number": 150,
       "unit_name": "",
       "key": "huw_disinfection",
       "enum": {
-        "id": 1,
+        "id": 10,
         "values": [
-          "OFF",
-          "ON"
+          "Off",
+          "On"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "OFF",
+      "enum_value": "Off",
       "categories": [
         "HUW settings"
       ],
@@ -1379,8 +1380,8 @@
       "offset": 11,
       "name": "SUMMER mode",
       "index": 55,
-      "description": "SUMMER mode means deactivation of central heating while leaving HUW heating. Automatic activation of the mode is executed on basis of indications of weather temperature sensor.",
-      "number": 113,
+      "description": "",
+      "number": 58,
       "unit_name": "",
       "key": "summer_mode",
       "enum": {
@@ -1393,13 +1394,13 @@
           "Summer"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "Winter",
       "categories": [
-        "HUW settings"
+        "Other"
       ],
-      "category": "HUW settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -1407,7 +1408,7 @@
       "lock_reason": null
     },
     "56": {
-      "value": 20,
+      "value": 21,
       "maxv": 30,
       "minv": 5,
       "edit": true,
@@ -1416,8 +1417,8 @@
       "offset": 0,
       "name": "SUMMER mode act. temperature",
       "index": 56,
-      "description": "External temperature, above which the SUMMER mode will be activated, if the automatic detection of the SUMMER mode is on.",
-      "number": 15,
+      "description": "",
+      "number": 59,
       "unit_name": "°C",
       "key": "summer_mode_act_temperature",
       "categories": [
@@ -1432,7 +1433,7 @@
     },
     "57": {
       "value": 16,
-      "maxv": 19,
+      "maxv": 20,
       "minv": 1,
       "edit": true,
       "unit": 1,
@@ -1440,8 +1441,8 @@
       "offset": 0,
       "name": "SUMMER mode deact. temperature",
       "index": 57,
-      "description": "External temperature, below which the SUMMER mode will be deactivated, if the automatic detection of the SUMMER mode is on.",
-      "number": 16,
+      "description": "",
+      "number": 50,
       "unit_name": "°C",
       "key": "summer_mode_deact_temperature",
       "categories": [
@@ -1464,14 +1465,14 @@
       "offset": 0,
       "name": "CH pump activation temperature",
       "index": 58,
-      "description": "Param. determines the temp. at which the CH boiler pump will be activated. This protects the boiler from retting due to cooling it with cold water returning from the system.",
-      "number": 17,
+      "description": "",
+      "number": 51,
       "unit_name": "°C",
       "key": "ch_pump_activation_temperature",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -1488,8 +1489,8 @@
       "offset": 0,
       "name": "CH pump standstill when loading HUW",
       "index": 59,
-      "description": "Param. allows for  period. activ. of b. p. (CH) durnig load. with HUW feed priority. After this time, CH p. will be activ. for a program., const. time of 30 s. To enable this funct., set param. on 0.",
-      "number": 150,
+      "description": "",
+      "number": 60,
       "unit_name": "min.",
       "key": "ch_pump_standstill_when_loading_huw",
       "categories": [
@@ -1512,8 +1513,8 @@
       "offset": 0,
       "name": "Boiler inc. by HUW, Mixer",
       "index": 60,
-      "description": "Par. det. by how many deg. pres. boiler temp. must be higher to load the HUW feed., buffer, and mix. circuit. Increas. pres. b. temp. is achieved only when pres. b. temp. is low. than other pres temp.",
-      "number": 58,
+      "description": "",
+      "number": 61,
       "unit_name": "°C",
       "key": "boiler_inc_by_huw,_mixer",
       "categories": [
@@ -1536,14 +1537,14 @@
       "offset": 0,
       "name": "Extending HUW pump operation time",
       "index": 61,
-      "description": "Allows for removal of heat from boiler by HUW feed. directly after the HUW feed. is load. In order to cool the boiler, the oper. of HUW pump can be extended by a period of extended oper. of HUW pump.",
-      "number": 59,
+      "description": "",
+      "number": 62,
       "unit_name": "min.",
       "key": "extending_huw_pump_operation_time",
       "categories": [
-        "Boiler settings"
+        "HUW settings"
       ],
-      "category": "Boiler settings",
+      "category": "HUW settings",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -1560,8 +1561,8 @@
       "offset": 12,
       "name": "Exchanger",
       "index": 62,
-      "description": "Applies only to hydraul. install. with heat exch. between o. and c. syst. Avail. opt.:YES=b. p. runs cont. in short circ. b. exch. & is not on to SUMMER or HUW priority,NO=boiler p. runs normally.",
-      "number": 50,
+      "description": "",
+      "number": 151,
       "unit_name": "",
       "key": "exchanger",
       "enum": {
@@ -1571,13 +1572,13 @@
           "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "No",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -1594,18 +1595,10 @@
       "offset": 0,
       "name": "Preset mixer 1 temperature",
       "index": 63,
-      "description": "Present temperature for controlled heating circuit when the weather control is on. When the weather control is on, the parameter is not included by the controller for the heating circuit of the mixer.",
-      "number": 1,
+      "description": "",
+      "number": 87,
       "unit_name": "°C",
       "key": "preset_mixer1_temperature",
-      "enum": {
-        "id": 1,
-        "values": [
-          "OFF",
-          "ON"
-        ],
-        "first": 0
-      },
       "categories": [
         "Mixer settings"
       ],
@@ -1626,8 +1619,8 @@
       "offset": 0,
       "name": "Preset mixer 2 temperature",
       "index": 64,
-      "description": "Present temperature for controlled heating circuit when the weather control is on. When the weather control is on, the parameter is not included by the controller for the heating circuit of the mixer.",
-      "number": 60,
+      "description": "",
+      "number": 67,
       "unit_name": "°C",
       "key": "preset_mixer2_temperature",
       "categories": [
@@ -1650,8 +1643,8 @@
       "offset": 0,
       "name": "Preset mixer 3 temperature",
       "index": 65,
-      "description": "Present temperature for controlled heating circuit when the weather control is on. When the weather control is on, the parameter is not included by the controller for the heating circuit of the mixer.",
-      "number": 61,
+      "description": "",
+      "number": 71,
       "unit_name": "°C",
       "key": "preset_mixer3_temperature",
       "categories": [
@@ -1674,8 +1667,8 @@
       "offset": 0,
       "name": "Preset mixer 4 temperature",
       "index": 66,
-      "description": "Present temperature for controlled heating circuit when the weather control is on. When the weather control is on, the parameter is not included by the controller for the heating circuit of the mixer.",
-      "number": 62,
+      "description": "",
+      "number": 91,
       "unit_name": "°C",
       "key": "preset_mixer4_temperature",
       "categories": [
@@ -1698,8 +1691,8 @@
       "offset": 0,
       "name": "Min. mixer 1 temp.",
       "index": 67,
-      "description": "Param. allows for limiting  the user's ability to set too low pres. temp. of the mixer. Autom. change of pres.  temp.,e.g. tempor. reduct. will not reduce pres. temp. val. below val. set in the param.",
-      "number": 151,
+      "description": "",
+      "number": 95,
       "unit_name": "°C",
       "key": "min_mixer1_temp",
       "categories": [
@@ -1722,8 +1715,8 @@
       "offset": 0,
       "name": "Min. mixer 2 temp.",
       "index": 68,
-      "description": "Param. allows for limiting  the user's ability to set too low pres. temp. of the mixer. Autom. change of pres.  temp.,e.g. tempor. reduct. will not reduce pres. temp. val. below val. set in the param.",
-      "number": 87,
+      "description": "",
+      "number": 103,
       "unit_name": "°C",
       "key": "min_mixer2_temp",
       "categories": [
@@ -1746,8 +1739,8 @@
       "offset": 0,
       "name": "Min. mixer 3 temp.",
       "index": 69,
-      "description": "Param. allows for limiting  the user's ability to set too low pres. temp. of the mixer. Autom. change of pres.  temp.,e.g. tempor. reduct. will not reduce pres. temp. val. below val. set in the param.",
-      "number": 67,
+      "description": "",
+      "number": 99,
       "unit_name": "°C",
       "key": "min_mixer3_temp",
       "categories": [
@@ -1770,8 +1763,8 @@
       "offset": 0,
       "name": "Min. mixer 4 temp.",
       "index": 70,
-      "description": "Param. allows for limiting  the user's ability to set too low pres. temp. of the mixer. Autom. change of pres.  temp.,e.g. tempor. reduct. will not reduce pres. temp. val. below val. set in the param.",
-      "number": 71,
+      "description": "",
+      "number": 107,
       "unit_name": "°C",
       "key": "min_mixer4_temp",
       "categories": [
@@ -1794,8 +1787,8 @@
       "offset": 0,
       "name": "Max. mixer 1 temp.",
       "index": 71,
-      "description": "Limits possibility of setting too high a preset mixer temperature by the user and by the controller. For MIXER SERVICE = ROOF ACTIVATED determines value of maximum temperature in heating circuit above which mixer pump will be switched off.",
-      "number": 91,
+      "description": "",
+      "number": 159,
       "unit_name": "°C",
       "key": "max_mixer1_temp",
       "categories": [
@@ -1818,8 +1811,8 @@
       "offset": 0,
       "name": "Max. mixer 2 temp.",
       "index": 72,
-      "description": "Limits possibility of setting too high a preset mixer temperature by the user and by the controller. For MIXER SERVICE = ROOF ACTIVATED determines value of maximum temperature in heating circuit above which mixer pump will be switched off.",
-      "number": 95,
+      "description": "",
+      "number": 160,
       "unit_name": "°C",
       "key": "max_mixer2_temp",
       "categories": [
@@ -1842,8 +1835,8 @@
       "offset": 0,
       "name": "Max. mixer 3 temp.",
       "index": 73,
-      "description": "Limits possibility of setting too high a preset mixer temperature by the user and by the controller. For MIXER SERVICE = ROOF ACTIVATED determines value of maximum temperature in heating circuit above which mixer pump will be switched off.",
-      "number": 103,
+      "description": "",
+      "number": 144,
       "unit_name": "°C",
       "key": "max_mixer3_temp",
       "categories": [
@@ -1866,8 +1859,8 @@
       "offset": 0,
       "name": "Max. mixer 4 temp.",
       "index": 74,
-      "description": "Limits possibility of setting too high a preset mixer temperature by the user and by the controller. For MIXER SERVICE = ROOF ACTIVATED determines value of maximum temperature in heating circuit above which mixer pump will be switched off.",
-      "number": 99,
+      "description": "",
+      "number": 164,
       "unit_name": "°C",
       "key": "max_mixer4_temp",
       "categories": [
@@ -1890,8 +1883,8 @@
       "offset": 0,
       "name": "Mixer 1 room therm.",
       "index": 75,
-      "description": "Present temperature reduction in the heating circuit of the mixer when the contacts of the room therm. are open (present room temp. is reached).",
-      "number": 107,
+      "description": "",
+      "number": 25,
       "unit_name": "°C",
       "key": "mixer1_room_therm",
       "categories": [
@@ -1914,10 +1907,19 @@
       "offset": 0,
       "name": "Mixer 2 room therm.",
       "index": 76,
-      "description": "Present temperature reduction in the heating circuit of the mixer when the contacts of the room therm. are open (present room temp. is reached).",
-      "number": 159,
+      "description": "",
+      "number": 26,
       "unit_name": "°C",
       "key": "mixer2_room_therm",
+      "enum": {
+        "id": 26,
+        "values": [
+          "Off",
+          "On"
+        ],
+        "first": 0,
+        "detection_method": "structure_data_id"
+      },
       "categories": [
         "Mixer settings"
       ],
@@ -1938,8 +1940,8 @@
       "offset": 0,
       "name": "Mixer 3 room therm.",
       "index": 77,
-      "description": "Present temperature reduction in the heating circuit of the mixer when the contacts of the room therm. are open (present room temp. is reached).",
-      "number": 160,
+      "description": "",
+      "number": 27,
       "unit_name": "°C",
       "key": "mixer3_room_therm",
       "categories": [
@@ -1962,10 +1964,20 @@
       "offset": 0,
       "name": "Mixer 4 room therm.",
       "index": 78,
-      "description": "Present temperature reduction in the heating circuit of the mixer when the contacts of the room therm. are open (present room temp. is reached).",
-      "number": 144,
+      "description": "",
+      "number": 28,
       "unit_name": "°C",
       "key": "mixer4_room_therm",
+      "enum": {
+        "id": 28,
+        "values": [
+          "Reserve boiler",
+          "Alarms",
+          "Circulation pump"
+        ],
+        "first": 0,
+        "detection_method": "structure_data_id"
+      },
       "categories": [
         "Mixer settings"
       ],
@@ -1986,20 +1998,20 @@
       "offset": 13,
       "name": "Mixer 1 weather control",
       "index": 79,
-      "description": "When the weather control is on, present temperature is calculated based on the heating curve and weather sensor readings.",
-      "number": 164,
+      "description": "",
+      "number": 29,
       "unit_name": "",
       "key": "mixer1_weather_control",
       "enum": {
-        "id": 1,
+        "id": 13,
         "values": [
-          "OFF",
-          "ON"
+          "Off",
+          "On"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ON",
+      "enum_value": "On",
       "categories": [
         "Mixer settings"
       ],
@@ -2020,20 +2032,20 @@
       "offset": 13,
       "name": "Mixer 2 weather control",
       "index": 80,
-      "description": "When the weather control is on, present temperature is calculated based on the heating curve and weather sensor readings.",
-      "number": 25,
+      "description": "",
+      "number": 30,
       "unit_name": "",
       "key": "mixer2_weather_control",
       "enum": {
-        "id": 1,
+        "id": 13,
         "values": [
-          "OFF",
-          "ON"
+          "Off",
+          "On"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ON",
+      "enum_value": "On",
       "categories": [
         "Mixer settings"
       ],
@@ -2054,17 +2066,18 @@
       "offset": 13,
       "name": "Mixer 3 weather control",
       "index": 81,
-      "description": "When the weather control is on, present temperature is calculated based on the heating curve and weather sensor readings.",
-      "number": 26,
+      "description": "",
+      "number": 31,
       "unit_name": "",
       "key": "mixer3_weather_control",
       "enum": {
-        "id": 26,
+        "id": 13,
         "values": [
           "Off",
           "On"
         ],
-        "first": 0
+        "first": 0,
+        "detection_method": "unit_offset"
       },
       "enum_value": "On",
       "categories": [
@@ -2087,20 +2100,20 @@
       "offset": 13,
       "name": "Mixer 4 weather control",
       "index": 82,
-      "description": "When the weather control is on, present temperature is calculated based on the heating curve and weather sensor readings.",
-      "number": 27,
+      "description": "",
+      "number": 32,
       "unit_name": "",
       "key": "mixer4_weather_control",
       "enum": {
-        "id": 1,
+        "id": 13,
         "values": [
-          "OFF",
-          "ON"
+          "Off",
+          "On"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ON",
+      "enum_value": "On",
       "categories": [
         "Mixer settings"
       ],
@@ -2112,7 +2125,7 @@
       "lock_reason": null
     },
     "83": {
-      "value": 1,
+      "value": 0.7,
       "maxv": 4,
       "minv": 0.1,
       "edit": true,
@@ -2121,20 +2134,19 @@
       "offset": 0,
       "name": "Heating curve. mixer 1",
       "index": 83,
-      "description": "Heating curve reflects the thermal characteristics of the building. Recommended settings for mixer circuit: 0,2 - 0,6",
-      "number": 28,
+      "description": "",
+      "number": 33,
       "unit_name": "",
       "key": "heating_curve_mixer_1",
       "enum": {
-        "id": 28,
+        "id": 1,
         "values": [
-          "Reserve boiler",
-          "Alarms",
-          "Circulation pump"
+          "OFF",
+          "ON"
         ],
-        "first": 0
+        "first": 0,
+        "detection_method": "smart_detection"
       },
-      "enum_value": "Alarms",
       "categories": [
         "Mixer settings"
       ],
@@ -2155,8 +2167,8 @@
       "offset": 0,
       "name": "Heating curve. mixer 2",
       "index": 84,
-      "description": "Heating curve reflects the thermal characteristics of the building. Recommended settings for mixer circuit: 0,2 - 0,6",
-      "number": 29,
+      "description": "",
+      "number": 0,
       "unit_name": "",
       "key": "heating_curve_mixer_2",
       "enum": {
@@ -2166,7 +2178,7 @@
           "ON"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "smart_detection"
       },
       "categories": [
         "Mixer settings"
@@ -2188,8 +2200,8 @@
       "offset": 0,
       "name": "Heating curve. mixer 3",
       "index": 85,
-      "description": "Heating curve reflects the thermal characteristics of the building. Recommended settings for mixer circuit: 0,2 - 0,6",
-      "number": 30,
+      "description": "",
+      "number": 1,
       "unit_name": "",
       "key": "heating_curve_mixer_3",
       "enum": {
@@ -2199,7 +2211,7 @@
           "ON"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "structure_data_id"
       },
       "categories": [
         "Mixer settings"
@@ -2221,8 +2233,8 @@
       "offset": 0,
       "name": "Heating curve. mixer 4",
       "index": 86,
-      "description": "Heating curve reflects the thermal characteristics of the building. Recommended settings for mixer circuit: 0,2 - 0,6",
-      "number": 31,
+      "description": "",
+      "number": 2,
       "unit_name": "",
       "key": "heating_curve_mixer_4",
       "enum": {
@@ -2232,7 +2244,7 @@
           "ON"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "smart_detection"
       },
       "categories": [
         "Mixer settings"
@@ -2254,52 +2266,22 @@
       "offset": 14,
       "name": "Mixer 1 support",
       "index": 87,
-      "description": "OFF=mixer actuator & pump are off. CH ON=mixer circ. supplies radiator syst. FLOOR ON=mixer circ. supplies floor instal.. PUMP ONLY=actuator is off, pump turns off, when present temp. is reached.",
-      "number": 32,
+      "description": "",
+      "number": 41,
       "unit_name": "",
       "key": "mixer1_support",
       "enum": {
-        "id": 16,
+        "id": 14,
         "values": [
-          "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
           "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "CH on",
+          "Floor on",
+          "Pump only"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ecoSTER T1",
+      "enum_value": "Floor on",
       "categories": [
         "Mixer settings"
       ],
@@ -2320,52 +2302,22 @@
       "offset": 14,
       "name": "Mixer 2 support",
       "index": 88,
-      "description": "OFF=mixer actuator & pump are off. CH ON=mixer circ. supplies radiator syst. FLOOR ON=mixer circ. supplies floor instal.. PUMP ONLY=actuator is off, pump turns off, when present temp. is reached.",
-      "number": 33,
+      "description": "",
+      "number": 3,
       "unit_name": "",
       "key": "mixer2_support",
       "enum": {
-        "id": 16,
+        "id": 14,
         "values": [
-          "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
           "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "CH on",
+          "Floor on",
+          "Pump only"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ecoSTER T1",
+      "enum_value": "Floor on",
       "categories": [
         "Mixer settings"
       ],
@@ -2386,52 +2338,22 @@
       "offset": 14,
       "name": "Mixer 3 support",
       "index": 89,
-      "description": "OFF=mixer actuator & pump are off. CH ON=mixer circ. supplies radiator syst. FLOOR ON=mixer circ. supplies floor instal.. PUMP ONLY=actuator is off, pump turns off, when present temp. is reached.",
-      "number": 0,
+      "description": "",
+      "number": 4,
       "unit_name": "",
       "key": "mixer3_support",
       "enum": {
-        "id": 16,
+        "id": 14,
         "values": [
-          "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
           "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "CH on",
+          "Floor on",
+          "Pump only"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ecoSTER T1",
+      "enum_value": "Floor on",
       "categories": [
         "Mixer settings"
       ],
@@ -2452,18 +2374,22 @@
       "offset": 14,
       "name": "Mixer 4 support",
       "index": 90,
-      "description": "OFF=mixer actuator & pump are off. CH ON=mixer circ. supplies radiator syst. FLOOR ON=mixer circ. supplies floor instal.. PUMP ONLY=actuator is off, pump turns off, when present temp. is reached.",
-      "number": 1,
+      "description": "",
+      "number": 5,
       "unit_name": "",
       "key": "mixer4_support",
       "enum": {
-        "id": 1,
+        "id": 14,
         "values": [
-          "OFF",
-          "ON"
+          "Off",
+          "CH on",
+          "Floor on",
+          "Pump only"
         ],
-        "first": 0
+        "first": 0,
+        "detection_method": "unit_offset"
       },
+      "enum_value": "Floor on",
       "categories": [
         "Mixer settings"
       ],
@@ -2484,14 +2410,14 @@
       "offset": 0,
       "name": "Proportional range",
       "index": 91,
-      "description": "The higher the value, the faster the mixer reaches the present temperature. Too high parameter value causes temperature overshoot and unnecessary movements of the actuator.",
-      "number": 2,
+      "description": "",
+      "number": 42,
       "unit_name": "",
       "key": "proportional_range",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2508,14 +2434,14 @@
       "offset": 0,
       "name": "Proportional range",
       "index": 92,
-      "description": "The higher the value, the faster the mixer reaches the present temperature. Too high parameter value causes temperature overshoot and unnecessary movements of the actuator.",
-      "number": 41,
+      "description": "",
+      "number": 6,
       "unit_name": "",
       "key": "proportional_range",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2532,22 +2458,14 @@
       "offset": 0,
       "name": "Proportional range",
       "index": 93,
-      "description": "The higher the value, the faster the mixer reaches the present temperature. Too high parameter value causes temperature overshoot and unnecessary movements of the actuator.",
-      "number": 3,
+      "description": "",
+      "number": 7,
       "unit_name": "",
       "key": "proportional_range",
-      "enum": {
-        "id": 3,
-        "values": [
-          "",
-          "Calibration"
-        ],
-        "first": 0
-      },
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2564,14 +2482,14 @@
       "offset": 0,
       "name": "Proportional range",
       "index": 94,
-      "description": "The higher the value, the faster the mixer reaches the present temperature. Too high parameter value causes temperature overshoot and unnecessary movements of the actuator.",
-      "number": 4,
+      "description": "",
+      "number": 8,
       "unit_name": "",
       "key": "proportional_range",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2588,14 +2506,14 @@
       "offset": 0,
       "name": "Integration time constant",
       "index": 95,
-      "description": "The lower the value, the faster the mixer reaches the present temperature. Too low parameter value causes temperature overshoot and unnecessary movements of the actuator.",
-      "number": 5,
+      "description": "",
+      "number": 43,
       "unit_name": "",
       "key": "integration_time_constant",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2612,14 +2530,14 @@
       "offset": 0,
       "name": "Integration time constant",
       "index": 96,
-      "description": "The lower the value, the faster the mixer reaches the present temperature. Too low parameter value causes temperature overshoot and unnecessary movements of the actuator.",
-      "number": 42,
+      "description": "",
+      "number": 134,
       "unit_name": "",
       "key": "integration_time_constant",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2636,14 +2554,14 @@
       "offset": 0,
       "name": "Integration time constant",
       "index": 97,
-      "description": "The lower the value, the faster the mixer reaches the present temperature. Too low parameter value causes temperature overshoot and unnecessary movements of the actuator.",
-      "number": 6,
+      "description": "",
+      "number": 135,
       "unit_name": "",
       "key": "integration_time_constant",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2660,14 +2578,14 @@
       "offset": 0,
       "name": "Integration time constant",
       "index": 98,
-      "description": "The lower the value, the faster the mixer reaches the present temperature. Too low parameter value causes temperature overshoot and unnecessary movements of the actuator.",
-      "number": 7,
+      "description": "",
+      "number": 34,
       "unit_name": "",
       "key": "integration_time_constant",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2684,56 +2602,24 @@
       "offset": 15,
       "name": "Off by thermostat",
       "index": 99,
-      "description": "Setting parameter on YES value closes the mixer actuator and turns off the mixer pump when the contacts of the room thermostat are open (heated room).",
-      "number": 8,
+      "description": "",
+      "number": 35,
       "unit_name": "",
       "key": "off_by_thermostat",
       "enum": {
-        "id": 16,
+        "id": 15,
         "values": [
           "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "Universal",
+      "enum_value": "Yes",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2750,56 +2636,24 @@
       "offset": 15,
       "name": "Off by thermostat",
       "index": 100,
-      "description": "Setting parameter on YES value closes the mixer actuator and turns off the mixer pump when the contacts of the room thermostat are open (heated room).",
-      "number": 43,
+      "description": "",
+      "number": 36,
       "unit_name": "",
       "key": "off_by_thermostat",
       "enum": {
-        "id": 16,
+        "id": 15,
         "values": [
           "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "No",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2816,56 +2670,24 @@
       "offset": 15,
       "name": "Off by thermostat",
       "index": 101,
-      "description": "Setting parameter on YES value closes the mixer actuator and turns off the mixer pump when the contacts of the room thermostat are open (heated room).",
-      "number": 134,
+      "description": "",
+      "number": 145,
       "unit_name": "",
       "key": "off_by_thermostat",
       "enum": {
-        "id": 16,
+        "id": 15,
         "values": [
           "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "No",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2882,56 +2704,24 @@
       "offset": 15,
       "name": "Off by thermostat",
       "index": 102,
-      "description": "Setting parameter on YES value closes the mixer actuator and turns off the mixer pump when the contacts of the room thermostat are open (heated room).",
-      "number": 135,
+      "description": "",
+      "number": 153,
       "unit_name": "",
       "key": "off_by_thermostat",
       "enum": {
-        "id": 16,
+        "id": 15,
         "values": [
           "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "No",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -2948,8 +2738,8 @@
       "offset": 0,
       "name": "Valve full opening time",
       "index": 103,
-      "description": "Read the valve full opening time form the nameplate of the valve actuator and eneter it, e.g. 140s.",
-      "number": 34,
+      "description": "",
+      "number": 38,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
       "categories": [
@@ -2972,8 +2762,8 @@
       "offset": 0,
       "name": "Valve full opening time",
       "index": 104,
-      "description": "Read the valve full opening time form the nameplate of the valve actuator and eneter it, e.g. 140s.",
-      "number": 35,
+      "description": "",
+      "number": 39,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
       "categories": [
@@ -2996,8 +2786,8 @@
       "offset": 0,
       "name": "Valve full opening time",
       "index": 105,
-      "description": "Read the valve full opening time form the nameplate of the valve actuator and eneter it, e.g. 140s.",
-      "number": 36,
+      "description": "",
+      "number": 40,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
       "categories": [
@@ -3020,8 +2810,8 @@
       "offset": 0,
       "name": "Valve full opening time",
       "index": 106,
-      "description": "Read the valve full opening time form the nameplate of the valve actuator and eneter it, e.g. 140s.",
-      "number": 145,
+      "description": "",
+      "number": 44,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
       "categories": [
@@ -3044,8 +2834,8 @@
       "offset": 0,
       "name": "Mixer 1 input dead zone",
       "index": 107,
-      "description": "Setting of param. defining the value temp. dead zone for mixer control system. Adjustment is made when the intended temp. of mixer circuit is higher or lower than the present temp. by MDZ value.",
-      "number": 153,
+      "description": "",
+      "number": 154,
       "unit_name": "°C",
       "key": "mixer1_input_dead_zone",
       "categories": [
@@ -3068,8 +2858,8 @@
       "offset": 0,
       "name": "Mixer 2 input dead zone",
       "index": 108,
-      "description": "Setting of param. defining the value temp. dead zone for mixer control system. Adjustment is made when the intended temp. of mixer circuit is higher or lower than the present temp. by MDZ value.",
-      "number": 38,
+      "description": "",
+      "number": 155,
       "unit_name": "°C",
       "key": "mixer2_input_dead_zone",
       "categories": [
@@ -3092,8 +2882,8 @@
       "offset": 0,
       "name": "Mixer 3 input dead zone",
       "index": 109,
-      "description": "Setting of param. defining the value temp. dead zone for mixer control system. Adjustment is made when the intended temp. of mixer circuit is higher or lower than the present temp. by MDZ value.",
-      "number": 39,
+      "description": "",
+      "number": 156,
       "unit_name": "°C",
       "key": "mixer3_input_dead_zone",
       "categories": [
@@ -3116,8 +2906,8 @@
       "offset": 0,
       "name": "Mixer 4 input dead zone",
       "index": 110,
-      "description": "Setting of param. defining the value temp. dead zone for mixer control system. Adjustment is made when the intended temp. of mixer circuit is higher or lower than the present temp. by MDZ value.",
-      "number": 40,
+      "description": "",
+      "number": 110,
       "unit_name": "°C",
       "key": "mixer4_input_dead_zone",
       "categories": [
@@ -3140,20 +2930,20 @@
       "offset": 13,
       "name": "Weather control the boiler",
       "index": 111,
-      "description": "When weather control is on, present boiler temperature is calculated based on the heating curve and weather sensor readings.",
-      "number": 44,
+      "description": "",
+      "number": 111,
       "unit_name": "",
       "key": "weather_control_the_boiler",
       "enum": {
-        "id": 1,
+        "id": 13,
         "values": [
-          "OFF",
-          "ON"
+          "Off",
+          "On"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "OFF",
+      "enum_value": "Off",
       "categories": [
         "Boiler settings"
       ],
@@ -3165,7 +2955,7 @@
       "lock_reason": null
     },
     "112": {
-      "value": 1.6,
+      "value": 1.5,
       "maxv": 4,
       "minv": 0.1,
       "edit": true,
@@ -3174,8 +2964,8 @@
       "offset": 0,
       "name": "Boiler heating curve",
       "index": 112,
-      "description": "Heating curve reflects the thermal characteristics of the building. Recommended settings for boiler: 1,8 - 4",
-      "number": 154,
+      "description": "",
+      "number": 112,
       "unit_name": "",
       "key": "boiler_heating_curve",
       "enum": {
@@ -3185,7 +2975,7 @@
           "ON"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "smart_detection"
       },
       "categories": [
         "Boiler settings"
@@ -3207,8 +2997,8 @@
       "offset": 0,
       "name": "Boiler cooling temperature",
       "index": 113,
-      "description": "Above this temp., cont. enabl. HUW p. & opens mix. circ. to cool boiler. Cont. turns off HUW p., if temp. of this water exceeds max. value. Cont. wcn't open the mix. circ. when MIX CONT = floor on.",
-      "number": 155,
+      "description": "",
+      "number": 113,
       "unit_name": "°C",
       "key": "boiler_cooling_temperature",
       "categories": [
@@ -3231,14 +3021,14 @@
       "offset": 16,
       "name": "Thermostat select.:",
       "index": 114,
-      "description": "Param. allows for room therm. select. for direct heating circuit. OFF - turns off therm. oper., UNIVERSAL - refers to stand. therm., ecoSTER 1,2,3 - therm. signal is retrieved form ecoSTER200 panel.",
-      "number": 156,
+      "description": "",
+      "number": 114,
       "unit_name": "",
       "key": "thermostat_select",
       "enum": {
         "id": 16,
         "values": [
-          "No",
+          "Off",
           "Universal",
           "ecoSTER T1",
           "ecoSTER T2",
@@ -3274,13 +3064,13 @@
           "Off"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "Off",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -3297,14 +3087,14 @@
       "offset": 16,
       "name": "Thermostat select.",
       "index": 115,
-      "description": "Param. allows for room therm. select. for control. heating circuit. OFF - turns off therm. oper., UNIVERSAL - refers to stand. therm., ecoSTER 1,2,3 - therm. signal is retrieved form ecoSTER200 panel.",
+      "description": "",
       "number": 115,
       "unit_name": "",
       "key": "thermostat_select",
       "enum": {
         "id": 16,
         "values": [
-          "No",
+          "Off",
           "Universal",
           "ecoSTER T1",
           "ecoSTER T2",
@@ -3340,13 +3130,13 @@
           "Off"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "Universal",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -3363,14 +3153,14 @@
       "offset": 16,
       "name": "Thermostat select.",
       "index": 116,
-      "description": "Param. allows for room therm. select. for control. heating circuit. OFF - turns off therm. oper., UNIVERSAL - refers to stand. therm., ecoSTER 1,2,3 - therm. signal is retrieved form ecoSTER200 panel.",
+      "description": "",
       "number": 116,
       "unit_name": "",
       "key": "thermostat_select",
       "enum": {
         "id": 16,
         "values": [
-          "No",
+          "Off",
           "Universal",
           "ecoSTER T1",
           "ecoSTER T2",
@@ -3406,13 +3196,13 @@
           "Off"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "Universal",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -3429,14 +3219,14 @@
       "offset": 16,
       "name": "Thermostat select.",
       "index": 117,
-      "description": "Param. allows for room therm. select. for control. heating circuit. OFF - turns off therm. oper., UNIVERSAL - refers to stand. therm., ecoSTER 1,2,3 - therm. signal is retrieved form ecoSTER200 panel.",
+      "description": "",
       "number": 117,
       "unit_name": "",
       "key": "thermostat_select",
       "enum": {
         "id": 16,
         "values": [
-          "No",
+          "Off",
           "Universal",
           "ecoSTER T1",
           "ecoSTER T2",
@@ -3472,13 +3262,13 @@
           "Off"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "Universal",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -3495,14 +3285,14 @@
       "offset": 16,
       "name": "Thermostat select.",
       "index": 118,
-      "description": "Param. allows for room therm. select. for control. heating circuit. OFF - turns off therm. oper., UNIVERSAL - refers to stand. therm., ecoSTER 1,2,3 - therm. signal is retrieved form ecoSTER200 panel.",
+      "description": "",
       "number": 118,
       "unit_name": "",
       "key": "thermostat_select",
       "enum": {
         "id": 16,
         "values": [
-          "No",
+          "Off",
           "Universal",
           "ecoSTER T1",
           "ecoSTER T2",
@@ -3538,13 +3328,13 @@
           "Off"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "Universal",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -3561,7 +3351,7 @@
       "offset": 0,
       "name": "Circulating pump standstill time",
       "index": 119,
-      "description": "Determines the intervals between activations of circulating pump. Parameter available after connection of extra C module.",
+      "description": "",
       "number": 119,
       "unit_name": "min.",
       "key": "circulating_pump_standstill_time",
@@ -3585,7 +3375,7 @@
       "offset": 0,
       "name": "Circulating pump operation time",
       "index": 120,
-      "description": "Determines the operating time of circulating pump. Parameter available after connection of extra C module.",
+      "description": "",
       "number": 120,
       "unit_name": "sek.",
       "key": "circulating_pump_operation_time",
@@ -3609,7 +3399,7 @@
       "offset": 20,
       "name": "Curve shift",
       "index": 121,
-      "description": "Allows for increasing or decreasing temperature in heating circuit when the heating curve does not exactly match the characteristics of the building.",
+      "description": "",
       "number": 121,
       "unit_name": "°C",
       "key": "curve_shift",
@@ -3633,7 +3423,7 @@
       "offset": 20,
       "name": "Curve translation",
       "index": 122,
-      "description": "Allows for correction -  temperature increase/decrease in the controlled heating circuit when the weather control is on and when the heating curve does not match the building characteristics.",
+      "description": "",
       "number": 122,
       "unit_name": "°C",
       "key": "curve_translation",
@@ -3657,7 +3447,7 @@
       "offset": 20,
       "name": "Curve translation",
       "index": 123,
-      "description": "Allows for correction -  temperature increase/decrease in the controlled heating circuit when the weather control is on and when the heating curve does not match the building characteristics.",
+      "description": "",
       "number": 123,
       "unit_name": "°C",
       "key": "curve_translation",
@@ -3681,7 +3471,7 @@
       "offset": 20,
       "name": "Curve translation",
       "index": 124,
-      "description": "Allows for correction -  temperature increase/decrease in the controlled heating circuit when the weather control is on and when the heating curve does not match the building characteristics.",
+      "description": "",
       "number": 124,
       "unit_name": "°C",
       "key": "curve_translation",
@@ -3705,7 +3495,7 @@
       "offset": 20,
       "name": "Curve translation",
       "index": 125,
-      "description": "Allows for correction -  temperature increase/decrease in the controlled heating circuit when the weather control is on and when the heating curve does not match the building characteristics.",
+      "description": "",
       "number": 125,
       "unit_name": "°C",
       "key": "curve_translation",
@@ -3729,24 +3519,14 @@
       "offset": 0,
       "name": "Room  temp. factor",
       "index": 126,
-      "description": "Correct. factor for pres. temp. in the heat. circ. based on the read. of room temp. sensor. The higher the value, the higher the temp. correct. in the heat. circuit. ecoSTER room p. must be connected.",
+      "description": "",
       "number": 126,
       "unit_name": "",
       "key": "room__temp_factor",
-      "enum": {
-        "id": 1,
-        "values": [
-          "OFF",
-          "ON"
-        ],
-        "first": 0,
-        "smart_detected": true
-      },
-      "enum_value": "OFF",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -3763,24 +3543,14 @@
       "offset": 0,
       "name": "Room  temp. factor",
       "index": 127,
-      "description": "Correct. factor of pres. temp. in the heat. circ. based on the readings of room temp. sensor. The higher the value, the higher the temp. correct. in the heating circ. ecoSTER r. p. must be connected.",
+      "description": "",
       "number": 127,
       "unit_name": "",
       "key": "room__temp_factor",
-      "enum": {
-        "id": 1,
-        "values": [
-          "OFF",
-          "ON"
-        ],
-        "first": 0,
-        "smart_detected": true
-      },
-      "enum_value": "OFF",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -3797,24 +3567,14 @@
       "offset": 0,
       "name": "Room  temp. factor",
       "index": 128,
-      "description": "Correct. factor of pres. temp. in the heat. circ. based on the readings of room temp. sensor. The higher the value, the higher the temp. correct. in the heating circ. ecoSTER r. p. must be connected.",
+      "description": "",
       "number": 128,
       "unit_name": "",
       "key": "room__temp_factor",
-      "enum": {
-        "id": 1,
-        "values": [
-          "OFF",
-          "ON"
-        ],
-        "first": 0,
-        "smart_detected": true
-      },
-      "enum_value": "OFF",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -3831,24 +3591,14 @@
       "offset": 0,
       "name": "Room  temp. factor",
       "index": 129,
-      "description": "Correct. factor of pres. temp. in the heat. circ. based on the readings of room temp. sensor. The higher the value, the higher the temp. correct. in the heating circ. ecoSTER r. p. must be connected.",
+      "description": "",
       "number": 129,
       "unit_name": "",
       "key": "room__temp_factor",
-      "enum": {
-        "id": 1,
-        "values": [
-          "OFF",
-          "ON"
-        ],
-        "first": 0,
-        "smart_detected": true
-      },
-      "enum_value": "OFF",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -3865,24 +3615,14 @@
       "offset": 0,
       "name": "Room  temp. factor",
       "index": 130,
-      "description": "Correct. factor of pres. temp. in the heat. circ. based on the readings of room temp. sensor. The higher the value, the higher the temp. correct. in the heating circ. ecoSTER r. p. must be connected.",
+      "description": "",
       "number": 130,
       "unit_name": "",
       "key": "room__temp_factor",
-      "enum": {
-        "id": 1,
-        "values": [
-          "OFF",
-          "ON"
-        ],
-        "first": 0,
-        "smart_detected": true
-      },
-      "enum_value": "OFF",
       "categories": [
-        "Mixer settings"
+        "Other"
       ],
-      "category": "Mixer settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -3899,7 +3639,7 @@
       "offset": 0,
       "name": "Poker cycle time",
       "index": 131,
-      "description": "Time of actuator mechanism operation for furnace cleaning",
+      "description": "",
       "number": 131,
       "unit_name": "sek.",
       "key": "poker_cycle_time",
@@ -3923,7 +3663,7 @@
       "offset": 0,
       "name": "Burner cleaning",
       "index": 132,
-      "description": "It is a time of continous operation of burner, after which the burner will be automatically burned off, cleaned, and fired up again.",
+      "description": "",
       "number": 132,
       "unit_name": "h.",
       "key": "burner_cleaning",
@@ -3947,7 +3687,7 @@
       "offset": 0,
       "name": "Stabilization time",
       "index": 133,
-      "description": "Duration STABILIZATION mode. This mode occurs immediately after lighting the furnace and is aimed at stabilizing the combustion process before moving on to the OPERATION mode.",
+      "description": "",
       "number": 133,
       "unit_name": "min.",
       "key": "stabilization_time",
@@ -3971,7 +3711,7 @@
       "offset": 0,
       "name": "Burning off time",
       "index": 134,
-      "description": "BURNING OFF mode time.",
+      "description": "",
       "number": 134,
       "unit_name": "min.",
       "key": "burning_off_time",
@@ -3995,14 +3735,14 @@
       "offset": 0,
       "name": "Air flush intensity",
       "index": 135,
-      "description": "Blow-in output during burning off.",
+      "description": "",
       "number": 135,
       "unit_name": "%",
       "key": "air_flush_intensity",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -4019,50 +3759,18 @@
       "offset": 17,
       "name": "Buffer support:",
       "index": 136,
-      "description": "Allows for turning on or off the operation with buffer.",
+      "description": "",
       "number": 136,
       "unit_name": "",
       "key": "buffer_support",
       "enum": {
-        "id": 16,
+        "id": 17,
         "values": [
           "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "No",
       "categories": [
@@ -4085,7 +3793,7 @@
       "offset": 0,
       "name": "Loading start temperature",
       "index": 137,
-      "description": "Param. defines buffor max. temp., below which the process of buffor loading will start. Process of buffor loading ends, when the buffor min. temp. reaches the temp. of BUFFOR LOADING END TEMP. param.",
+      "description": "",
       "number": 137,
       "unit_name": "°C",
       "key": "loading_start_temperature",
@@ -4109,7 +3817,7 @@
       "offset": 0,
       "name": "Loading end temperature",
       "index": 138,
-      "description": "Param. defines buffor min. temp., above which the process of buffor loading will end. Process of buffor loading starts again, when the buffor max. temp. falls below the BUFFOR LOADING START TEMP.",
+      "description": "",
       "number": 138,
       "unit_name": "°C",
       "key": "loading_end_temperature",
@@ -4133,14 +3841,14 @@
       "offset": 0,
       "name": "Alarm level",
       "index": 139,
-      "description": "Fuel threshold value in which the following warning will be displayed: LOW FUEL LEVEL!",
+      "description": "",
       "number": 139,
       "unit_name": "%",
       "key": "alarm_level",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -4157,7 +3865,7 @@
       "offset": 0,
       "name": "No fuel detection time",
       "index": 140,
-      "description": "The t. is count. when the exh. temp. drops below EX.TEMP.W. NO FUEL val. After this time, the cont. proceeds to a. of firing up the b., & after 3 unsuc. a., the alarm \"Failed to fire up\" occurs.",
+      "description": "",
       "number": 140,
       "unit_name": "min.",
       "key": "no_fuel_detection_time",
@@ -4181,56 +3889,24 @@
       "offset": 19,
       "name": "On/Off",
       "index": 141,
-      "description": "Turn on/off schedule of extra feeder.",
+      "description": "",
       "number": 141,
       "unit_name": "",
       "key": "on/off",
       "enum": {
-        "id": 16,
+        "id": 19,
         "values": [
-          "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
           "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "On"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "Universal",
+      "enum_value": "On",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -4247,7 +3923,7 @@
       "offset": 0,
       "name": "Feeder operat time 2",
       "index": 142,
-      "description": "Extra feeder operat. time (external).",
+      "description": "",
       "number": 142,
       "unit_name": "sek.",
       "key": "feeder_operat_time_2",
@@ -4271,7 +3947,7 @@
       "offset": 0,
       "name": "Feeder interval 2",
       "index": 143,
-      "description": "Extra feeder interval (external).",
+      "description": "",
       "number": 143,
       "unit_name": "sek.",
       "key": "feeder_interval_2",
@@ -4295,7 +3971,7 @@
       "offset": 0,
       "name": "Reserve boiler",
       "index": 144,
-      "description": "Defines the temp. of pellet boiler below which reserve boiler is activated (e.g. gas boiler). Setting to \"0\" value turnes off control of reserve boiler and switches 39-40 contact to alarm control.",
+      "description": "",
       "number": 144,
       "unit_name": "°C",
       "key": "reserve_boiler",
@@ -4319,7 +3995,7 @@
       "offset": 0,
       "name": "Airflow oper.extend.",
       "index": 145,
-      "description": "Fan operation time extend. after provision of fuel dose in SUPERVISION.",
+      "description": "",
       "number": 145,
       "unit_name": "sek.",
       "key": "airflow_operextend",
@@ -4343,7 +4019,7 @@
       "offset": 0,
       "name": "Max.burner temp.",
       "index": 146,
-      "description": "Defines max. feeder temp. at which an alarm of exceeding max. temperature will be reported. ",
+      "description": "",
       "number": 146,
       "unit_name": "°C",
       "key": "maxburner_temp",
@@ -4367,7 +4043,7 @@
       "offset": 0,
       "name": "Ex.temp.w.no fuel",
       "index": 147,
-      "description": "If, for a longer time than set in NO FUEL DETET. T.  param., the ex. temp will be lower than this value, the fuel shortage will be detected and another attempt to fire up the burner will be made.",
+      "description": "",
       "number": 147,
       "unit_name": "°C",
       "key": "extempwno_fuel",
@@ -4391,21 +4067,21 @@
       "offset": 20,
       "name": "Hysteresis function",
       "index": 148,
-      "description": "Hysteresis function",
+      "description": "",
       "number": 148,
       "unit_name": "",
       "key": "hysteresis_function",
       "enum": {
-        "id": 4,
+        "id": 20,
         "values": [
-          "STOP",
-          "OFF",
-          "ON"
+          "On",
+          "Disabled SUMMER",
+          "Off"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "STOP",
+      "enum_value": "On",
       "categories": [
         "Boiler settings"
       ],
@@ -4426,20 +4102,20 @@
       "offset": 21,
       "name": "Boiler lock from thermostate",
       "index": 149,
-      "description": "Once the parameter is on, boiler operation lock is available in service menu when the contacts of the thermostat are open (when the present room temperature is reached).",
+      "description": "",
       "number": 149,
       "unit_name": "",
       "key": "boiler_lock_from_thermostate",
       "enum": {
-        "id": 1,
+        "id": 21,
         "values": [
-          "OFF",
-          "ON"
+          "No",
+          "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ON",
+      "enum_value": "Yes",
       "categories": [
         "Boiler settings"
       ],
@@ -4460,56 +4136,24 @@
       "offset": 22,
       "name": "Thermostat lock",
       "index": 150,
-      "description": "If the parameter is turned off, the boiler operation will be stopped, when the contact of the room thermostat will be opened.",
+      "description": "",
       "number": 150,
       "unit_name": "",
       "key": "thermostat_lock",
       "enum": {
-        "id": 16,
+        "id": 22,
         "values": [
           "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "Universal",
+      "enum_value": "Yes",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -4526,20 +4170,20 @@
       "offset": 23,
       "name": "Boiler pump lock",
       "index": 151,
-      "description": "If the parameter is on, the boiler pump will be stopped when the room thermostat contact are open (present room temp. is reached).",
+      "description": "",
       "number": 151,
       "unit_name": "",
       "key": "boiler_pump_lock",
       "enum": {
-        "id": 1,
+        "id": 23,
         "values": [
-          "OFF",
-          "ON"
+          "No",
+          "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ON",
+      "enum_value": "Yes",
       "categories": [
         "Boiler settings"
       ],
@@ -4560,20 +4204,20 @@
       "offset": 24,
       "name": "Work on time",
       "index": 152,
-      "description": "Allows for bolier operation in accordance with programmend schedule.",
+      "description": "",
       "number": 152,
       "unit_name": "",
       "key": "work_on_time",
       "enum": {
-        "id": 1,
+        "id": 24,
         "values": [
-          "OFF",
-          "ON"
+          "No",
+          "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ON",
+      "enum_value": "Yes",
       "categories": [
         "Other"
       ],
@@ -4594,52 +4238,20 @@
       "offset": 26,
       "name": "Operation with Lambda sensor",
       "index": 153,
-      "description": "Turns off and on the operation of Lambda sensor.",
+      "description": "",
       "number": 153,
       "unit_name": "",
       "key": "operation_with_lambda_sensor",
       "enum": {
-        "id": 16,
+        "id": 26,
         "values": [
-          "No",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
           "Off",
-          "Universal",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T3",
-          "Off",
-          "Universal",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T2",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T3",
-          "Off",
-          "ecoSTER T1",
-          "ecoSTER T3",
-          "Universal",
-          "Universal",
-          "Universal",
-          "Off",
-          "Off",
-          "Off"
+          "On"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "Universal",
+      "enum_value": "On",
       "categories": [
         "Boiler settings"
       ],
@@ -4660,7 +4272,7 @@
       "offset": 0,
       "name": "Feeder lock",
       "index": 154,
-      "description": "Oxygen value in exhaust below which the feeder operation will be stopped untill another increase of this value.",
+      "description": "",
       "number": 154,
       "unit_name": "%",
       "key": "feeder_lock",
@@ -4684,7 +4296,7 @@
       "offset": 0,
       "name": "Fuel detection: oxygen",
       "index": 155,
-      "description": "The oxygen content in exhaust, above which the furnace is considered to be burned off.",
+      "description": "",
       "number": 155,
       "unit_name": "%",
       "key": "fuel_detection_oxygen",
@@ -4708,7 +4320,7 @@
       "offset": 0,
       "name": "Fuel detection: time",
       "index": 156,
-      "description": "The t. is count. when the ox. cont. in ex. incres. above FUEL DET.-OX. val. After this time, the cont. proceeds to a. of firing up the b., & after 3 unsuc. a., the alarm \"Failed to fire up\" occurs.",
+      "description": "",
       "number": 156,
       "unit_name": "min.",
       "key": "fuel_detection_time",
@@ -4732,7 +4344,7 @@
       "offset": 0,
       "name": "Fan rotation detection",
       "index": 157,
-      "description": "Fan rotation speed, below which the alarm of blocked fan will be reported during the normal operation. Once the parameter is set on \"0\", the rotation detection is off.",
+      "description": "",
       "number": 157,
       "unit_name": "r/min",
       "key": "fan_rotation_detection",
@@ -4756,7 +4368,7 @@
       "offset": 27,
       "name": "Feeder sensor mode",
       "index": 158,
-      "description": "FEEDER AND GRATE - during the alarm of exceeded feed. temp., the feed. and grate operation is stopped. GRATE ONLY - during the alarm of exceeded feed. temp., only the feed. operstion is stopped.",
+      "description": "",
       "number": 158,
       "unit_name": "",
       "key": "feeder_sensor_mode",
@@ -4767,7 +4379,7 @@
           "Grate only"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
       "enum_value": "Feeder and grate",
       "categories": [
@@ -4790,21 +4402,21 @@
       "offset": 28,
       "name": "Output H1",
       "index": 159,
-      "description": "Configuration output H1.",
+      "description": "",
       "number": 159,
       "unit_name": "",
       "key": "output_h1",
       "enum": {
-        "id": 4,
+        "id": 28,
         "values": [
-          "STOP",
-          "OFF",
-          "ON"
+          "Reserve boiler",
+          "Alarms",
+          "Circulation pump"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "OFF",
+      "enum_value": "Alarms",
       "categories": [
         "Other"
       ],
@@ -4825,21 +4437,21 @@
       "offset": 28,
       "name": "Output H2 and H3",
       "index": 160,
-      "description": "Configuration output H1 and H3.",
+      "description": "",
       "number": 160,
       "unit_name": "",
       "key": "output_h2_and_h3",
       "enum": {
-        "id": 4,
+        "id": 28,
         "values": [
-          "STOP",
-          "OFF",
-          "ON"
+          "Reserve boiler",
+          "Alarms",
+          "Circulation pump"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "STOP",
+      "enum_value": "Reserve boiler",
       "categories": [
         "Other"
       ],
@@ -4860,24 +4472,25 @@
       "offset": 30,
       "name": "Preset power",
       "index": 161,
-      "description": "Chimney sweep mode preset power",
+      "description": "",
       "number": 161,
       "unit_name": "",
       "key": "preset_power",
       "enum": {
-        "id": 1,
+        "id": 30,
         "values": [
-          "OFF",
-          "ON"
+          "30%",
+          "50%",
+          "100%"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ON",
+      "enum_value": "50%",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -4894,14 +4507,14 @@
       "offset": 0,
       "name": "Work time",
       "index": 162,
-      "description": "Chimney sweep mode work time",
+      "description": "",
       "number": 162,
       "unit_name": "min.",
       "key": "work_time",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -4918,20 +4531,20 @@
       "offset": 29,
       "name": "Show advanced setup",
       "index": 163,
-      "description": "Setting on YES value will cause a display of hidden advanced parameters in respective places in menu. ",
+      "description": "",
       "number": 163,
       "unit_name": "",
       "key": "show_advanced_setup",
       "enum": {
-        "id": 1,
+        "id": 29,
         "values": [
-          "OFF",
-          "ON"
+          "No",
+          "Yes"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "unit_offset"
       },
-      "enum_value": "ON",
+      "enum_value": "Yes",
       "categories": [
         "Other"
       ],
@@ -4952,7 +4565,7 @@
       "offset": 0,
       "name": "Alarms",
       "index": 164,
-      "description": "Allows for defining the number of alarm or group of alarms, after which the output 39-40 will be enabled. Alarms will enable this output, if the RESERVE BOILER param. is set on \"0\" value.",
+      "description": "",
       "number": 164,
       "unit_name": "",
       "key": "alarms",
@@ -4963,13 +4576,13 @@
           "ON"
         ],
         "first": 0,
-        "smart_detected": true
+        "detection_method": "smart_detection"
       },
       "enum_value": "OFF",
       "categories": [
-        "Boiler settings"
+        "Other"
       ],
-      "category": "Boiler settings",
+      "category": "Other",
       "category_indices": [],
       "category_index": 0,
       "locked": false,
@@ -4980,9 +4593,9 @@
   "metadata": {
     "totalParameters": 165,
     "namedParameters": 165,
-    "describedParameters": 165,
+    "describedParameters": 0,
     "editableParameters": 165,
-    "enumParameters": 50,
+    "enumParameters": 45,
     "lockedParameters": 6
   },
   "sourceEndpoints": {
