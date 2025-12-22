@@ -358,9 +358,12 @@ def should_be_select_entity(param: dict) -> bool:
     if num_options is not None:
         return num_options >= 3
 
-    # Fallback to enum.values length
+    # Fallback to enum.values length when min/max unavailable
+    # Simply check if there are 3+ options - the binary pattern check is not
+    # relevant for length-based detection since is_binary_enum only examines
+    # the first 2 values and would incorrectly filter enums like ["off", "on", "auto"]
     enum_values = enum_data.get("values", [])
-    return len(enum_values) >= 3 and not is_binary_enum(enum_values)
+    return len(enum_values) >= 3
 
 
 def should_be_switch_entity(param: dict) -> bool:
@@ -388,6 +391,8 @@ def should_be_switch_entity(param: dict) -> bool:
     if not enum_data:
         return False
 
+    enum_values = enum_data.get("values", [])
+
     # Use min/max to determine actual number of options (more reliable)
     minv = param.get("minv")
     maxv = param.get("maxv")
@@ -399,9 +404,14 @@ def should_be_switch_entity(param: dict) -> bool:
                 return False
         except (ValueError, TypeError):
             pass
+    else:
+        # Fallback: require exactly 2 enum values when min/max unavailable
+        # This prevents 3+ option enums (e.g., ["off", "on", "auto"]) from being
+        # misclassified as switches just because their first 2 values match a binary pattern
+        if len(enum_values) != 2:
+            return False
 
     # Check if enum values represent binary pattern
-    enum_values = enum_data.get("values", [])
     return is_binary_enum(enum_values)
 
 

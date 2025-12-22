@@ -4,7 +4,10 @@ import pytest
 
 from custom_components.econet300.common_functions import (
     get_lock_reason,
+    is_binary_enum,
     is_parameter_locked,
+    should_be_select_entity,
+    should_be_switch_entity,
     validate_parameter_data,
 )
 
@@ -228,4 +231,250 @@ class TestLockReasonsFromFixture:
         """Test lambda calibration lock reason."""
         param = {"lock_reason": lock_reasons[5]}
         assert get_lock_reason(param) == "Lambda sensor calibration in progress"
+
+
+class TestIsBinaryEnum:
+    """Tests for is_binary_enum function."""
+
+    def test_binary_on_off(self):
+        """Test binary enum with OFF/ON values."""
+        assert is_binary_enum(["OFF", "ON"]) is True
+
+    def test_binary_yes_no(self):
+        """Test binary enum with NO/YES values."""
+        assert is_binary_enum(["NO", "YES"]) is True
+
+    def test_binary_enabled_disabled(self):
+        """Test binary enum with DISABLED/ENABLED values."""
+        assert is_binary_enum(["DISABLED", "ENABLED"]) is True
+
+    def test_non_binary_three_options(self):
+        """Test non-binary enum with 3 options - only checks first 2."""
+        # Note: is_binary_enum only checks first 2 values by design
+        # This returns True because first 2 match binary pattern
+        assert is_binary_enum(["OFF", "ON", "AUTO"]) is True
+
+    def test_non_binary_pattern(self):
+        """Test non-binary enum that doesn't match patterns."""
+        assert is_binary_enum(["LOW", "MEDIUM", "HIGH"]) is False
+
+    def test_empty_enum(self):
+        """Test empty enum."""
+        assert is_binary_enum([]) is False
+
+    def test_single_value(self):
+        """Test single value enum."""
+        assert is_binary_enum(["ON"]) is False
+
+
+class TestShouldBeSwitchEntity:
+    """Tests for should_be_switch_entity function."""
+
+    def test_binary_switch_with_min_max(self):
+        """Test binary enum with min/max indicating 2 options."""
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON"]},
+            "minv": 0,
+            "maxv": 1,
+        }
+        assert should_be_switch_entity(param) is True
+
+    def test_three_option_enum_with_min_max_not_switch(self):
+        """Test 3-option enum with min/max should NOT be switch."""
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON", "AUTO"]},
+            "minv": 0,
+            "maxv": 2,
+        }
+        assert should_be_switch_entity(param) is False
+
+    def test_three_option_enum_no_min_max_not_switch(self):
+        """Test 3-option enum without min/max should NOT be switch.
+
+        This is the key bug fix test - previously this would incorrectly
+        return True because is_binary_enum only checks first 2 values.
+        """
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON", "AUTO"]},
+            # No minv/maxv
+        }
+        assert should_be_switch_entity(param) is False
+
+    def test_binary_switch_no_min_max(self):
+        """Test binary enum without min/max still works as switch."""
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON"]},
+            # No minv/maxv - fallback to enum length check
+        }
+        assert should_be_switch_entity(param) is True
+
+    def test_non_editable_not_switch(self):
+        """Test non-editable param is not a switch."""
+        param = {
+            "edit": False,
+            "enum": {"values": ["OFF", "ON"]},
+            "minv": 0,
+            "maxv": 1,
+        }
+        assert should_be_switch_entity(param) is False
+
+    def test_locked_param_not_switch(self):
+        """Test locked param is not a switch."""
+        param = {
+            "edit": True,
+            "locked": True,
+            "enum": {"values": ["OFF", "ON"]},
+            "minv": 0,
+            "maxv": 1,
+        }
+        assert should_be_switch_entity(param) is False
+
+    def test_no_enum_not_switch(self):
+        """Test param without enum is not a switch."""
+        param = {
+            "edit": True,
+            "minv": 0,
+            "maxv": 100,
+        }
+        assert should_be_switch_entity(param) is False
+
+
+class TestShouldBeSelectEntity:
+    """Tests for should_be_select_entity function."""
+
+    def test_three_option_select_with_min_max(self):
+        """Test 3-option enum with min/max is select."""
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON", "AUTO"]},
+            "minv": 0,
+            "maxv": 2,
+        }
+        assert should_be_select_entity(param) is True
+
+    def test_three_option_select_no_min_max(self):
+        """Test 3-option enum without min/max is select.
+
+        This is the key bug fix test - previously this would incorrectly
+        return False because is_binary_enum returns True for first 2 values.
+        """
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON", "AUTO"]},
+            # No minv/maxv
+        }
+        assert should_be_select_entity(param) is True
+
+    def test_binary_enum_not_select(self):
+        """Test binary enum with min/max indicating 2 options is not select."""
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON"]},
+            "minv": 0,
+            "maxv": 1,
+        }
+        assert should_be_select_entity(param) is False
+
+    def test_binary_enum_no_min_max_not_select(self):
+        """Test binary enum without min/max is not select."""
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON"]},
+            # No minv/maxv
+        }
+        assert should_be_select_entity(param) is False
+
+    def test_non_editable_not_select(self):
+        """Test non-editable param is not a select."""
+        param = {
+            "edit": False,
+            "enum": {"values": ["OFF", "ON", "AUTO"]},
+            "minv": 0,
+            "maxv": 2,
+        }
+        assert should_be_select_entity(param) is False
+
+    def test_locked_param_not_select(self):
+        """Test locked param is not a select."""
+        param = {
+            "edit": True,
+            "locked": True,
+            "enum": {"values": ["OFF", "ON", "AUTO"]},
+            "minv": 0,
+            "maxv": 2,
+        }
+        assert should_be_select_entity(param) is False
+
+    def test_no_enum_not_select(self):
+        """Test param without enum is not a select."""
+        param = {
+            "edit": True,
+            "minv": 0,
+            "maxv": 100,
+        }
+        assert should_be_select_entity(param) is False
+
+    def test_many_options_select(self):
+        """Test enum with many options is select."""
+        param = {
+            "edit": True,
+            "enum": {"values": ["A", "B", "C", "D", "E"]},
+            "minv": 0,
+            "maxv": 4,
+        }
+        assert should_be_select_entity(param) is True
+
+
+class TestSwitchSelectMutualExclusion:
+    """Tests to ensure switch and select detection are mutually exclusive."""
+
+    def test_binary_enum_switch_not_select(self):
+        """Test binary enum is switch, not select."""
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON"]},
+            "minv": 0,
+            "maxv": 1,
+        }
+        assert should_be_switch_entity(param) is True
+        assert should_be_select_entity(param) is False
+
+    def test_three_option_select_not_switch(self):
+        """Test 3-option enum is select, not switch."""
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON", "AUTO"]},
+            "minv": 0,
+            "maxv": 2,
+        }
+        assert should_be_switch_entity(param) is False
+        assert should_be_select_entity(param) is True
+
+    def test_three_option_no_min_max_select_not_switch(self):
+        """Test 3-option enum without min/max is select, not switch.
+
+        Critical test for the bug fix - ensures mutual exclusion
+        when min/max are unavailable.
+        """
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON", "AUTO"]},
+            # No minv/maxv
+        }
+        assert should_be_switch_entity(param) is False
+        assert should_be_select_entity(param) is True
+
+    def test_binary_no_min_max_switch_not_select(self):
+        """Test binary enum without min/max is switch, not select."""
+        param = {
+            "edit": True,
+            "enum": {"values": ["OFF", "ON"]},
+            # No minv/maxv
+        }
+        assert should_be_switch_entity(param) is True
+        assert should_be_select_entity(param) is False
 
