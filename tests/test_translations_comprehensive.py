@@ -8,12 +8,15 @@ This module tests:
 5. Entity types match between constants and translation files
 """
 
+# pylint: disable=redefined-outer-name
+# Note: Redefining fixture names in test parameters is expected pytest pattern
+
 import json
-from pathlib import Path
 import re
 
 # Add the custom_components directory to the path
 import sys
+from pathlib import Path
 
 import pytest
 

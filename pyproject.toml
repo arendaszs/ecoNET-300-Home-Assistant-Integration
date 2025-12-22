@@ -543,7 +543,10 @@ combine-as-imports = true
 split-on-trailing-comma = false
 
 [tool.ruff.per-file-ignores]
-"tests/**/*.py" = ["INP001"]  # Ignore implicit namespace package warning for test files
+"tests/**/*.py" = [
+    "INP001",  # Ignore implicit namespace package warning for test files
+    "PLW0621",  # Redefining name from outer scope - expected for pytest fixtures
+]
 "scripts/**/*.py" = ["T20"]  # Allow print statements in utility scripts
 [tool.ruff.mccabe]
 max-complexity = 25

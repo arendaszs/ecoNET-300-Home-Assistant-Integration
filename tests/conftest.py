@@ -4,6 +4,9 @@ This module provides pytest fixtures and configuration for testing the
 ecoNET300 Home Assistant integration.
 """
 
+# pylint: disable=redefined-outer-name
+# Note: Redefining fixture names in test parameters is expected pytest pattern
+
 import json
 from pathlib import Path
 import sys
