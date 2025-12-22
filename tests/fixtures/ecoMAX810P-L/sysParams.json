@@ -13,7 +13,7 @@
     },
     "encryption":"psk2",
     "schemaID":24,
-    "wlan0":"10.10.1.77",
+    "wlan0":"10.12.1.772",
     "remoteMenu":true,
     "regType":0,
     "schema":{
@@ -1054,7 +1054,7 @@
           "service":false
        }
     ],
-    "login":"admin",
+    "login":"admiusern",
     "moduleBSoftVer":"1.30.7",
     "etConfVer":null
  }

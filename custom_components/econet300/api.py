@@ -1,9 +1,9 @@
 """Econet300 API class describing methods of getting and setting data."""
 
 import asyncio
+import logging
 from datetime import datetime
 from http import HTTPStatus
-import logging
 from typing import Any
 
 import aiohttp
@@ -497,11 +497,57 @@ class Econet300Api:
             _LOGGER.error("Error fetching parameter names: %s", e)
             return None
 
-    async def fetch_rm_params_data(self) -> dict[str, Any] | None:
+    async def _authenticate_service(self, password_hash: str) -> bool:
+        """Authenticate with service password via rmAccess endpoint.
+
+        This method authenticates with the device using the service password hash
+        from sysParams. Successful authentication may unlock additional service
+        parameters in subsequent API calls.
+
+        Args:
+            password_hash: SHA512 hash of the service password from sysParams
+
+        Returns:
+            True if authentication successful, False otherwise
+
+        """
+        try:
+            url = f"{self.host}/econet/password"
+            _LOGGER.debug("Authenticating with service password")
+
+            async with self._client._session.post(
+                url, json={"password": password_hash}
+            ) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    if data.get("access"):
+                        _LOGGER.info(
+                            "Service authentication successful (index: %s, level: %s)",
+                            data.get("index", 0),
+                            data.get("level", "unknown"),
+                        )
+                        return True
+                    _LOGGER.debug("Service authentication denied: access=False")
+                else:
+                    _LOGGER.debug(
+                        "Service authentication failed: HTTP %s", response.status
+                    )
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+            _LOGGER.debug("Service authentication error: %s", e)
+        except Exception as e:
+            _LOGGER.debug("Service authentication unexpected error: %s", e)
+        return False
+
+    async def fetch_rm_params_data(
+        self, password: str | None = None
+    ) -> dict[str, Any] | None:
         """Fetch parameter metadata from rmParamsData endpoint.
 
         This endpoint provides parameter metadata including min/max values, units,
         and other configuration information for each parameter.
+
+        Args:
+            password: Optional service password hash for authenticated access
 
         Returns:
             Dictionary containing parameter metadata.
@@ -527,6 +573,8 @@ class Econet300Api:
         """
         try:
             url = f"{self.host}/econet/{API_RM_PARAMS_DATA_URI}?uid={self.uid}"
+            if password:
+                url = f"{url}&password={password}"
             _LOGGER.debug("Fetching parameter data from: %s", url)
 
             data = await self._client.get(url)
@@ -741,7 +789,9 @@ class Econet300Api:
             _LOGGER.error("Error fetching category descriptions: %s", e)
             return None
 
-    async def fetch_rm_structure(self, lang: str = "en") -> dict[str, Any] | None:
+    async def fetch_rm_structure(
+        self, lang: str = "en", password: str | None = None
+    ) -> dict[str, Any] | None:
         """Fetch menu structure from rmStructure endpoint.
 
         This endpoint provides the hierarchical menu structure for the web interface,
@@ -749,6 +799,7 @@ class Econet300Api:
 
         Args:
             lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+            password: Optional service password hash for authenticated access
 
         Returns:
             Dictionary containing menu structure.
@@ -778,6 +829,8 @@ class Econet300Api:
             url = (
                 f"{self.host}/econet/{API_RM_STRUCTURE_URI}?uid={self.uid}&lang={lang}"
             )
+            if password:
+                url = f"{url}&password={password}"
             _LOGGER.debug("Fetching menu structure from: %s", url)
 
             data = await self._client.get(url)
@@ -1023,7 +1076,7 @@ class Econet300Api:
     # starting with the most fundamental endpoint (rmParamsData) as the foundation.
 
     async def fetch_merged_rm_data_with_names(
-        self, lang: str = "en"
+        self, lang: str = "en", password: str | None = None
     ) -> dict[str, Any] | None:
         """Merge rmParamsData with rmParamsNames.
 
@@ -1032,6 +1085,7 @@ class Econet300Api:
 
         Args:
             lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+            password: Optional service password hash for authenticated access.
 
         Returns:
             Dictionary containing merged parameter data with names.
@@ -1073,8 +1127,9 @@ class Econet300Api:
         """
         try:
             # Fetch core data in parallel
+            # Pass password to rmParamsData for potential service params
             tasks = [
-                self.fetch_rm_params_data(),
+                self.fetch_rm_params_data(password=password),
                 self.fetch_rm_params_names(lang),
             ]
 
@@ -1146,7 +1201,7 @@ class Econet300Api:
             return unified_data
 
     async def fetch_merged_rm_data_with_names_and_descs(
-        self, lang: str = "en"
+        self, lang: str = "en", password: str | None = None
     ) -> dict[str, Any] | None:
         """Merge rmParamsData with rmParamsNames and rmParamsDescs.
 
@@ -1154,6 +1209,7 @@ class Econet300Api:
 
         Args:
             lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
+            password: Optional service password hash for authenticated access.
 
         Returns:
             Dictionary containing merged parameter data with names and descriptions.
@@ -1161,8 +1217,10 @@ class Econet300Api:
 
         """
         try:
-            # Get step 1 data
-            step1_data = await self.fetch_merged_rm_data_with_names(lang)
+            # Get step 1 data (pass password for service authentication)
+            step1_data = await self.fetch_merged_rm_data_with_names(
+                lang, password=password
+            )
             if not step1_data:
                 return None
 
@@ -1197,16 +1255,23 @@ class Econet300Api:
             return step1_data
 
     async def fetch_merged_rm_data_with_names_descs_and_structure(
-        self, lang: str = "en", category_mode: str = DEFAULT_CATEGORY_MODE
+        self,
+        lang: str = "en",
+        category_mode: str = DEFAULT_CATEGORY_MODE,
+        sys_params: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         """Merge rmParamsData with rmParamsNames, rmParamsDescs, rmStructure, and rmParamsEnums.
 
         This step adds parameter numbers, units, and enumeration data to individual parameters.
         Returns a cleaned structure with only essential data (structure, enums, metadata sections removed).
 
+        If sys_params contains a servicePassword, authenticates with rmAccess endpoint
+        before fetching data to potentially unlock service parameters.
+
         Args:
             lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
             category_mode: Category assignment mode (simplified/api/none). Defaults to simplified.
+            sys_params: Optional sysParams data containing servicePassword for authentication.
 
         Returns:
             Dictionary containing fully merged parameter data.
@@ -1278,14 +1343,28 @@ class Econet300Api:
 
         """
         try:
-            # Get step 2 data
-            step2_data = await self.fetch_merged_rm_data_with_names_and_descs(lang)
+            # Try service authentication if password available in sysParams
+            service_password: str | None = None
+            if sys_params:
+                service_password = sys_params.get("servicePassword")
+                if service_password:
+                    auth_success = await self._authenticate_service(service_password)
+                    if not auth_success:
+                        _LOGGER.debug(
+                            "Service authentication failed, continuing with user-level access"
+                        )
+
+            # Get step 2 data (uses service password if available)
+            step2_data = await self.fetch_merged_rm_data_with_names_and_descs(
+                lang, password=service_password
+            )
             if not step2_data:
                 return None
 
             # Fetch additional data in parallel (always include categories for dynamic entities)
+            # Pass service password to structure endpoint for potential service params
             tasks = [
-                self.fetch_rm_structure(lang),
+                self.fetch_rm_structure(lang, password=service_password),
                 self.fetch_rm_params_enums(lang),
                 self.fetch_rm_params_units_names(lang),
                 self.fetch_rm_cats_names(lang),
@@ -1551,30 +1630,56 @@ class Econet300Api:
 
         The pass_index field indicates access level:
         - 0 = User accessible (no password required)
-        - 1, 2, 3 = Requires service password (should be disabled by default)
+        - 1, 2, 3, 4 = Requires service password (should be disabled by default)
+
+        The structure is hierarchical:
+        - type 0 = category entry (can have pass_index > 0)
+        - type 1 = parameter entry (inherits pass_index from parent category)
+        - type 7 = menu group (resets pass_index tracking)
+
+        Parameters inherit pass_index from their parent category.
 
         Args:
             parameters: List of parameter dictionaries to update
             structure: Structure data from rmStructure endpoint
 
         """
-        # Extract parameter entries from structure (type == 1)
-        param_structure_entries = [
-            item
-            for item in structure
-            if isinstance(item, dict) and item.get("type") == 1
-        ]
+        # Build list of parameter structure entries with inherited pass_index
+        # by iterating through structure in order and tracking category pass_index
+        param_structure_entries: list[dict[str, int]] = []
+        current_pass_index = 0
 
-        # Add numbers and pass_index to parameters based on structure mapping
+        for entry in structure:
+            if not isinstance(entry, dict):
+                continue
+
+            entry_type = entry.get("type")
+            entry_pass_index = entry.get("pass_index", 0)
+
+            if entry_type == 7:
+                # Menu group - reset pass_index tracking
+                current_pass_index = 0
+            elif entry_type == 0:
+                # Category entry - update current pass_index for subsequent params
+                current_pass_index = entry_pass_index
+            elif entry_type == 1:
+                # Parameter entry - inherits pass_index from current category
+                param_structure_entries.append(
+                    {
+                        "number": entry.get("index", len(param_structure_entries)),
+                        "pass_index": current_pass_index,
+                    }
+                )
+
+        # Add numbers and inherited pass_index to parameters
+        # param_index is used as array index into param_structure_entries
         for param in parameters:
             param_index = param.get("index", 0)
 
-            # Use the structure entry if available
             if param_index < len(param_structure_entries):
                 structure_entry = param_structure_entries[param_index]
-                param["number"] = structure_entry.get("index", param_index)
-                # Add pass_index (0=user accessible, >0=requires service password)
-                param["pass_index"] = structure_entry.get("pass_index", 0)
+                param["number"] = structure_entry["number"]
+                param["pass_index"] = structure_entry["pass_index"]
             else:
                 # Fallback to parameter index if no structure entry
                 param["number"] = param_index

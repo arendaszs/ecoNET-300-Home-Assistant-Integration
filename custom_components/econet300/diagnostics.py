@@ -15,6 +15,7 @@ from .const import DOMAIN, SERVICE_API, SERVICE_COORDINATOR
 # Data to redact from diagnostics
 TO_REDACT = [
     "password",
+    "servicePassword",  # Service password hash - sensitive
     "username",  # May contain sensitive info
     "host",  # May contain internal network info
     "uid",  # Device UID - unique device identifier

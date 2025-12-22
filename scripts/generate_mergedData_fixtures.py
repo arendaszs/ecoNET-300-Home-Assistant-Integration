@@ -106,30 +106,53 @@ def extract_data_array(json_data: dict | list | None) -> list:
 def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None:
     """Add parameter numbers and pass_index based on structure data.
 
-    The structure contains entries with type == 1 for parameters.
-    Each parameter index maps to a structure entry index (parameter number).
-
     The pass_index field indicates access level:
     - 0 = User accessible (no password required)
-    - 1, 2, 3 = Requires service password (should be disabled by default)
+    - 1, 2, 3, 4 = Requires service password (should be disabled by default)
+
+    The structure is hierarchical:
+    - type 0 = category entry (can have pass_index > 0)
+    - type 1 = parameter entry (inherits pass_index from parent category)
+    - type 7 = menu group (resets pass_index tracking)
+
+    Parameters inherit pass_index from their parent category.
 
     This matches api.py _add_parameter_numbers() method.
     """
-    # Extract parameter entries from structure (type == 1)
-    param_structure_entries = [
-        item for item in structure if isinstance(item, dict) and item.get("type") == 1
-    ]
+    # Build list of parameter structure entries with inherited pass_index
+    # by iterating through structure in order and tracking category pass_index
+    param_structure_entries: list[dict[str, int]] = []
+    current_pass_index = 0
 
-    # Add numbers and pass_index to parameters based on structure mapping
+    for entry in structure:
+        if not isinstance(entry, dict):
+            continue
+
+        entry_type = entry.get("type")
+        entry_pass_index = entry.get("pass_index", 0)
+
+        if entry_type == 7:
+            # Menu group - reset pass_index tracking
+            current_pass_index = 0
+        elif entry_type == 0:
+            # Category entry - update current pass_index for subsequent params
+            current_pass_index = entry_pass_index
+        elif entry_type == 1:
+            # Parameter entry - inherits pass_index from current category
+            param_structure_entries.append({
+                "number": entry.get("index", len(param_structure_entries)),
+                "pass_index": current_pass_index,
+            })
+
+    # Add numbers and inherited pass_index to parameters
+    # param_index is used as array index into param_structure_entries
     for param in parameters:
         param_index = param.get("index", 0)
 
-        # Use the structure entry if available
         if param_index < len(param_structure_entries):
             structure_entry = param_structure_entries[param_index]
-            param["number"] = structure_entry.get("index", param_index)
-            # Add pass_index (0=user accessible, >0=requires service password)
-            param["pass_index"] = structure_entry.get("pass_index", 0)
+            param["number"] = structure_entry["number"]
+            param["pass_index"] = structure_entry["pass_index"]
         else:
             # Fallback to parameter index if no structure entry
             param["number"] = param_index
