@@ -1,14 +1,14 @@
 {
-  "remoteMenuParamsUnitsNamesVer": "22746_1",
-  "data": [
-    "",
-    "°C",
-    "sek.",
-    "min.",
-    "h.",
-    "%",
-    "kg",
-    "kW",
-    "r/min"
-  ]
-}
+    "remoteMenuParamsUnitsNamesVer":"22746_1",
+    "data":[
+       "",
+       "°C",
+       "sek.",
+       "min.",
+       "h.",
+       "%",
+       "kg",
+       "kW",
+       "r/min"
+    ]
+ }
