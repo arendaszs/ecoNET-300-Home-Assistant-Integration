@@ -1034,10 +1034,15 @@ async def create_mixer_number_entities(
             _LOGGER.info(
                 "DEBUG: Checking mixer %d with keys: %s", mixer_idx, mixer_keys
             )
+            # Skip if coordinator data is not available
+            if coordinator.data is None:
+                _LOGGER.info("Mixer: %d skipped - coordinator data is None", mixer_idx)
+                continue
+
             # Check if all required mixer keys have valid (non-null) values
-            if any(
-                coordinator.data.get("regParams", {}).get(mixer_key) is None
-                for mixer_key in mixer_keys
+            reg_params = coordinator.data.get("regParams", {})
+            if reg_params is None or any(
+                reg_params.get(mixer_key) is None for mixer_key in mixer_keys
             ):
                 _LOGGER.info(
                     "Mixer: %d will not be created due to invalid data.", mixer_idx

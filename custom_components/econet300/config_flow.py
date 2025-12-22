@@ -51,9 +51,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry: ConfigEntry) -> EconetOptionsFlowHandler:
+    def async_get_options_flow(
+        config_entry: ConfigEntry,  # noqa: ARG004
+    ) -> EconetOptionsFlowHandler:
         """Get the options flow handler."""
-        return EconetOptionsFlowHandler(config_entry)
+        return EconetOptionsFlowHandler()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None

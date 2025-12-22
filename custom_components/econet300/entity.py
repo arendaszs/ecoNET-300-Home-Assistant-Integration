@@ -9,6 +9,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
+from .common_functions import sanitize_category_for_device_id
 from .const import (
     DEVICE_INFO_CONTROLLER_NAME,
     DEVICE_INFO_ECOSTER_NAME,
@@ -407,11 +408,16 @@ class MenuCategoryEntity(EconetEntity):
     def device_info(self) -> DeviceInfo | None:
         """Return device info grouping by menu category.
 
-        Creates a unique device for each menu category index,
-        with the category name as the device name.
+        Creates a unique device for each menu category name,
+        using the sanitized category name as the device identifier.
+        This ensures entities with the same category name are grouped
+        together regardless of their category_index.
         """
+        # Use sanitized category name for identifier to avoid duplicate devices
+        # when same category name has different indices
+        sanitized_name = sanitize_category_for_device_id(self._category_name)
         return DeviceInfo(
-            identifiers={(DOMAIN, f"{self.api.uid}-menu-{self._category_index}")},
+            identifiers={(DOMAIN, f"{self.api.uid}-menu-{sanitized_name}")},
             name=self._category_name,
             manufacturer=DEVICE_INFO_MANUFACTURER,
             model=DEVICE_INFO_MODEL,

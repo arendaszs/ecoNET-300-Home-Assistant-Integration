@@ -9,8 +9,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from homeassistant.config_entries import ConfigEntry, ConfigFlowResult, OptionsFlow
-from homeassistant.core import callback
+from homeassistant.config_entries import ConfigFlowResult, OptionsFlow
 import voluptuous as vol
 
 from .const import (
@@ -26,10 +25,6 @@ _LOGGER = logging.getLogger(__name__)
 
 class EconetOptionsFlowHandler(OptionsFlow):
     """Handle ecoNET300 options flow."""
-
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialize options flow."""
-        self.config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -66,10 +61,3 @@ class EconetOptionsFlowHandler(OptionsFlow):
                 "none_desc": "No categories - all parameters in a flat list",
             },
         )
-
-
-@callback
-def async_get_options_flow(config_entry: ConfigEntry) -> EconetOptionsFlowHandler:
-    """Get the options flow handler."""
-    return EconetOptionsFlowHandler(config_entry)
-
