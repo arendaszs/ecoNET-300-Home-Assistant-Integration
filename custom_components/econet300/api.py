@@ -196,7 +196,7 @@ class Econet300Api:
         sys_params = await self.fetch_sys_params()
 
         if sys_params is None:
-            _LOGGER.error("Failed to fetch system parameters.")
+            _LOGGER.warning("Failed to fetch system parameters (device offline?)")
             return
 
         # Set system parameters by HA device properties
@@ -425,14 +425,14 @@ class Econet300Api:
 
             return data[data_key]
         except aiohttp.ClientError as e:
-            _LOGGER.error(
-                "Client error occurred while fetching data from endpoint: %s, error: %s",
+            _LOGGER.warning(
+                "Client error while fetching %s (device offline?): %s",
                 endpoint,
                 e,
             )
         except asyncio.TimeoutError as e:
-            _LOGGER.error(
-                "A timeout error occurred while fetching data from endpoint: %s, error: %s",
+            _LOGGER.warning(
+                "Timeout while fetching %s (device offline?): %s",
                 endpoint,
                 e,
             )

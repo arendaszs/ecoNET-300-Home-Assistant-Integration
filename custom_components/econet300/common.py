@@ -157,8 +157,8 @@ class EconetDataCoordinator(DataUpdateCoordinator):
             _LOGGER.error("API error: %s", err)
             raise UpdateFailed(f"Error communicating with API: {err}") from err
         except (asyncio.TimeoutError, ClientError) as err:
-            _LOGGER.error("Timeout or client error: %s", err)
-            raise UpdateFailed(f"Timeout or client error: {err}") from err
+            _LOGGER.warning("Connection failed (device offline?): %s", err)
+            raise UpdateFailed(f"Connection failed: {err}") from err
 
     async def _fetch_rm_endpoint_data(self) -> dict[str, Any]:
         """Fetch data from RM... endpoints for enhanced functionality.
