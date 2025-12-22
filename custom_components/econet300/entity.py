@@ -98,8 +98,8 @@ class EconetEntity(CoordinatorEntity):
         )
         merged_parameters = merged_data.get("parameters", {}) if merged_data else {}
 
-        _LOGGER.info(
-            "DEBUG: Looking for key '%s' in data sources - sysParams: %s, regParams: %s, paramsEdits: %s, mergedData: %s, is_dynamic: %s",
+        _LOGGER.debug(
+            "Looking for key '%s' in data sources - sysParams: %s, regParams: %s, paramsEdits: %s, mergedData: %s, is_dynamic: %s",
             self.entity_description.key,
             self.entity_description.key in sys_params,
             self.entity_description.key in reg_params,
@@ -126,28 +126,26 @@ class EconetEntity(CoordinatorEntity):
 
             if param_data:
                 value = param_data.get("value")
-                _LOGGER.info(
-                    "DEBUG: Found dynamic entity value in mergedData: %s", value
-                )
+                _LOGGER.debug("Found dynamic entity value in mergedData: %s", value)
         elif self.entity_description.key in sys_params:
             value = sys_params[self.entity_description.key]
-            _LOGGER.info("DEBUG: Found in sysParams: %s", value)
+            _LOGGER.debug("Found in sysParams: %s", value)
         elif self.entity_description.key in reg_params:
             value = reg_params[self.entity_description.key]
-            _LOGGER.info("DEBUG: Found in regParams: %s", value)
+            _LOGGER.debug("Found in regParams: %s", value)
         elif self.entity_description.key in params_edits:
             value = params_edits[self.entity_description.key]
-            _LOGGER.info("DEBUG: Found in paramsEdits: %s", value)
+            _LOGGER.debug("Found in paramsEdits: %s", value)
 
         if value is None:
-            _LOGGER.info(
-                "DEBUG: Value for key %s is None - entity will not be updated",
+            _LOGGER.debug(
+                "Value for key %s is None - entity will not be updated",
                 self.entity_description.key,
             )
             return
 
-        _LOGGER.info(
-            "DEBUG: Updating state for key: %s with value: %s - calling _sync_state",
+        _LOGGER.debug(
+            "Updating state for key: %s with value: %s - calling _sync_state",
             self.entity_description.key,
             value,
         )
@@ -156,8 +154,8 @@ class EconetEntity(CoordinatorEntity):
 
     async def async_added_to_hass(self):
         """Handle added to hass."""
-        _LOGGER.info(
-            "DEBUG: Entering async_added_to_hass for entity: %s",
+        _LOGGER.debug(
+            "Entering async_added_to_hass for entity: %s",
             self.entity_description.key,
         )
         _LOGGER.debug("Added to HASS: %s", self.entity_description)
@@ -238,8 +236,8 @@ class EconetEntity(CoordinatorEntity):
 
             if param_data:
                 value = param_data.get("value")
-                _LOGGER.info(
-                    "DEBUG: Found dynamic entity initial value in mergedData: %s", value
+                _LOGGER.debug(
+                    "Found dynamic entity initial value in mergedData: %s", value
                 )
         else:
             # For legacy entities, use standard logic
@@ -254,12 +252,10 @@ class EconetEntity(CoordinatorEntity):
             )
 
         if value is not None:
-            _LOGGER.info(
-                "DEBUG: Found initial value for entity %s: %s", expected_key, value
-            )
+            _LOGGER.debug("Found initial value for entity %s: %s", expected_key, value)
         else:
-            _LOGGER.info(
-                "DEBUG: No initial value found for entity %s. Available sysParams keys: %s, regParams keys: %s, paramsEdits keys: %s",
+            _LOGGER.debug(
+                "No initial value found for entity %s. Available sysParams keys: %s, regParams keys: %s, paramsEdits keys: %s",
                 expected_key,
                 sys_keys,
                 reg_keys,

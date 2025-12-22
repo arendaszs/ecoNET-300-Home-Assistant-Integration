@@ -1026,14 +1026,12 @@ async def create_mixer_number_entities(
     entities: list[MixerNumber] = []
 
     try:
-        _LOGGER.info("DEBUG: Entering create_mixer_number_entities function")
-        _LOGGER.info("Creating mixer number entities dynamically...")
+        _LOGGER.debug("Entering create_mixer_number_entities function")
+        _LOGGER.debug("Creating mixer number entities dynamically...")
 
         # Use the same logic as sensor.py - check SENSOR_MIXER_KEY
         for mixer_idx, mixer_keys in SENSOR_MIXER_KEY.items():
-            _LOGGER.info(
-                "DEBUG: Checking mixer %d with keys: %s", mixer_idx, mixer_keys
-            )
+            _LOGGER.debug("Checking mixer %d with keys: %s", mixer_idx, mixer_keys)
             # Skip if coordinator data is not available
             if coordinator.data is None:
                 _LOGGER.info("Mixer: %d skipped - coordinator data is None", mixer_idx)
@@ -1607,9 +1605,9 @@ async def _create_legacy_entities(
     _LOGGER.info("Falling back to legacy number entity creation from NUMBER_MAP")
 
     # Create mixer number entities dynamically
-    _LOGGER.info("DEBUG: Creating mixer number entities...")
+    _LOGGER.debug("Creating mixer number entities...")
     mixer_entities = await create_mixer_number_entities(coordinator, api)
-    _LOGGER.info("DEBUG: Created %d mixer number entities", len(mixer_entities))
+    _LOGGER.debug("Created %d mixer number entities", len(mixer_entities))
     entities.extend(mixer_entities)
 
     # Create other number entities from NUMBER_MAP (excluding mixer entities)
@@ -1686,16 +1684,14 @@ async def async_setup_entry(
         entities.extend(dynamic_entities)
 
         # Create mixer number entities dynamically (even in dynamic mode)
-        _LOGGER.info("DEBUG: About to call create_mixer_number_entities...")
+        _LOGGER.debug("About to call create_mixer_number_entities...")
         mixer_entities = await create_mixer_number_entities(coordinator, api)
-        _LOGGER.info(
-            "DEBUG: create_mixer_number_entities returned %d entities",
+        _LOGGER.debug(
+            "create_mixer_number_entities returned %d entities",
             len(mixer_entities),
         )
         entities.extend(mixer_entities)
-        _LOGGER.info(
-            "DEBUG: Total entities after adding mixer entities: %d", len(entities)
-        )
+        _LOGGER.debug("Total entities after adding mixer entities: %d", len(entities))
     else:
         # Fallback to legacy entity creation
         legacy_entities = await _create_legacy_entities(api, coordinator)
