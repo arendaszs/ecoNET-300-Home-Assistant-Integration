@@ -81,13 +81,13 @@ class EconetNumber(EconetEntity, NumberEntity):
 
     def _sync_state(self, value):
         """Sync the state of the ecoNET number entity."""
-        _LOGGER.info(
-            "DEBUG: EconetNumber _sync_state called for entity %s with value: %s",
+        _LOGGER.debug(
+            "EconetNumber _sync_state called for entity %s with value: %s",
             self.entity_description.key,
             value,
         )
         _LOGGER.debug(
-            "DEBUG: Entity key=%s, translation_key=%s, Value type: %s, Value keys: %s",
+            "Entity key=%s, translation_key=%s, Value type: %s, Value keys: %s",
             self.entity_description.key,
             self.entity_description.translation_key,
             type(value),
@@ -98,28 +98,26 @@ class EconetNumber(EconetEntity, NumberEntity):
         if isinstance(value, dict) and "value" in value:
             val = value.get("value")
             self._attr_native_value = float(val) if val is not None else None
-            _LOGGER.debug(
-                "DEBUG: Extracted value from dict: %s", self._attr_native_value
-            )
+            _LOGGER.debug("Extracted value from dict: %s", self._attr_native_value)
         elif isinstance(value, (int, float, str)) and value is not None:
             self._attr_native_value = float(value)
-            _LOGGER.debug("DEBUG: Using direct value: %s", self._attr_native_value)
+            _LOGGER.debug("Using direct value: %s", self._attr_native_value)
         else:
             self._attr_native_value = None
-            _LOGGER.debug("DEBUG: Invalid value type, setting to None: %s", value)
+            _LOGGER.debug("Invalid value type, setting to None: %s", value)
 
         map_key = NUMBER_MAP.get(self.entity_description.key)
 
         if map_key:
             _LOGGER.debug(
-                "DEBUG: Found map_key %s for entity %s, setting value limits",
+                "Found map_key %s for entity %s, setting value limits",
                 map_key,
                 self.entity_description.key,
             )
             self._set_value_limits(value)
         else:
             _LOGGER.debug(
-                "DEBUG: No map_key found for dynamic entity %s (not in NUMBER_MAP), skipping _set_value_limits",
+                "No map_key found for dynamic entity %s (not in NUMBER_MAP), skipping _set_value_limits",
                 self.entity_description.key,
             )
         # Ensure the state is updated in Home Assistant.
@@ -145,15 +143,13 @@ class EconetNumber(EconetEntity, NumberEntity):
 
     async def async_set_limits_values(self):
         """Async Sync number limits."""
-        _LOGGER.debug(
-            "DEBUG: Getting limits for entity key: %s", self.entity_description.key
-        )
+        _LOGGER.debug("Getting limits for entity key: %s", self.entity_description.key)
         number_limits = await self.api.get_param_limits(self.entity_description.key)
         _LOGGER.debug("Number limits retrieved: %s", number_limits)
 
         if not number_limits:
             _LOGGER.warning(
-                "DEBUG: Cannot get limits for dynamic entity: %s, numeric limits is None",
+                "Cannot get limits for dynamic entity: %s, numeric limits is None",
                 self.entity_description.key,
             )
             return
@@ -461,7 +457,7 @@ class MixerNumber(MixerEntity, NumberEntity):
             value,
         )
         _LOGGER.debug(
-            "DEBUG: Entity key=%s, translation_key=%s, Value type: %s, Value keys: %s",
+            "Entity key=%s, translation_key=%s, Value type: %s, Value keys: %s",
             self.entity_description.key,
             self.entity_description.translation_key,
             type(value),
@@ -472,28 +468,26 @@ class MixerNumber(MixerEntity, NumberEntity):
         if isinstance(value, dict) and "value" in value:
             val = value.get("value")
             self._attr_native_value = float(val) if val is not None else None
-            _LOGGER.debug(
-                "DEBUG: Extracted value from dict: %s", self._attr_native_value
-            )
+            _LOGGER.debug("Extracted value from dict: %s", self._attr_native_value)
         elif isinstance(value, (int, float, str)) and value is not None:
             self._attr_native_value = float(value)
-            _LOGGER.debug("DEBUG: Using direct value: %s", self._attr_native_value)
+            _LOGGER.debug("Using direct value: %s", self._attr_native_value)
         else:
             self._attr_native_value = None
-            _LOGGER.debug("DEBUG: Invalid value type, setting to None: %s", value)
+            _LOGGER.debug("Invalid value type, setting to None: %s", value)
 
         map_key = NUMBER_MAP.get(self.entity_description.key)
 
         if map_key:
             _LOGGER.debug(
-                "DEBUG: Found map_key %s for mixer entity %s, setting value limits",
+                "Found map_key %s for mixer entity %s, setting value limits",
                 map_key,
                 self.entity_description.key,
             )
             self._set_value_limits(value)
         else:
             _LOGGER.debug(
-                "DEBUG: No map_key found for mixer entity %s (not in NUMBER_MAP), skipping _set_value_limits",
+                "No map_key found for mixer entity %s (not in NUMBER_MAP), skipping _set_value_limits",
                 self.entity_description.key,
             )
         # Ensure the state is updated in Home Assistant.
@@ -1047,9 +1041,7 @@ async def create_mixer_number_entities(
                 )
                 continue
 
-            _LOGGER.info(
-                "DEBUG: Mixer %d passed validation, creating entity", mixer_idx
-            )
+            _LOGGER.debug("Mixer %d passed validation, creating entity", mixer_idx)
             # Create the mixer set temperature key (e.g., "mixerSetTemp1")
             mixer_set_temp_key = f"{MIXER_SET_AVAILABILITY_KEY}{mixer_idx}"
 
@@ -1063,18 +1055,18 @@ async def create_mixer_number_entities(
             # Create and add the entity
             entity = MixerNumber(entity_description, coordinator, api, mixer_idx)
             entities.append(entity)
-            _LOGGER.info(
+            _LOGGER.debug(
                 "Created mixer number entity: %s (Mixer %d)",
                 mixer_set_temp_key,
                 mixer_idx,
             )
-            _LOGGER.info(
-                "DEBUG: MixerNumber device_info: %s",
+            _LOGGER.debug(
+                "MixerNumber device_info: %s",
                 entity.device_info,
             )
 
-        _LOGGER.info(
-            "DEBUG: Exiting create_mixer_number_entities with %d entities",
+        _LOGGER.debug(
+            "Exiting create_mixer_number_entities with %d entities",
             len(entities),
         )
 
@@ -1086,9 +1078,9 @@ async def create_mixer_number_entities(
         AttributeError,
         KeyError,
     ) as e:
-        _LOGGER.error("DEBUG: Exception in create_mixer_number_entities: %s", e)
-        _LOGGER.error("DEBUG: Exception type: %s", type(e))
-        _LOGGER.error("DEBUG: Traceback: %s", traceback.format_exc())
+        _LOGGER.error("Exception in create_mixer_number_entities: %s", e)
+        _LOGGER.error("Exception type: %s", type(e))
+        _LOGGER.error("Traceback: %s", traceback.format_exc())
 
     return entities
 
@@ -1136,7 +1128,7 @@ def create_dynamic_number_entity_description(
         entity_key = f"basic_{param_key}"
 
     _LOGGER.debug(
-        "DEBUG: Creating entity description for param_id=%s, name=%s, key=%s, translation_key=%s, entity_key=%s, type=%s",
+        "Creating entity description for param_id=%s, name=%s, key=%s, translation_key=%s, entity_key=%s, type=%s",
         param_id,
         param.get("name", "No name"),
         param_key,
@@ -1410,8 +1402,8 @@ def _create_dynamic_entity_from_param(
     param_type = get_parameter_type_from_category(category)
     param_name = param.get("name", f"Parameter {param_id}")
 
-    _LOGGER.info(
-        "DEBUG: Parameter %s qualifies as number entity: name=%s, unit_name=%s, edit=%s, category=%s, type=%s",
+    _LOGGER.debug(
+        "Parameter %s qualifies as number entity: name=%s, unit_name=%s, edit=%s, category=%s, type=%s",
         param_id,
         param_name,
         param.get("unit_name", "No unit"),
@@ -1430,8 +1422,8 @@ def _create_dynamic_entity_from_param(
         is_mixer_related, mixer_num = is_mixer_related_entity(param_name, param_key)
 
         if is_mixer_related:
-            _LOGGER.info(
-                "DEBUG: Found mixer-related entity: '%s' -> Mixer %d",
+            _LOGGER.debug(
+                "Found mixer-related entity: '%s' -> Mixer %d",
                 param_name,
                 mixer_num,
             )
@@ -1500,10 +1492,10 @@ async def _create_dynamic_entities_from_merged_data(
 
     """
     entities: list[NumberEntity] = []
-    _LOGGER.info("Using dynamic number entity creation from merged parameter data")
+    _LOGGER.debug("Using dynamic number entity creation from merged parameter data")
 
-    _LOGGER.info(
-        "DEBUG: Starting dynamic entity creation. Total parameters: %d",
+    _LOGGER.debug(
+        "Starting dynamic entity creation. Total parameters: %d",
         len(merged_data["parameters"]),
     )
 
@@ -1511,8 +1503,8 @@ async def _create_dynamic_entities_from_merged_data(
     for param_count, (param_id, param) in enumerate(merged_data["parameters"].items()):
         if param_count < 5:  # Log first 5 parameters for debugging
             categories = param.get("categories", [param.get("category", "")])
-            _LOGGER.info(
-                "DEBUG: Sample parameter %s: name=%s, unit_name=%s, edit=%s, has_enum=%s, categories=%s",
+            _LOGGER.debug(
+                "Sample parameter %s: name=%s, unit_name=%s, edit=%s, has_enum=%s, categories=%s",
                 param_id,
                 param.get("name", "No name"),
                 param.get("unit_name", "No unit"),
@@ -1527,7 +1519,7 @@ async def _create_dynamic_entities_from_merged_data(
     )  # Track created entity keys to avoid duplicates
 
     for param_id, param in merged_data["parameters"].items():
-        _LOGGER.debug("DEBUG: Processing parameter %s: %s", param_id, param)
+        _LOGGER.debug("Processing parameter %s: %s", param_id, param)
 
         # Get parameter key - this is what determines uniqueness
         param_key = param.get("key", f"parameter_{param_id}")
@@ -1575,11 +1567,11 @@ async def _create_dynamic_entities_from_merged_data(
                 created_entity_keys.add(param_key)
                 break  # Only create one number entity per parameter (first non-Information category)
 
-    _LOGGER.info(
-        "DEBUG: Found %d parameters that qualify as number entities",
+    _LOGGER.debug(
+        "Found %d parameters that qualify as number entities",
         number_entity_count,
     )
-    _LOGGER.info(
+    _LOGGER.debug(
         "Created %d dynamic number entities (Information categories handled as sensors). "
         "Service/advanced parameters are hidden by default (entity_registry_visible_default=False).",
         len(entities),

@@ -145,8 +145,8 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                     param_keys = list(merged_data["parameters"].keys())[
                         :5
                     ]  # First 5 keys
-                    _LOGGER.info(
-                        "DEBUG: Coordinator merged data keys (first 5): %s", param_keys
+                    _LOGGER.debug(
+                        "Coordinator merged data keys (first 5): %s", param_keys
                     )
 
                 return result
