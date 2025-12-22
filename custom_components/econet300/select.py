@@ -24,6 +24,7 @@ from .common_functions import (
     is_information_category,
     is_parameter_locked,
     mixer_exists,
+    requires_service_password,
     should_be_select_entity,
     validate_parameter_data,
 )
@@ -676,15 +677,20 @@ def create_dynamic_selects(
         if param_type in ("service", "advanced"):
             entity._attr_entity_registry_visible_default = False  # noqa: SLF001
 
+        # Disable params requiring service password (pass_index > 0)
+        if requires_service_password(param):
+            entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
+
         entities.append(entity)
         created_keys.add(param_key)
 
         _LOGGER.debug(
-            "Created dynamic select: %s (param %d) -> %s with %d options",
+            "Created dynamic select: %s (param %d) -> %s with %d options, enabled_default: %s",
             param_name,
             param_number,
             category_name,
             len(enum_values),
+            getattr(entity, "_attr_entity_registry_enabled_default", True),
         )
 
     _LOGGER.info("Created %d dynamic select entities", len(entities))

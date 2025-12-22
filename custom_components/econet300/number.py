@@ -30,6 +30,7 @@ from .common_functions import (
     is_information_category,
     is_parameter_locked,
     mixer_exists,
+    requires_service_password,
     validate_parameter_data,
 )
 from .const import (
@@ -1005,12 +1006,34 @@ def should_be_number_entity(param: dict) -> bool:
         True if parameter should be a number entity
 
     """
-    unit_name = param.get("unit_name", "")
     has_enum = "enum" in param
     is_editable = param.get("edit", False)
 
-    # Number entity: has unit_name, is editable, no enum
-    return bool(unit_name and is_editable and not has_enum)
+    # Must be editable and not have enum
+    if not is_editable or has_enum:
+        return False
+
+    # Check for unit_name - if present, it's a number entity
+    unit_name = param.get("unit_name", "")
+    if unit_name:
+        return True
+
+    # Even without unit_name, check if it's a numeric parameter
+    # Parameters with decimal multiplier (mult < 1) are numeric (e.g., heating curve 0.1-4.0)
+    mult = param.get("mult", 1)
+    if isinstance(mult, (int, float)) and mult < 1:
+        return True
+
+    # Parameters with fractional min/max are numeric
+    minv = param.get("minv")
+    maxv = param.get("maxv")
+    if minv is not None and maxv is not None:
+        if isinstance(minv, (int, float)) and isinstance(maxv, (int, float)):
+            # Fractional values indicate numeric parameter
+            if minv != int(minv) or maxv != int(maxv):
+                return True
+
+    return False
 
 
 async def create_mixer_number_entities(
@@ -1201,6 +1224,7 @@ def _create_mixer_entity_by_category(
     param_name: str,
     category: str,
     param_id: str,
+    param: dict,
 ) -> NumberEntity:
     """Create mixer entity based on category type.
 
@@ -1216,6 +1240,7 @@ def _create_mixer_entity_by_category(
         param_name: Parameter name
         category: Category name
         param_id: Parameter ID for value lookup
+        param: Parameter dictionary (for pass_index check)
 
     Returns:
         MenuCategoryNumber entity grouped under Mixer device
@@ -1239,12 +1264,17 @@ def _create_mixer_entity_by_category(
     if param_type in ("service", "advanced"):
         entity._attr_entity_registry_visible_default = False  # noqa: SLF001
 
+    # Disable params requiring service password (pass_index > 0)
+    if requires_service_password(param):
+        entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
+
     _LOGGER.info(
-        "Created mixer number entity: %s (Mixer %d, type: %s, category: %s)",
+        "Created mixer number entity: %s (Mixer %d, type: %s, category: %s, enabled_default: %s)",
         param_name,
         mixer_num,
         param_type,
         category_name,
+        getattr(entity, "_attr_entity_registry_enabled_default", True),
     )
 
     return entity
@@ -1317,8 +1347,13 @@ def _create_regular_entity_by_category(
     if param_type in ("service", "advanced"):
         entity._attr_entity_registry_visible_default = False  # noqa: SLF001
 
+    # Disable params requiring service password (pass_index > 0)
+    # User can enable in HA UI if needed
+    if requires_service_password(param):
+        entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
+
     _LOGGER.info(
-        "Created menu category number entity: %s (%s) - category[%d]: %s, type: %s, %s to %s %s, visible_default: %s",
+        "Created menu category number entity: %s (%s) - category[%d]: %s, type: %s, %s to %s %s, visible_default: %s, enabled_default: %s",
         param_name,
         param_id,
         category_index,
@@ -1328,6 +1363,7 @@ def _create_regular_entity_by_category(
         param.get("maxv", 100),
         param.get("unit_name", ""),
         getattr(entity, "_attr_entity_registry_visible_default", True),
+        getattr(entity, "_attr_entity_registry_enabled_default", True),
     )
 
     return entity
@@ -1448,6 +1484,7 @@ def _create_dynamic_entity_from_param(
                 param_name,
                 category,
                 param_id,
+                param,
             )
 
         return _create_regular_entity_by_category(

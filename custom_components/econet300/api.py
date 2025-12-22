@@ -1431,6 +1431,20 @@ class Econet300Api:
         if unit_index in [31]:  # Known enum unit indices
             return True
 
+        # Check for decimal multiplier - indicates numeric parameter, not enum
+        # Parameters with mult < 1 (like 0.1) are definitely numeric values
+        mult = param.get("mult", 1)
+        if isinstance(mult, (int, float)) and mult < 1:
+            return False
+
+        # Check if min/max are fractional - indicates numeric parameter, not enum
+        minv = param.get("minv", 0)
+        maxv = param.get("maxv", 0)
+        if isinstance(minv, (int, float)) and isinstance(maxv, (int, float)):
+            # Fractional min or max means it's a numeric value, not enum
+            if minv != int(minv) or maxv != int(maxv):
+                return False
+
         # Check if description contains enum-like patterns
         description = param.get("description", "").lower()
         enum_patterns = [
@@ -1452,13 +1466,12 @@ class Econet300Api:
         if pattern_matches >= 2:  # At least 2 enum-like patterns
             return True
 
-        # Check if min/max values suggest discrete states
-        minv = param.get("minv", 0)
-        maxv = param.get("maxv", 0)
+        # Check if min/max values suggest discrete states (only for integers)
         if isinstance(minv, (int, float)) and isinstance(maxv, (int, float)):
-            # If range is small and discrete, likely an enum
-            if 0 <= minv <= maxv <= 10 and maxv - minv <= 5:
-                return True
+            # Only consider as enum if values are integers and range is small
+            if minv == int(minv) and maxv == int(maxv):
+                if 0 <= minv <= maxv <= 10 and maxv - minv <= 5:
+                    return True
 
         return False
 
@@ -1534,7 +1547,11 @@ class Econet300Api:
     def _add_parameter_numbers(
         self, parameters: list[dict[str, Any]], structure: list[dict[str, Any]]
     ) -> None:
-        """Add parameter numbers based on structure data.
+        """Add parameter numbers and pass_index based on structure data.
+
+        The pass_index field indicates access level:
+        - 0 = User accessible (no password required)
+        - 1, 2, 3 = Requires service password (should be disabled by default)
 
         Args:
             parameters: List of parameter dictionaries to update
@@ -1548,17 +1565,20 @@ class Econet300Api:
             if isinstance(item, dict) and item.get("type") == 1
         ]
 
-        # Add numbers to parameters based on structure mapping
+        # Add numbers and pass_index to parameters based on structure mapping
         for param in parameters:
             param_index = param.get("index", 0)
 
-            # Use the structure entry index if available
+            # Use the structure entry if available
             if param_index < len(param_structure_entries):
                 structure_entry = param_structure_entries[param_index]
                 param["number"] = structure_entry.get("index", param_index)
+                # Add pass_index (0=user accessible, >0=requires service password)
+                param["pass_index"] = structure_entry.get("pass_index", 0)
             else:
                 # Fallback to parameter index if no structure entry
                 param["number"] = param_index
+                param["pass_index"] = 0  # Default to user-accessible
 
     def _add_unit_names(
         self, parameters: list[dict[str, Any]], units: list[str]

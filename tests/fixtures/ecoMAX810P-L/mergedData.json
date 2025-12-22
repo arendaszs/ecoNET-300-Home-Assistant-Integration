@@ -1,6 +1,6 @@
 {
   "version": "1.0-names-descs-structure-units-indexed-enums-categories-locks-cleaned",
-  "timestamp": "2025-12-22T19:32:10.854791",
+  "timestamp": "2025-12-22T20:11:53.414972",
   "device": {
     "uid": "ecoMAX810P-L-device",
     "controllerId": "ecoMAX810P-L",
@@ -19,6 +19,7 @@
       "index": 0,
       "description": "",
       "number": 46,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "100percent_blow_in_output",
       "categories": [
@@ -43,6 +44,7 @@
       "index": 1,
       "description": "",
       "number": 111,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "100percent_feeder_operation",
       "categories": [
@@ -67,6 +69,7 @@
       "index": 2,
       "description": "",
       "number": 112,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "100percent_feeder_interval",
       "categories": [
@@ -91,6 +94,7 @@
       "index": 3,
       "description": "",
       "number": 121,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "50percent_blow_in_output",
       "categories": [
@@ -115,6 +119,7 @@
       "index": 4,
       "description": "",
       "number": 132,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "50percent_feeder_operation",
       "categories": [
@@ -139,6 +144,7 @@
       "index": 5,
       "description": "",
       "number": 49,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "50percent_feeder_interval",
       "categories": [
@@ -163,6 +169,7 @@
       "index": 6,
       "description": "",
       "number": 52,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "30percent_blow_in_output",
       "categories": [
@@ -187,6 +194,7 @@
       "index": 7,
       "description": "",
       "number": 53,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "30percent_feeder_operation",
       "categories": [
@@ -211,6 +219,7 @@
       "index": 8,
       "description": "",
       "number": 54,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "30percent_feeder_interval",
       "categories": [
@@ -235,6 +244,7 @@
       "index": 9,
       "description": "",
       "number": 55,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "50percent_h2_hysteresis",
       "categories": [
@@ -259,6 +269,7 @@
       "index": 10,
       "description": "",
       "number": 56,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "30percent_h1_hysteresis",
       "categories": [
@@ -283,6 +294,7 @@
       "index": 11,
       "description": "",
       "number": 57,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "boiler_hysteresis",
       "categories": [
@@ -307,6 +319,7 @@
       "index": 12,
       "description": "",
       "number": 63,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "fl_airfl_correction",
       "categories": [
@@ -331,6 +344,7 @@
       "index": 13,
       "description": "",
       "number": 75,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "minimum_boiler_output_fl",
       "categories": [
@@ -355,6 +369,7 @@
       "index": 14,
       "description": "",
       "number": 79,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "maximum_boiler_output_fl",
       "categories": [
@@ -379,6 +394,7 @@
       "index": 15,
       "description": "",
       "number": 83,
+      "pass_index": 0,
       "unit_name": "",
       "key": "parametr_a_fuzzylogic",
       "enum": {
@@ -414,6 +430,7 @@
       "index": 16,
       "description": "",
       "number": 122,
+      "pass_index": 0,
       "unit_name": "",
       "key": "parametr_b_fuzzylogic",
       "categories": [
@@ -438,6 +455,7 @@
       "index": 17,
       "description": "",
       "number": 161,
+      "pass_index": 0,
       "unit_name": "",
       "key": "parametr_c_fuzzylogic",
       "categories": [
@@ -462,6 +480,7 @@
       "index": 18,
       "description": "",
       "number": 162,
+      "pass_index": 0,
       "unit_name": "",
       "key": "regulation_mode_",
       "enum": {
@@ -497,6 +516,7 @@
       "index": 19,
       "description": "",
       "number": 19,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "airflow_power_correction_100percent",
       "categories": [
@@ -521,6 +541,7 @@
       "index": 20,
       "description": "",
       "number": 20,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "100percent_feeder_work_correction",
       "categories": [
@@ -545,6 +566,7 @@
       "index": 21,
       "description": "",
       "number": 9,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "50percent_airflow_power_correction",
       "categories": [
@@ -569,6 +591,7 @@
       "index": 22,
       "description": "",
       "number": 21,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "50percent_feeder_work_correction",
       "categories": [
@@ -593,6 +616,7 @@
       "index": 23,
       "description": "",
       "number": 22,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "airflow_power_correction_30percent",
       "categories": [
@@ -617,6 +641,7 @@
       "index": 24,
       "description": "",
       "number": 10,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "30percent_feeder_work_correction",
       "categories": [
@@ -641,6 +666,7 @@
       "index": 25,
       "description": "",
       "number": 23,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "firing_up_airflow",
       "categories": [
@@ -665,6 +691,7 @@
       "index": 26,
       "description": "",
       "number": 24,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "ignition_test_time",
       "categories": [
@@ -689,6 +716,7 @@
       "index": 27,
       "description": "",
       "number": 11,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "ignition_test_time_2",
       "categories": [
@@ -713,6 +741,7 @@
       "index": 28,
       "description": "",
       "number": 18,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "feeding_time",
       "categories": [
@@ -737,6 +766,7 @@
       "index": 29,
       "description": "",
       "number": 12,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "firing_up_time",
       "categories": [
@@ -761,6 +791,7 @@
       "index": 30,
       "description": "",
       "number": 45,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "extempdelta",
       "categories": [
@@ -785,6 +816,7 @@
       "index": 31,
       "description": "",
       "number": 13,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "extempdelta_2",
       "categories": [
@@ -809,6 +841,7 @@
       "index": 32,
       "description": "",
       "number": 14,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "ex_temp_at_the_end_of_firing_up",
       "categories": [
@@ -833,6 +866,7 @@
       "index": 33,
       "description": "",
       "number": 133,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "test_dose",
       "categories": [
@@ -857,6 +891,7 @@
       "index": 34,
       "description": "",
       "number": 139,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "supervision_time",
       "categories": [
@@ -881,6 +916,7 @@
       "index": 35,
       "description": "",
       "number": 163,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "feed_time",
       "categories": [
@@ -905,6 +941,7 @@
       "index": 36,
       "description": "",
       "number": 149,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "feed_interval",
       "categories": [
@@ -929,6 +966,7 @@
       "index": 37,
       "description": "",
       "number": 152,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "minimum_airflow_output",
       "categories": [
@@ -953,6 +991,7 @@
       "index": 38,
       "description": "",
       "number": 148,
+      "pass_index": 0,
       "unit_name": "",
       "key": "parameter_a_lambda",
       "categories": [
@@ -977,6 +1016,7 @@
       "index": 39,
       "description": "",
       "number": 157,
+      "pass_index": 0,
       "unit_name": "",
       "key": "parameter_b_lambda",
       "categories": [
@@ -1001,6 +1041,7 @@
       "index": 40,
       "description": "",
       "number": 158,
+      "pass_index": 0,
       "unit_name": "",
       "key": "parameter_c_lambda",
       "categories": [
@@ -1025,6 +1066,7 @@
       "index": 41,
       "description": "",
       "number": 47,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "100percent_oxygen",
       "categories": [
@@ -1049,6 +1091,7 @@
       "index": 42,
       "description": "",
       "number": 48,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "50percent_oxygen",
       "categories": [
@@ -1073,6 +1116,7 @@
       "index": 43,
       "description": "",
       "number": 37,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "30percent_oxygen",
       "categories": [
@@ -1097,6 +1141,7 @@
       "index": 44,
       "description": "",
       "number": 140,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "airflow_correction_range",
       "categories": [
@@ -1121,6 +1166,7 @@
       "index": 45,
       "description": "",
       "number": 147,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "fl_oxygen_correction",
       "categories": [
@@ -1145,6 +1191,7 @@
       "index": 46,
       "description": "",
       "number": 146,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "preset_boiler_temperature",
       "categories": [
@@ -1169,6 +1216,7 @@
       "index": 47,
       "description": "",
       "number": 131,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "min_boiler_temperature",
       "categories": [
@@ -1193,6 +1241,7 @@
       "index": 48,
       "description": "",
       "number": 142,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "max_boiler_temperature",
       "categories": [
@@ -1217,6 +1266,7 @@
       "index": 49,
       "description": "",
       "number": 143,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "huw_preset_temperature",
       "categories": [
@@ -1241,6 +1291,7 @@
       "index": 50,
       "description": "",
       "number": 113,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "minimum_huw_temperature",
       "categories": [
@@ -1265,6 +1316,7 @@
       "index": 51,
       "description": "",
       "number": 15,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "maximum_huw_temperature",
       "categories": [
@@ -1289,6 +1341,7 @@
       "index": 52,
       "description": "",
       "number": 16,
+      "pass_index": 0,
       "unit_name": "",
       "key": "huw_pump_mode",
       "enum": {
@@ -1324,6 +1377,7 @@
       "index": 53,
       "description": "",
       "number": 17,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "huw_cont_hysteresis",
       "categories": [
@@ -1348,6 +1402,7 @@
       "index": 54,
       "description": "",
       "number": 150,
+      "pass_index": 0,
       "unit_name": "",
       "key": "huw_disinfection",
       "enum": {
@@ -1382,6 +1437,7 @@
       "index": 55,
       "description": "",
       "number": 58,
+      "pass_index": 0,
       "unit_name": "",
       "key": "summer_mode",
       "enum": {
@@ -1419,6 +1475,7 @@
       "index": 56,
       "description": "",
       "number": 59,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "summer_mode_act_temperature",
       "categories": [
@@ -1443,6 +1500,7 @@
       "index": 57,
       "description": "",
       "number": 50,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "summer_mode_deact_temperature",
       "categories": [
@@ -1467,6 +1525,7 @@
       "index": 58,
       "description": "",
       "number": 51,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "ch_pump_activation_temperature",
       "categories": [
@@ -1491,6 +1550,7 @@
       "index": 59,
       "description": "",
       "number": 60,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "ch_pump_standstill_when_loading_huw",
       "categories": [
@@ -1515,6 +1575,7 @@
       "index": 60,
       "description": "",
       "number": 61,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "boiler_inc_by_huw,_mixer",
       "categories": [
@@ -1539,6 +1600,7 @@
       "index": 61,
       "description": "",
       "number": 62,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "extending_huw_pump_operation_time",
       "categories": [
@@ -1563,6 +1625,7 @@
       "index": 62,
       "description": "",
       "number": 151,
+      "pass_index": 0,
       "unit_name": "",
       "key": "exchanger",
       "enum": {
@@ -1597,6 +1660,7 @@
       "index": 63,
       "description": "",
       "number": 87,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "preset_mixer1_temperature",
       "categories": [
@@ -1621,6 +1685,7 @@
       "index": 64,
       "description": "",
       "number": 67,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "preset_mixer2_temperature",
       "categories": [
@@ -1645,6 +1710,7 @@
       "index": 65,
       "description": "",
       "number": 71,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "preset_mixer3_temperature",
       "categories": [
@@ -1669,6 +1735,7 @@
       "index": 66,
       "description": "",
       "number": 91,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "preset_mixer4_temperature",
       "categories": [
@@ -1693,6 +1760,7 @@
       "index": 67,
       "description": "",
       "number": 95,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "min_mixer1_temp",
       "categories": [
@@ -1717,6 +1785,7 @@
       "index": 68,
       "description": "",
       "number": 103,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "min_mixer2_temp",
       "categories": [
@@ -1741,6 +1810,7 @@
       "index": 69,
       "description": "",
       "number": 99,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "min_mixer3_temp",
       "categories": [
@@ -1765,6 +1835,7 @@
       "index": 70,
       "description": "",
       "number": 107,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "min_mixer4_temp",
       "categories": [
@@ -1789,6 +1860,7 @@
       "index": 71,
       "description": "",
       "number": 159,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "max_mixer1_temp",
       "categories": [
@@ -1813,6 +1885,7 @@
       "index": 72,
       "description": "",
       "number": 160,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "max_mixer2_temp",
       "categories": [
@@ -1837,6 +1910,7 @@
       "index": 73,
       "description": "",
       "number": 144,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "max_mixer3_temp",
       "categories": [
@@ -1861,6 +1935,7 @@
       "index": 74,
       "description": "",
       "number": 164,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "max_mixer4_temp",
       "categories": [
@@ -1885,6 +1960,7 @@
       "index": 75,
       "description": "",
       "number": 25,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer1_room_therm",
       "categories": [
@@ -1909,6 +1985,7 @@
       "index": 76,
       "description": "",
       "number": 26,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer2_room_therm",
       "enum": {
@@ -1942,6 +2019,7 @@
       "index": 77,
       "description": "",
       "number": 27,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer3_room_therm",
       "categories": [
@@ -1966,6 +2044,7 @@
       "index": 78,
       "description": "",
       "number": 28,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer4_room_therm",
       "enum": {
@@ -2000,6 +2079,7 @@
       "index": 79,
       "description": "",
       "number": 29,
+      "pass_index": 0,
       "unit_name": "",
       "key": "mixer1_weather_control",
       "enum": {
@@ -2034,6 +2114,7 @@
       "index": 80,
       "description": "",
       "number": 30,
+      "pass_index": 0,
       "unit_name": "",
       "key": "mixer2_weather_control",
       "enum": {
@@ -2068,6 +2149,7 @@
       "index": 81,
       "description": "",
       "number": 31,
+      "pass_index": 0,
       "unit_name": "",
       "key": "mixer3_weather_control",
       "enum": {
@@ -2102,6 +2184,7 @@
       "index": 82,
       "description": "",
       "number": 32,
+      "pass_index": 0,
       "unit_name": "",
       "key": "mixer4_weather_control",
       "enum": {
@@ -2136,17 +2219,9 @@
       "index": 83,
       "description": "",
       "number": 33,
+      "pass_index": 0,
       "unit_name": "",
       "key": "heating_curve_mixer_1",
-      "enum": {
-        "id": 1,
-        "values": [
-          "OFF",
-          "ON"
-        ],
-        "first": 0,
-        "detection_method": "smart_detection"
-      },
       "categories": [
         "Mixer settings"
       ],
@@ -2169,17 +2244,9 @@
       "index": 84,
       "description": "",
       "number": 0,
+      "pass_index": 0,
       "unit_name": "",
       "key": "heating_curve_mixer_2",
-      "enum": {
-        "id": 1,
-        "values": [
-          "OFF",
-          "ON"
-        ],
-        "first": 0,
-        "detection_method": "smart_detection"
-      },
       "categories": [
         "Mixer settings"
       ],
@@ -2202,6 +2269,7 @@
       "index": 85,
       "description": "",
       "number": 1,
+      "pass_index": 0,
       "unit_name": "",
       "key": "heating_curve_mixer_3",
       "enum": {
@@ -2235,17 +2303,9 @@
       "index": 86,
       "description": "",
       "number": 2,
+      "pass_index": 0,
       "unit_name": "",
       "key": "heating_curve_mixer_4",
-      "enum": {
-        "id": 1,
-        "values": [
-          "OFF",
-          "ON"
-        ],
-        "first": 0,
-        "detection_method": "smart_detection"
-      },
       "categories": [
         "Mixer settings"
       ],
@@ -2268,6 +2328,7 @@
       "index": 87,
       "description": "",
       "number": 41,
+      "pass_index": 0,
       "unit_name": "",
       "key": "mixer1_support",
       "enum": {
@@ -2304,6 +2365,7 @@
       "index": 88,
       "description": "",
       "number": 3,
+      "pass_index": 0,
       "unit_name": "",
       "key": "mixer2_support",
       "enum": {
@@ -2340,6 +2402,7 @@
       "index": 89,
       "description": "",
       "number": 4,
+      "pass_index": 0,
       "unit_name": "",
       "key": "mixer3_support",
       "enum": {
@@ -2376,6 +2439,7 @@
       "index": 90,
       "description": "",
       "number": 5,
+      "pass_index": 0,
       "unit_name": "",
       "key": "mixer4_support",
       "enum": {
@@ -2412,6 +2476,7 @@
       "index": 91,
       "description": "",
       "number": 42,
+      "pass_index": 0,
       "unit_name": "",
       "key": "proportional_range",
       "categories": [
@@ -2436,6 +2501,7 @@
       "index": 92,
       "description": "",
       "number": 6,
+      "pass_index": 0,
       "unit_name": "",
       "key": "proportional_range",
       "categories": [
@@ -2460,6 +2526,7 @@
       "index": 93,
       "description": "",
       "number": 7,
+      "pass_index": 0,
       "unit_name": "",
       "key": "proportional_range",
       "categories": [
@@ -2484,6 +2551,7 @@
       "index": 94,
       "description": "",
       "number": 8,
+      "pass_index": 0,
       "unit_name": "",
       "key": "proportional_range",
       "categories": [
@@ -2508,6 +2576,7 @@
       "index": 95,
       "description": "",
       "number": 43,
+      "pass_index": 0,
       "unit_name": "",
       "key": "integration_time_constant",
       "categories": [
@@ -2532,6 +2601,7 @@
       "index": 96,
       "description": "",
       "number": 134,
+      "pass_index": 0,
       "unit_name": "",
       "key": "integration_time_constant",
       "categories": [
@@ -2556,6 +2626,7 @@
       "index": 97,
       "description": "",
       "number": 135,
+      "pass_index": 0,
       "unit_name": "",
       "key": "integration_time_constant",
       "categories": [
@@ -2580,6 +2651,7 @@
       "index": 98,
       "description": "",
       "number": 34,
+      "pass_index": 0,
       "unit_name": "",
       "key": "integration_time_constant",
       "categories": [
@@ -2604,6 +2676,7 @@
       "index": 99,
       "description": "",
       "number": 35,
+      "pass_index": 0,
       "unit_name": "",
       "key": "off_by_thermostat",
       "enum": {
@@ -2638,6 +2711,7 @@
       "index": 100,
       "description": "",
       "number": 36,
+      "pass_index": 0,
       "unit_name": "",
       "key": "off_by_thermostat",
       "enum": {
@@ -2672,6 +2746,7 @@
       "index": 101,
       "description": "",
       "number": 145,
+      "pass_index": 0,
       "unit_name": "",
       "key": "off_by_thermostat",
       "enum": {
@@ -2706,6 +2781,7 @@
       "index": 102,
       "description": "",
       "number": 153,
+      "pass_index": 0,
       "unit_name": "",
       "key": "off_by_thermostat",
       "enum": {
@@ -2740,6 +2816,7 @@
       "index": 103,
       "description": "",
       "number": 38,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
       "categories": [
@@ -2764,6 +2841,7 @@
       "index": 104,
       "description": "",
       "number": 39,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
       "categories": [
@@ -2788,6 +2866,7 @@
       "index": 105,
       "description": "",
       "number": 40,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
       "categories": [
@@ -2812,6 +2891,7 @@
       "index": 106,
       "description": "",
       "number": 44,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
       "categories": [
@@ -2836,6 +2916,7 @@
       "index": 107,
       "description": "",
       "number": 154,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer1_input_dead_zone",
       "categories": [
@@ -2860,6 +2941,7 @@
       "index": 108,
       "description": "",
       "number": 155,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer2_input_dead_zone",
       "categories": [
@@ -2884,6 +2966,7 @@
       "index": 109,
       "description": "",
       "number": 156,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer3_input_dead_zone",
       "categories": [
@@ -2908,6 +2991,7 @@
       "index": 110,
       "description": "",
       "number": 110,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer4_input_dead_zone",
       "categories": [
@@ -2932,6 +3016,7 @@
       "index": 111,
       "description": "",
       "number": 111,
+      "pass_index": 0,
       "unit_name": "",
       "key": "weather_control_the_boiler",
       "enum": {
@@ -2966,17 +3051,9 @@
       "index": 112,
       "description": "",
       "number": 112,
+      "pass_index": 0,
       "unit_name": "",
       "key": "boiler_heating_curve",
-      "enum": {
-        "id": 1,
-        "values": [
-          "OFF",
-          "ON"
-        ],
-        "first": 0,
-        "detection_method": "smart_detection"
-      },
       "categories": [
         "Boiler settings"
       ],
@@ -2999,6 +3076,7 @@
       "index": 113,
       "description": "",
       "number": 113,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "boiler_cooling_temperature",
       "categories": [
@@ -3023,6 +3101,7 @@
       "index": 114,
       "description": "",
       "number": 114,
+      "pass_index": 0,
       "unit_name": "",
       "key": "thermostat_select",
       "enum": {
@@ -3089,6 +3168,7 @@
       "index": 115,
       "description": "",
       "number": 115,
+      "pass_index": 0,
       "unit_name": "",
       "key": "thermostat_select",
       "enum": {
@@ -3155,6 +3235,7 @@
       "index": 116,
       "description": "",
       "number": 116,
+      "pass_index": 0,
       "unit_name": "",
       "key": "thermostat_select",
       "enum": {
@@ -3221,6 +3302,7 @@
       "index": 117,
       "description": "",
       "number": 117,
+      "pass_index": 0,
       "unit_name": "",
       "key": "thermostat_select",
       "enum": {
@@ -3287,6 +3369,7 @@
       "index": 118,
       "description": "",
       "number": 118,
+      "pass_index": 0,
       "unit_name": "",
       "key": "thermostat_select",
       "enum": {
@@ -3353,6 +3436,7 @@
       "index": 119,
       "description": "",
       "number": 119,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "circulating_pump_standstill_time",
       "categories": [
@@ -3377,6 +3461,7 @@
       "index": 120,
       "description": "",
       "number": 120,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "circulating_pump_operation_time",
       "categories": [
@@ -3401,6 +3486,7 @@
       "index": 121,
       "description": "",
       "number": 121,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "curve_shift",
       "categories": [
@@ -3425,6 +3511,7 @@
       "index": 122,
       "description": "",
       "number": 122,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "curve_translation",
       "categories": [
@@ -3449,6 +3536,7 @@
       "index": 123,
       "description": "",
       "number": 123,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "curve_translation",
       "categories": [
@@ -3473,6 +3561,7 @@
       "index": 124,
       "description": "",
       "number": 124,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "curve_translation",
       "categories": [
@@ -3497,6 +3586,7 @@
       "index": 125,
       "description": "",
       "number": 125,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "curve_translation",
       "categories": [
@@ -3521,6 +3611,7 @@
       "index": 126,
       "description": "",
       "number": 126,
+      "pass_index": 0,
       "unit_name": "",
       "key": "room__temp_factor",
       "categories": [
@@ -3545,6 +3636,7 @@
       "index": 127,
       "description": "",
       "number": 127,
+      "pass_index": 0,
       "unit_name": "",
       "key": "room__temp_factor",
       "categories": [
@@ -3569,6 +3661,7 @@
       "index": 128,
       "description": "",
       "number": 128,
+      "pass_index": 0,
       "unit_name": "",
       "key": "room__temp_factor",
       "categories": [
@@ -3593,6 +3686,7 @@
       "index": 129,
       "description": "",
       "number": 129,
+      "pass_index": 0,
       "unit_name": "",
       "key": "room__temp_factor",
       "categories": [
@@ -3617,6 +3711,7 @@
       "index": 130,
       "description": "",
       "number": 130,
+      "pass_index": 0,
       "unit_name": "",
       "key": "room__temp_factor",
       "categories": [
@@ -3641,6 +3736,7 @@
       "index": 131,
       "description": "",
       "number": 131,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "poker_cycle_time",
       "categories": [
@@ -3665,6 +3761,7 @@
       "index": 132,
       "description": "",
       "number": 132,
+      "pass_index": 0,
       "unit_name": "h.",
       "key": "burner_cleaning",
       "categories": [
@@ -3689,6 +3786,7 @@
       "index": 133,
       "description": "",
       "number": 133,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "stabilization_time",
       "categories": [
@@ -3713,6 +3811,7 @@
       "index": 134,
       "description": "",
       "number": 134,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "burning_off_time",
       "categories": [
@@ -3737,6 +3836,7 @@
       "index": 135,
       "description": "",
       "number": 135,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "air_flush_intensity",
       "categories": [
@@ -3761,6 +3861,7 @@
       "index": 136,
       "description": "",
       "number": 136,
+      "pass_index": 0,
       "unit_name": "",
       "key": "buffer_support",
       "enum": {
@@ -3795,6 +3896,7 @@
       "index": 137,
       "description": "",
       "number": 137,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "loading_start_temperature",
       "categories": [
@@ -3819,6 +3921,7 @@
       "index": 138,
       "description": "",
       "number": 138,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "loading_end_temperature",
       "categories": [
@@ -3843,6 +3946,7 @@
       "index": 139,
       "description": "",
       "number": 139,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "alarm_level",
       "categories": [
@@ -3867,6 +3971,7 @@
       "index": 140,
       "description": "",
       "number": 140,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "no_fuel_detection_time",
       "categories": [
@@ -3891,6 +3996,7 @@
       "index": 141,
       "description": "",
       "number": 141,
+      "pass_index": 0,
       "unit_name": "",
       "key": "on/off",
       "enum": {
@@ -3925,6 +4031,7 @@
       "index": 142,
       "description": "",
       "number": 142,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "feeder_operat_time_2",
       "categories": [
@@ -3949,6 +4056,7 @@
       "index": 143,
       "description": "",
       "number": 143,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "feeder_interval_2",
       "categories": [
@@ -3973,6 +4081,7 @@
       "index": 144,
       "description": "",
       "number": 144,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "reserve_boiler",
       "categories": [
@@ -3997,6 +4106,7 @@
       "index": 145,
       "description": "",
       "number": 145,
+      "pass_index": 0,
       "unit_name": "sek.",
       "key": "airflow_operextend",
       "categories": [
@@ -4021,6 +4131,7 @@
       "index": 146,
       "description": "",
       "number": 146,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "maxburner_temp",
       "categories": [
@@ -4045,6 +4156,7 @@
       "index": 147,
       "description": "",
       "number": 147,
+      "pass_index": 0,
       "unit_name": "°C",
       "key": "extempwno_fuel",
       "categories": [
@@ -4069,6 +4181,7 @@
       "index": 148,
       "description": "",
       "number": 148,
+      "pass_index": 0,
       "unit_name": "",
       "key": "hysteresis_function",
       "enum": {
@@ -4104,6 +4217,7 @@
       "index": 149,
       "description": "",
       "number": 149,
+      "pass_index": 0,
       "unit_name": "",
       "key": "boiler_lock_from_thermostate",
       "enum": {
@@ -4138,6 +4252,7 @@
       "index": 150,
       "description": "",
       "number": 150,
+      "pass_index": 0,
       "unit_name": "",
       "key": "thermostat_lock",
       "enum": {
@@ -4172,6 +4287,7 @@
       "index": 151,
       "description": "",
       "number": 151,
+      "pass_index": 0,
       "unit_name": "",
       "key": "boiler_pump_lock",
       "enum": {
@@ -4206,6 +4322,7 @@
       "index": 152,
       "description": "",
       "number": 152,
+      "pass_index": 0,
       "unit_name": "",
       "key": "work_on_time",
       "enum": {
@@ -4240,6 +4357,7 @@
       "index": 153,
       "description": "",
       "number": 153,
+      "pass_index": 0,
       "unit_name": "",
       "key": "operation_with_lambda_sensor",
       "enum": {
@@ -4274,6 +4392,7 @@
       "index": 154,
       "description": "",
       "number": 154,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "feeder_lock",
       "categories": [
@@ -4298,6 +4417,7 @@
       "index": 155,
       "description": "",
       "number": 155,
+      "pass_index": 0,
       "unit_name": "%",
       "key": "fuel_detection_oxygen",
       "categories": [
@@ -4322,6 +4442,7 @@
       "index": 156,
       "description": "",
       "number": 156,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "fuel_detection_time",
       "categories": [
@@ -4346,6 +4467,7 @@
       "index": 157,
       "description": "",
       "number": 157,
+      "pass_index": 0,
       "unit_name": "r/min",
       "key": "fan_rotation_detection",
       "categories": [
@@ -4370,6 +4492,7 @@
       "index": 158,
       "description": "",
       "number": 158,
+      "pass_index": 0,
       "unit_name": "",
       "key": "feeder_sensor_mode",
       "enum": {
@@ -4404,6 +4527,7 @@
       "index": 159,
       "description": "",
       "number": 159,
+      "pass_index": 0,
       "unit_name": "",
       "key": "output_h1",
       "enum": {
@@ -4439,6 +4563,7 @@
       "index": 160,
       "description": "",
       "number": 160,
+      "pass_index": 0,
       "unit_name": "",
       "key": "output_h2_and_h3",
       "enum": {
@@ -4474,6 +4599,7 @@
       "index": 161,
       "description": "",
       "number": 161,
+      "pass_index": 0,
       "unit_name": "",
       "key": "preset_power",
       "enum": {
@@ -4509,6 +4635,7 @@
       "index": 162,
       "description": "",
       "number": 162,
+      "pass_index": 0,
       "unit_name": "min.",
       "key": "work_time",
       "categories": [
@@ -4533,6 +4660,7 @@
       "index": 163,
       "description": "",
       "number": 163,
+      "pass_index": 0,
       "unit_name": "",
       "key": "show_advanced_setup",
       "enum": {
@@ -4567,6 +4695,7 @@
       "index": 164,
       "description": "",
       "number": 164,
+      "pass_index": 0,
       "unit_name": "",
       "key": "alarms",
       "enum": {
@@ -4595,7 +4724,7 @@
     "namedParameters": 165,
     "describedParameters": 0,
     "editableParameters": 165,
-    "enumParameters": 45,
+    "enumParameters": 41,
     "lockedParameters": 6
   },
   "sourceEndpoints": {

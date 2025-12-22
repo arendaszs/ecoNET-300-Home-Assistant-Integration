@@ -21,6 +21,7 @@ from .common_functions import (
     is_information_category,
     is_parameter_locked,
     mixer_exists,
+    requires_service_password,
     should_be_switch_entity,
     validate_parameter_data,
 )
@@ -447,16 +448,21 @@ def create_dynamic_switches(
         if param_type in ("service", "advanced"):
             entity._attr_entity_registry_visible_default = False  # noqa: SLF001
 
+        # Disable params requiring service password (pass_index > 0)
+        if requires_service_password(param):
+            entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
+
         entities.append(entity)
         created_keys.add(param_key)
 
         _LOGGER.debug(
-            "Created dynamic switch: %s (param %d) -> %s (off=%d, on=%d)",
+            "Created dynamic switch: %s (param %d) -> %s (off=%d, on=%d, enabled_default=%s)",
             param_name,
             param_number,
             category_name,
             off_value,
             on_value,
+            getattr(entity, "_attr_entity_registry_enabled_default", True),
         )
 
     _LOGGER.info("Created %d dynamic switch entities", len(entities))

@@ -84,6 +84,24 @@ def get_parameter_type_from_category(category_name: str | None) -> str:
     return "basic"
 
 
+def requires_service_password(param: dict) -> bool:
+    """Check if parameter requires service password (should be disabled by default).
+
+    Parameters with pass_index > 0 in rmStructure require a service password
+    to access in the ecoNET web interface. These should be disabled by default
+    in Home Assistant to prevent accidental changes.
+
+    Args:
+        param: Parameter dictionary from mergedData
+
+    Returns:
+        True if parameter requires service password (pass_index > 0)
+
+    """
+    pass_index = param.get("pass_index", 0)
+    return isinstance(pass_index, int) and pass_index > 0
+
+
 def is_information_category(category_name: str | None) -> bool:
     """Check if category is an Information category (read-only sensor).
 
