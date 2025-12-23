@@ -87,7 +87,7 @@
       "ch_pump_standstill_when_loading_huw": {
         "name": "CH pump standstill when loading HUW"
       },
-      "boiler_inc_by_huw,_mixer": {
+      "boiler_inc_by_huw_mixer": {
         "name": "Boiler inc. by HUW, Mixer"
       },
       "extending_huw_pump_operation_time": {

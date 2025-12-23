@@ -1503,10 +1503,9 @@ class Econet300Api:
             ):
                 lock_names = results[4]  # type: ignore[assignment]
 
-            # Add parameter numbers, units, rmCatsName, and keys
+            # Add parameter numbers, units, and keys
             self._add_parameter_numbers(step2_data["parameters"], structure)
             self._add_unit_names(step2_data["parameters"], units)
-            self._add_rmcats_names(step2_data["parameters"], categories)
 
             # Add keys using generate_translation_key
             for param in step2_data["parameters"]:
@@ -1540,6 +1539,7 @@ class Econet300Api:
             )
 
             # Add category information from API structure
+            # This MUST run before _add_rmcats_names to set correct category_index
             category_count = self._add_parameter_categories(
                 parameters_dict, structure, categories
             )
@@ -1547,6 +1547,10 @@ class Econet300Api:
                 "Added category information to %d parameters",
                 category_count,
             )
+
+            # Add rmCatsName from rmCatsNames
+            # This must run AFTER _add_parameter_categories to use corrected category_index
+            self._add_rmcats_names(list(parameters_dict.values()), categories)
 
             # Add lock status to parameters (with lock reasons from rmLocksNames)
             lock_count = self._add_parameter_locks(
@@ -1733,23 +1737,23 @@ class Econet300Api:
         - type 7 = menu group (resets pass_index tracking)
 
         Parameters inherit pass_index from their parent category.
+        Note: category_index is handled separately by _add_parameter_categories().
 
         IMPORTANT: The structure type=1 entry's "index" field refers to the param's
         position in rmParamsData. We use a dictionary keyed by this index to look up
-        the correct category for each param.
+        the correct pass_index for each param.
 
         Args:
             parameters: List of parameter dictionaries to update
             structure: Structure data from rmStructure endpoint
 
         """
-        # Build dictionary mapping param index -> {pass_index, category_index}
+        # Build dictionary mapping param index -> pass_index
         # The structure type=1 "index" field is the param's position in rmParamsData
-        param_structure_map: dict[int, dict[str, int]] = {}
+        param_structure_map: dict[int, int] = {}
         # Also build mapping of param index -> data_id from type 3 entries
         data_id_map: dict[int, str] = {}
         current_pass_index = 0
-        current_category_index = 0
 
         for entry in structure:
             if not isinstance(entry, dict):
@@ -1759,23 +1763,16 @@ class Econet300Api:
             entry_pass_index = entry.get("pass_index", 0)
 
             if entry_type == RM_STRUCTURE_TYPE_MENU_GROUP:
-                # Menu group - this IS the category context (same as _apply_api_categories)
-                # Reset pass_index and update category_index from the menu group's index
+                # Menu group - reset pass_index tracking
                 current_pass_index = 0
-                current_category_index = entry.get("index", 0)
             elif entry_type == RM_STRUCTURE_TYPE_CATEGORY:
-                # Category entry (type 0) - these appear to be sub-items, not main categories
-                # Only update pass_index, don't change category context
+                # Category entry (type 0) - update pass_index
                 current_pass_index = entry_pass_index
-                # Note: Do NOT update current_category_index from type 0 entries
             elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
                 # Parameter entry - map by param index (structure's index field)
                 param_index = entry.get("index")
                 if param_index is not None:
-                    param_structure_map[param_index] = {
-                        "pass_index": current_pass_index,
-                        "category_index": current_category_index,
-                    }
+                    param_structure_map[param_index] = current_pass_index
             elif entry_type == RM_STRUCTURE_TYPE_DATA_REF:
                 # Data reference entry - has data_id for sysParams mapping
                 param_index = entry.get("index")
@@ -1783,21 +1780,18 @@ class Econet300Api:
                 if param_index is not None and data_id is not None:
                     data_id_map[param_index] = data_id
 
-        # Add numbers, pass_index, category_index, and data_id to parameters
+        # Add numbers, pass_index, and data_id to parameters
         # Use the param's index to look up in the structure map
         for param in parameters:
             param_index = param.get("index", 0)
 
             if param_index in param_structure_map:
-                structure_entry = param_structure_map[param_index]
                 param["number"] = param_index  # Number is same as index
-                param["pass_index"] = structure_entry["pass_index"]
-                param["category_index"] = structure_entry["category_index"]
+                param["pass_index"] = param_structure_map[param_index]
             else:
                 # Fallback for params not in structure
                 param["number"] = param_index
                 param["pass_index"] = 0  # Default to user-accessible
-                param["category_index"] = 0
 
             # Add data_id if available from type 3 entries
             if param_index in data_id_map:
@@ -1834,9 +1828,9 @@ class Econet300Api:
     ) -> None:
         """Add category name from rmCatsNames to each parameter.
 
-        Uses the category_index stored by _add_parameter_numbers() to look up
-        the category name from rmCatsNames. This preserves the API's original
-        categorization even when simplified mode is used.
+        Only adds rmCatsName if the parameter was actually assigned a category
+        (i.e., has non-empty categories list). This ensures consistency between
+        category and rmCatsName fields.
 
         The rmCatsName field is used by requires_service_password() to
         detect service/advanced parameters that should be disabled by default.
@@ -1847,14 +1841,19 @@ class Econet300Api:
 
         """
         for param in parameters:
-            category_index = param.get("category_index", 0)
-            if (
-                isinstance(category_index, int)
-                and 0 <= category_index < len(categories)
-                and isinstance(categories[category_index], str)
-            ):
-                param["rmCatsName"] = categories[category_index]
+            # Only set rmCatsName if param has valid category assignment
+            if param.get("categories"):  # Non-empty categories list
+                category_index = param.get("category_index", 0)
+                if (
+                    isinstance(category_index, int)
+                    and 0 <= category_index < len(categories)
+                    and isinstance(categories[category_index], str)
+                ):
+                    param["rmCatsName"] = categories[category_index]
+                else:
+                    param["rmCatsName"] = ""
             else:
+                # No category assigned - keep consistent with empty category
                 param["rmCatsName"] = ""
 
     def _add_parameter_categories(

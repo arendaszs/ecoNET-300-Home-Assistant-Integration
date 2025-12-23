@@ -87,7 +87,7 @@
       "ch_pump_standstill_when_loading_huw": {
         "name": "Postój pompy CO przy ładowaniu CWU"
       },
-      "boiler_inc_by_huw,_mixer": {
+      "boiler_inc_by_huw_mixer": {
         "name": "Podniesienie kotła przez CWU, Mieszacz"
       },
       "extending_huw_pump_operation_time": {

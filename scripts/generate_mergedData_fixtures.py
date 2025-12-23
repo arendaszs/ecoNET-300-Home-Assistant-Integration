@@ -145,14 +145,11 @@ def extract_data_array(json_data: dict | list | None) -> list:
 
 
 def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None:
-    """Add parameter numbers, pass_index, and category_index based on structure data.
+    """Add parameter numbers, pass_index, and data_id based on structure data.
 
     The pass_index field indicates access level:
     - 0 = User accessible (no password required)
     - 1, 2, 3, 4 = Requires service password (should be disabled by default)
-
-    The category_index field stores the original category from rmStructure,
-    used to look up the category name from rmCatsNames.
 
     The structure is hierarchical:
     - type 0 = category entry (can have pass_index > 0)
@@ -160,21 +157,21 @@ def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None
     - type 3 = data reference entry (has data_id field for sysParams mapping)
     - type 7 = menu group (resets pass_index tracking)
 
-    Parameters inherit pass_index and category_index from their parent category.
+    Parameters inherit pass_index from their parent category.
+    Note: category_index is handled separately by add_parameter_categories().
 
     IMPORTANT: The structure type=1 entry's "index" field refers to the param's
     position in rmParamsData. We use a dictionary keyed by this index to look up
-    the correct category for each param.
+    the correct pass_index for each param.
 
     This matches api.py _add_parameter_numbers() method.
     """
-    # Build dictionary mapping param index -> {pass_index, category_index}
+    # Build dictionary mapping param index -> pass_index
     # The structure type=1 "index" field is the param's position in rmParamsData
-    param_structure_map: dict[int, dict[str, int]] = {}
+    param_structure_map: dict[int, int] = {}
     # Also build mapping of param index -> data_id from type 3 entries
     data_id_map: dict[int, str] = {}
     current_pass_index = 0
-    current_category_index = 0
 
     for entry in structure:
         if not isinstance(entry, dict):
@@ -184,23 +181,16 @@ def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None
         entry_pass_index = entry.get("pass_index", 0)
 
         if entry_type == RM_STRUCTURE_TYPE_MENU_GROUP:
-            # Menu group - this IS the category context (same as add_parameter_categories)
-            # Reset pass_index and update category_index from the menu group's index
+            # Menu group - reset pass_index tracking
             current_pass_index = 0
-            current_category_index = entry.get("index", 0)
         elif entry_type == RM_STRUCTURE_TYPE_CATEGORY:
-            # Category entry (type 0) - these appear to be sub-items, not main categories
-            # Only update pass_index, don't change category context
+            # Category entry (type 0) - update pass_index
             current_pass_index = entry_pass_index
-            # Note: Do NOT update current_category_index from type 0 entries
         elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
             # Parameter entry - map by param index (structure's index field)
             param_index = entry.get("index")
             if param_index is not None:
-                param_structure_map[param_index] = {
-                    "pass_index": current_pass_index,
-                    "category_index": current_category_index,
-                }
+                param_structure_map[param_index] = current_pass_index
         elif entry_type == RM_STRUCTURE_TYPE_DATA_REF:
             # Data reference entry - has data_id for sysParams mapping
             param_index = entry.get("index")
@@ -208,21 +198,18 @@ def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None
             if param_index is not None and data_id is not None:
                 data_id_map[param_index] = data_id
 
-    # Add numbers, pass_index, category_index, and data_id to parameters
+    # Add numbers, pass_index, and data_id to parameters
     # Use the param's index to look up in the structure map
     for param in parameters:
         param_index = param.get("index", 0)
 
         if param_index in param_structure_map:
-            structure_entry = param_structure_map[param_index]
             param["number"] = param_index  # Number is same as index
-            param["pass_index"] = structure_entry["pass_index"]
-            param["category_index"] = structure_entry["category_index"]
+            param["pass_index"] = param_structure_map[param_index]
         else:
             # Fallback for params not in structure
             param["number"] = param_index
             param["pass_index"] = 0  # Default to user-accessible
-            param["category_index"] = 0
 
         # Add data_id if available from type 3 entries
         if param_index in data_id_map:
@@ -250,20 +237,26 @@ def add_unit_names(parameters: list[dict], units: list[str]) -> None:
 def add_rmcats_names(parameters: list[dict], categories: list[str]) -> None:
     """Add category name from rmCatsNames to each parameter.
 
-    Uses the category_index stored by add_parameter_numbers() to look up
-    the category name from rmCatsNames.
+    Only adds rmCatsName if the parameter was actually assigned a category
+    (i.e., has non-empty categories list). This ensures consistency between
+    category and rmCatsName fields.
 
     This matches api.py _add_rmcats_names() method.
     """
     for param in parameters:
-        category_index = param.get("category_index", 0)
-        if (
-            isinstance(category_index, int)
-            and 0 <= category_index < len(categories)
-            and isinstance(categories[category_index], str)
-        ):
-            param["rmCatsName"] = categories[category_index]
+        # Only set rmCatsName if param has valid category assignment
+        if param.get("categories"):  # Non-empty categories list
+            category_index = param.get("category_index", 0)
+            if (
+                isinstance(category_index, int)
+                and 0 <= category_index < len(categories)
+                and isinstance(categories[category_index], str)
+            ):
+                param["rmCatsName"] = categories[category_index]
+            else:
+                param["rmCatsName"] = ""
         else:
+            # No category assigned - keep consistent with empty category
             param["rmCatsName"] = ""
 
 
@@ -735,10 +728,6 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
     print("Step 4: Adding unit names from rmParamsUnitsNames...")
     add_unit_names(merged_params, units)
 
-    # Step 4b: Add rmCatsName from rmCatsNames (_add_rmcats_names)
-    print("Step 4b: Adding rmCatsName from rmCatsNames...")
-    add_rmcats_names(merged_params, categories)
-
     # Step 5: Add translation keys (generate_translation_key)
     print("Step 5: Generating translation keys...")
     for param in merged_params:
@@ -762,9 +751,15 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
     )
 
     # Step 8: Add category information (_add_parameter_categories)
-    print("Step 8: Adding category information from rmCatsNames...")
+    # This MUST run before add_rmcats_names to set correct category_index
+    print("Step 8: Adding category information from rmStructure...")
     category_count = add_parameter_categories(parameters_dict, structure, categories)
     print(f"  - Added category info to {category_count} parameter assignments")
+
+    # Step 8b: Add rmCatsName from rmCatsNames (_add_rmcats_names)
+    # This must run AFTER add_parameter_categories to use the corrected category_index
+    print("Step 8b: Adding rmCatsName from rmCatsNames...")
+    add_rmcats_names(list(parameters_dict.values()), categories)
 
     # Step 9: Add lock status (_add_parameter_locks)
     print("Step 9: Adding lock status from rmLocksNames...")
