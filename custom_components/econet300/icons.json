@@ -310,7 +310,7 @@
           "off": "mdi:fire-off",
           "manual": "mdi:fire",
           "auto": "mdi:fire",
-          "service": "mdi:fire",
+          "work": "mdi:fire",
           "test": "mdi:eye",
           "pause": "mdi:pause",
           "error": "mdi:stop",
