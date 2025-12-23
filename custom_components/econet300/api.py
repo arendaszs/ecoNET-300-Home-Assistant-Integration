@@ -1819,7 +1819,7 @@ class Econet300Api:
             if (
                 unit_index is not None
                 and isinstance(unit_index, int)
-                and unit_index < len(units)
+                and 0 <= unit_index < len(units)
                 and isinstance(units[unit_index], str)
             ):
                 param["unit_name"] = units[unit_index]
@@ -1915,7 +1915,7 @@ class Econet300Api:
             entry_index = entry.get("index")
 
             if entry_type == RM_STRUCTURE_TYPE_MENU_GROUP:
-                if isinstance(entry_index, int) and entry_index < len(categories):
+                if isinstance(entry_index, int) and 0 <= entry_index < len(categories):
                     current_category_index = entry_index
             elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
                 if isinstance(entry_index, int) and current_category_index is not None:
