@@ -12,6 +12,8 @@ see: docs/DYNAMIC_ENTITY_VALIDATION.md
 
 import re
 
+from .const import AVAILABLE_NUMBER_OF_MIXERS
+
 
 def camel_to_snake(key: str) -> str:
     """Convert camel case return from API to snake case to match translations keys structure."""
@@ -199,11 +201,11 @@ def extract_device_group_from_name(
     mixer_match = re.search(r"mixer\s*(\d+)", name_lower)
     if mixer_match:
         mixer_num = int(mixer_match.group(1))
-        if 1 <= mixer_num <= 4:
+        if 1 <= mixer_num <= AVAILABLE_NUMBER_OF_MIXERS:
             if for_information:
-                # Information mixer devices are at index 16-19
+                # Information mixer devices use formula: 15 + mixer_num
                 return 15 + mixer_num, f"Information mixer {mixer_num}"
-            # Mixer settings are at index 5-8
+            # Mixer settings use formula: 4 + mixer_num
             return 4 + mixer_num, f"Mixer {mixer_num} settings"
 
     # Check for lambda sensor
