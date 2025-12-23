@@ -22,6 +22,9 @@
     "switch": {
       "boiler_control": {
         "name": "Boiler On/Off"
+      },
+      "buffer_support": {
+        "name": "Buffer Support"
       }
     },
     "select": {

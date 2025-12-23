@@ -22,6 +22,9 @@
     "switch": {
       "boiler_control": {
         "name": "Kocioł Wł/Wył"
+      },
+      "buffer_support": {
+        "name": "Obsługa bufora"
       }
     },
     "select": {

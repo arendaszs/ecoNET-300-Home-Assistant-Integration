@@ -7,6 +7,13 @@
           "on": "mdi:fire",
           "off": "mdi:fire-off"
         }
+      },
+      "buffer_support": {
+        "default": "mdi:water-boiler",
+        "state": {
+          "on": "mdi:water-boiler",
+          "off": "mdi:water-boiler-off"
+        }
       }
     },
     "select": {
