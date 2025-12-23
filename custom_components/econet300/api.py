@@ -21,6 +21,7 @@ from .const import (
     API_REG_PARAMS_DATA_URI,
     API_REG_PARAMS_PARAM_DATA,
     API_REG_PARAMS_URI,
+    API_RM_ACCESS_URI,
     API_RM_ALARMS_NAMES_URI,
     API_RM_CATS_DESCS_URI,
     API_RM_CATS_NAMES_URI,
@@ -43,6 +44,10 @@ from .const import (
     API_SYS_PARAMS_URI,
     CONTROL_PARAMS,
     NUMBER_MAP,
+    RM_STRUCTURE_TYPE_CATEGORY,
+    RM_STRUCTURE_TYPE_DATA_REF,
+    RM_STRUCTURE_TYPE_MENU_GROUP,
+    RM_STRUCTURE_TYPE_PARAMETER,
     RMNEWPARAM_PARAMS,
 )
 from .mem_cache import MemCache
@@ -575,42 +580,49 @@ class Econet300Api:
             _LOGGER.error("Error fetching parameter names: %s", e)
             return None
 
-    async def _authenticate_service(self, password_hash: str) -> bool:
+    async def _authenticate_service(self, password: str) -> bool:
         """Authenticate with service password via rmAccess endpoint.
 
-        This method authenticates with the device using the service password hash
-        from sysParams. Successful authentication may unlock additional service
-        parameters in subsequent API calls.
+        This method authenticates with the device using the service password.
+        Successful authentication unlocks the ability to modify service parameters
+        (those with pass_index > 0) in subsequent API calls.
+
+        Based on dev_set1.js: rmAccess?password=<password>
 
         Args:
-            password_hash: SHA512 hash of the service password from sysParams
+            password: The service password (or password hash from sysParams)
 
         Returns:
             True if authentication successful, False otherwise
 
         """
         try:
-            url = f"{self.host}/econet/password"
-            _LOGGER.debug("Authenticating with service password")
+            url = f"{self.host}/econet/{API_RM_ACCESS_URI}"
+            _LOGGER.debug("Authenticating with service password via rmAccess")
 
-            async with self._client._session.post(
-                url, json={"password": password_hash}
-            ) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    if data.get("access"):
-                        _LOGGER.info(
-                            "Service authentication successful (index: %s, level: %s)",
-                            data.get("index", 0),
-                            data.get("level", "unknown"),
+            async with asyncio.timeout(10):
+                async with self._client._session.get(
+                    url, params={"password": password}, auth=self._client._auth
+                ) as response:
+                    if response.status == HTTPStatus.OK:
+                        data = await response.json()
+                        access = data.get("access", False)
+                        if access:
+                            _LOGGER.info(
+                                "Service authentication successful (access level: %s)",
+                                data.get("index", data.get("level", "unknown")),
+                            )
+                            return True
+                        _LOGGER.debug(
+                            "Service authentication denied: access=%s", access
                         )
-                        return True
-                    _LOGGER.debug("Service authentication denied: access=False")
-                else:
-                    _LOGGER.debug(
-                        "Service authentication failed: HTTP %s", response.status
-                    )
-        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+                    else:
+                        _LOGGER.debug(
+                            "Service authentication failed: HTTP %s", response.status
+                        )
+        except asyncio.TimeoutError:
+            _LOGGER.debug("Service authentication timed out")
+        except (aiohttp.ClientError, ValueError) as e:
             _LOGGER.debug("Service authentication error: %s", e)
         except Exception as e:
             _LOGGER.debug("Service authentication unexpected error: %s", e)
@@ -1551,7 +1563,8 @@ class Econet300Api:
             param_structure_entries = [
                 item
                 for item in structure
-                if isinstance(item, dict) and item.get("type") == 1
+                if isinstance(item, dict)
+                and item.get("type") == RM_STRUCTURE_TYPE_PARAMETER
             ]
 
             _LOGGER.debug(
@@ -1745,16 +1758,16 @@ class Econet300Api:
             entry_type = entry.get("type")
             entry_pass_index = entry.get("pass_index", 0)
 
-            if entry_type == 7:
+            if entry_type == RM_STRUCTURE_TYPE_MENU_GROUP:
                 # Menu group - only reset pass_index, keep category context
                 current_pass_index = 0
                 # Note: Do NOT reset current_category_index here
                 # Parameters should inherit the last seen category
-            elif entry_type == 0:
+            elif entry_type == RM_STRUCTURE_TYPE_CATEGORY:
                 # Category entry - update tracking for subsequent params
                 current_pass_index = entry_pass_index
                 current_category_index = entry.get("index", 0)
-            elif entry_type == 1:
+            elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
                 # Parameter entry - map by param index (structure's index field)
                 param_index = entry.get("index")
                 if param_index is not None:
@@ -1762,7 +1775,7 @@ class Econet300Api:
                         "pass_index": current_pass_index,
                         "category_index": current_category_index,
                     }
-            elif entry_type == 3:
+            elif entry_type == RM_STRUCTURE_TYPE_DATA_REF:
                 # Data reference entry - has data_id for sysParams mapping
                 param_index = entry.get("index")
                 data_id = entry.get("data_id")
@@ -1901,10 +1914,10 @@ class Econet300Api:
             entry_type = entry.get("type")
             entry_index = entry.get("index")
 
-            if entry_type == 7:  # Category/menu group
+            if entry_type == RM_STRUCTURE_TYPE_MENU_GROUP:
                 if isinstance(entry_index, int) and entry_index < len(categories):
                     current_category_index = entry_index
-            elif entry_type == 1:  # Parameter
+            elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
                 if isinstance(entry_index, int) and current_category_index is not None:
                     category_name = categories[current_category_index]
                     if entry_index not in param_to_categories:
@@ -1977,7 +1990,7 @@ class Econet300Api:
             entry_lock = entry.get("lock", False)
             entry_lock_index = entry.get("lock_index")
 
-            if entry_type == 1:  # Parameter
+            if entry_type == RM_STRUCTURE_TYPE_PARAMETER:
                 if entry_index is not None:
                     param_to_lock[entry_index] = (entry_lock, entry_lock_index)
 

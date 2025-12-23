@@ -103,8 +103,24 @@ API_RM_EXISTING_LANGS_URI = "rmExistingLangs"
 API_RM_LOCKS_NAMES_URI = "rmLocksNames"
 API_RM_ALARMS_NAMES_URI = "rmAlarmsNames"
 
+# RM endpoints for authentication and parameter modification
+API_RM_ACCESS_URI = "rmAccess"  # Service password authentication
+API_RM_NEW_PARAM_URI = "rmNewParam"  # Save parameter by index
+API_RM_CURR_NEW_PARAM_URI = "rmCurrNewParam"  # Save current param by key
+
 # RM endpoint data key (all endpoints use "data" as the key)
 API_RM_DATA_KEY = "data"
+
+# =============================================================================
+# RM STRUCTURE ENTRY TYPES
+# =============================================================================
+# These constants define the entry types in rmStructure API response
+# Each entry in the structure has a "type" field indicating its purpose
+
+RM_STRUCTURE_TYPE_CATEGORY = 0  # Category entry - defines category context
+RM_STRUCTURE_TYPE_PARAMETER = 1  # Editable parameter entry
+RM_STRUCTURE_TYPE_DATA_REF = 3  # Data reference (read-only, has data_id)
+RM_STRUCTURE_TYPE_MENU_GROUP = 7  # Menu group/header (resets pass_index)
 
 # =============================================================================
 # OPERATION MODES AND STATUS MAPPINGS

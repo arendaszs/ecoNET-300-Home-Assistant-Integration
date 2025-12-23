@@ -42,6 +42,13 @@ from pathlib import Path
 # Add parent directory to path for imports from custom_components
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from custom_components.econet300.const import (
+    RM_STRUCTURE_TYPE_CATEGORY,
+    RM_STRUCTURE_TYPE_DATA_REF,
+    RM_STRUCTURE_TYPE_MENU_GROUP,
+    RM_STRUCTURE_TYPE_PARAMETER,
+)
+
 # Category constants removed - we now always use API structure categories
 
 
@@ -176,16 +183,16 @@ def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None
         entry_type = entry.get("type")
         entry_pass_index = entry.get("pass_index", 0)
 
-        if entry_type == 7:
+        if entry_type == RM_STRUCTURE_TYPE_MENU_GROUP:
             # Menu group - only reset pass_index, keep category context
             current_pass_index = 0
             # Note: Do NOT reset current_category_index here
             # Parameters should inherit the last seen category
-        elif entry_type == 0:
+        elif entry_type == RM_STRUCTURE_TYPE_CATEGORY:
             # Category entry - update tracking for subsequent params
             current_pass_index = entry_pass_index
             current_category_index = entry.get("index", 0)
-        elif entry_type == 1:
+        elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
             # Parameter entry - map by param index (structure's index field)
             param_index = entry.get("index")
             if param_index is not None:
@@ -193,7 +200,7 @@ def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None
                     "pass_index": current_pass_index,
                     "category_index": current_category_index,
                 }
-        elif entry_type == 3:
+        elif entry_type == RM_STRUCTURE_TYPE_DATA_REF:
             # Data reference entry - has data_id for sysParams mapping
             param_index = entry.get("index")
             data_id = entry.get("data_id")
@@ -287,10 +294,10 @@ def add_parameter_categories(
         entry_type = entry.get("type")
         entry_index = entry.get("index")
 
-        if entry_type == 0:  # Category entry - update current category
+        if entry_type == RM_STRUCTURE_TYPE_CATEGORY:
             if isinstance(entry_index, int) and entry_index < len(categories):
                 current_category_index = entry_index
-        elif entry_type == 1:  # Parameter entry
+        elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
             if isinstance(entry_index, int) and current_category_index is not None:
                 category_name = categories[current_category_index]
                 if entry_index not in param_to_categories:
@@ -349,7 +356,7 @@ def add_parameter_locks(
         entry_lock = entry.get("lock", False)
         entry_lock_index = entry.get("lock_index")
 
-        if entry_type == 1:  # Parameter
+        if entry_type == RM_STRUCTURE_TYPE_PARAMETER:
             if entry_index is not None:
                 param_to_lock[entry_index] = (entry_lock, entry_lock_index)
 
