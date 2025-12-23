@@ -13,35 +13,24 @@ This module tests:
 
 import json
 import re
-
-# Add the custom_components directory to the path
-import sys
 from pathlib import Path
 
 import pytest
 
-custom_components_path = str(
-    Path(__file__).parent.parent / "custom_components" / "econet300"
+from custom_components.econet300.common_functions import camel_to_snake
+from custom_components.econet300.const import (
+    BINARY_SENSOR_MAP_KEY,
+    DEFAULT_BINARY_SENSORS,
+    DEFAULT_SENSORS,
+    ECOMAX360I_SENSORS,
+    ECOSTER_SENSORS,
+    ENTITY_BINARY_DEVICE_CLASS_MAP,
+    ENTITY_NUMBER_SENSOR_DEVICE_CLASS_MAP,
+    ENTITY_SENSOR_DEVICE_CLASS_MAP,
+    LAMBDA_SENSORS,
+    SENSOR_MAP_KEY,
+    SENSOR_MIXER_KEY,
 )
-if custom_components_path not in sys.path:
-    sys.path.insert(0, custom_components_path)
-
-    from common_functions import camel_to_snake  # type: ignore[import-untyped]
-    from const import (  # type: ignore[import-untyped]
-        BINARY_SENSOR_MAP_KEY,
-        DEFAULT_BINARY_SENSORS,
-        DEFAULT_SENSORS,
-        ECOMAX360I_SENSORS,
-        ECOSOL500_BINARY_SENSORS,
-        ECOSOL500_SENSORS,
-        ECOSTER_SENSORS,
-        ENTITY_BINARY_DEVICE_CLASS_MAP,
-        ENTITY_NUMBER_SENSOR_DEVICE_CLASS_MAP,
-        ENTITY_SENSOR_DEVICE_CLASS_MAP,
-        LAMBDA_SENSORS,
-        SENSOR_MAP_KEY,
-        SENSOR_MIXER_KEY,
-    )
 
 # Define paths
 BASE_DIR = Path(__file__).parent.parent
@@ -89,7 +78,6 @@ def all_sensor_keys():
     sensor_keys.update(ECOMAX360I_SENSORS)
     sensor_keys.update(ECOSTER_SENSORS)
     sensor_keys.update(LAMBDA_SENSORS)
-    sensor_keys.update(ECOSOL500_SENSORS)
     sensor_keys.update(DEFAULT_SENSORS)
 
     for sensor_set in SENSOR_MAP_KEY.values():
@@ -111,7 +99,6 @@ def all_binary_sensor_keys():
     """Get all binary sensor keys from constants."""
     binary_keys = set(ENTITY_BINARY_DEVICE_CLASS_MAP.keys())
     binary_keys.update(DEFAULT_BINARY_SENSORS)
-    binary_keys.update(ECOSOL500_BINARY_SENSORS)
 
     for binary_sensor_set in BINARY_SENSOR_MAP_KEY.values():
         if isinstance(binary_sensor_set, set):

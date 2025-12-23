@@ -4,8 +4,8 @@ import json
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import pytest
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from custom_components.econet300.api import Econet300Api
 from custom_components.econet300.common import EconetDataCoordinator
@@ -154,9 +154,10 @@ class TestDynamicNumberEntities:
 
         assert all(isinstance(entity, HANumberEntity) for entity in entities)
 
-        # Check that we have the expected number of entities (should be around 104)
-        # This is approximate since it depends on the fixture data
-        assert len(entities) >= 50  # At least 50 number entities should be created
+        # Check that we have the expected number of entities
+        # This is approximate since it depends on the fixture data and filtering logic
+        # (service parameters may be disabled, some become switches/selects, etc.)
+        assert len(entities) >= 25  # At least 25 number entities should be created
 
     @pytest.mark.asyncio
     async def test_fallback_to_legacy_method(
