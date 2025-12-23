@@ -84,6 +84,9 @@ class EconetSwitch(EconetEntity, SwitchEntity):
         except (OSError, TimeoutError) as e:
             _LOGGER.error("Failed to turn boiler OFF: %s", e)
             EconetSwitch._raise_boiler_control_error(f"Error turning boiler OFF: {e}")
+        except Exception as e:
+            _LOGGER.error("Failed to turn boiler OFF: %s", e)
+            raise
 
     # Classes removed - category support eliminated
 
