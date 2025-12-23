@@ -33,11 +33,11 @@ Examples:
 """
 
 import argparse
+from datetime import datetime
 import json
+from pathlib import Path
 import re
 import sys
-from datetime import datetime
-from pathlib import Path
 
 # Add parent directory to path for imports from custom_components
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -91,6 +91,7 @@ def fix_json_quote_escaping(text: str) -> str:
 
     Returns:
         Fixed JSON text with proper escaping
+
     """
     # Fix double-double-quotes ("") to proper JSON escaping (\")
     # Pattern: look for "" that are inside strings (not at string boundaries)
@@ -158,7 +159,6 @@ def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None
     - type 7 = menu group (resets pass_index tracking)
 
     Parameters inherit pass_index from their parent category.
-    Note: category_index is handled separately by add_parameter_categories().
 
     IMPORTANT: The structure type=1 entry's "index" field refers to the param's
     position in rmParamsData. We use a dictionary keyed by this index to look up
@@ -232,102 +232,6 @@ def add_unit_names(parameters: list[dict], units: list[str]) -> None:
             param["unit_name"] = units[unit_index]
         else:
             param["unit_name"] = ""
-
-
-def add_rmcats_names(parameters: list[dict], categories: list[str]) -> None:
-    """Add category name from rmCatsNames to each parameter.
-
-    Only adds rmCatsName if the parameter was actually assigned a category
-    (i.e., has non-empty categories list). This ensures consistency between
-    category and rmCatsName fields.
-
-    This matches api.py _add_rmcats_names() method.
-    """
-    for param in parameters:
-        # Only set rmCatsName if param has valid category assignment
-        if param.get("categories"):  # Non-empty categories list
-            category_index = param.get("category_index", 0)
-            if (
-                isinstance(category_index, int)
-                and 0 <= category_index < len(categories)
-                and isinstance(categories[category_index], str)
-            ):
-                param["rmCatsName"] = categories[category_index]
-            else:
-                param["rmCatsName"] = ""
-        else:
-            # No category assigned - keep consistent with empty category
-            param["rmCatsName"] = ""
-
-
-def add_parameter_categories(
-    parameters_dict: dict[str, dict],
-    structure: list[dict],
-    categories: list[str],
-) -> int:
-    """Add category information to parameters based on API structure data.
-
-    Uses API structure to map parameters to their categories from rmCatsNames.
-
-    Structure types:
-    - type 0 = category entry (index maps to rmCatsNames array)
-    - type 1 = parameter entry (index is the parameter number)
-    - type 7 = menu separator (resets context but keeps category)
-    """
-    if not categories:
-        return 0
-
-    # Map parameter numbers to their categories from structure
-    param_to_categories: dict[int, list[tuple[int, str]]] = {}
-    current_category_index: int | None = None
-
-    for entry in structure:
-        if not isinstance(entry, dict):
-            continue
-
-        entry_type = entry.get("type")
-        entry_index = entry.get("index")
-
-        if entry_type == RM_STRUCTURE_TYPE_MENU_GROUP:
-            # Menu group (type 7) - this is the category context
-            if isinstance(entry_index, int) and entry_index < len(categories):
-                current_category_index = entry_index
-        elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
-            if isinstance(entry_index, int) and current_category_index is not None:
-                category_name = categories[current_category_index]
-                if entry_index not in param_to_categories:
-                    param_to_categories[entry_index] = []
-                existing_indices = [idx for idx, _ in param_to_categories[entry_index]]
-                if current_category_index not in existing_indices:
-                    param_to_categories[entry_index].append(
-                        (current_category_index, category_name)
-                    )
-
-    # Add categories to parameters
-    category_count = 0
-
-    for param in parameters_dict.values():
-        param_number = param.get("number")
-
-        if isinstance(param_number, int) and param_number in param_to_categories:
-            category_tuples = param_to_categories[param_number]
-            param_category_indices = [idx for idx, _ in category_tuples]
-            param_category_names = [name for _, name in category_tuples]
-            param["categories"] = param_category_names
-            param["category"] = param_category_names[0] if param_category_names else ""
-            param["category_indices"] = param_category_indices
-            param["category_index"] = (
-                param_category_indices[0] if param_category_indices else 0
-            )
-            category_count += len(category_tuples)
-        else:
-            # No category found - mark as empty
-            param["categories"] = []
-            param["category"] = ""
-            param["category_indices"] = []
-            param["category_index"] = 0
-
-    return category_count
 
 
 def add_parameter_locks(
@@ -667,7 +571,6 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
     structure_json = load_json_file(device_path / "rmStructure.json")
     units_json = load_json_file(device_path / "rmParamsUnitsNames.json")
     enums_json = load_json_file(device_path / "rmParamsEnums.json")
-    cats_json = load_json_file(device_path / "rmCatsNames.json")
     locks_json = load_json_file(device_path / "rmLocksNames.json")
 
     # Extract data arrays
@@ -677,7 +580,6 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
     structure = extract_data_array(structure_json)
     units = extract_data_array(units_json)
     enums = extract_data_array(enums_json)
-    categories = extract_data_array(cats_json)
     lock_names = extract_data_array(locks_json)
 
     if not params_data:
@@ -750,25 +652,14 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
         f"  - Added {unit_enum_count} enums from unit/offset, {struct_enum_count} from structure, {smart_enum_count} smart-detected"
     )
 
-    # Step 8: Add category information (_add_parameter_categories)
-    # This MUST run before add_rmcats_names to set correct category_index
-    print("Step 8: Adding category information from rmStructure...")
-    category_count = add_parameter_categories(parameters_dict, structure, categories)
-    print(f"  - Added category info to {category_count} parameter assignments")
-
-    # Step 8b: Add rmCatsName from rmCatsNames (_add_rmcats_names)
-    # This must run AFTER add_parameter_categories to use the corrected category_index
-    print("Step 8b: Adding rmCatsName from rmCatsNames...")
-    add_rmcats_names(list(parameters_dict.values()), categories)
-
-    # Step 9: Add lock status (_add_parameter_locks)
-    print("Step 9: Adding lock status from rmLocksNames...")
+    # Step 7: Add lock status (_add_parameter_locks)
+    print("Step 7: Adding lock status from rmLocksNames...")
     lock_count = add_parameter_locks(parameters_dict, structure, lock_names)
     print(f"  - Found {lock_count} locked parameters")
 
     # Build final structure (matches api.py output format)
     merged_data = {
-        "version": "1.0-names-descs-structure-units-indexed-enums-categories-locks-cleaned",
+        "version": "1.0-names-descs-structure-units-indexed-enums-locks-cleaned",
         "timestamp": datetime.now().isoformat(),
         "device": {
             "uid": f"{device_folder}-device",
@@ -797,7 +688,6 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
             "rmStructure": "Menu structure and parameter numbers",
             "rmParamsUnitsNames": "Unit symbols",
             "rmParamsEnums": "Enumeration values",
-            "rmCatsNames": "Category names",
             "rmLocksNames": "Lock reason messages",
         },
     }

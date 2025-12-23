@@ -59,33 +59,6 @@ def generate_translation_key(name: str) -> str:
     return re.sub(r"(\w+)(\d+)_(\w+)", r"\1\2_\3", key)
 
 
-def get_parameter_type_from_category(category_name: str | None) -> str:
-    """Determine parameter type (basic/service/advanced) from category name.
-
-    Args:
-        category_name: Category name from rmCatsNames (e.g., "Service Settings")
-
-    Returns:
-        'basic', 'service', or 'advanced'
-
-    """
-    if not category_name:
-        return "basic"
-
-    category_lower = category_name.lower()
-
-    # Service categories
-    if "service" in category_lower:
-        return "service"
-
-    # Advanced categories
-    if "advanced" in category_lower:
-        return "advanced"
-
-    # Basic categories (user-friendly)
-    return "basic"
-
-
 def requires_service_password(param: dict) -> bool:
     """Check if parameter requires service password (should be disabled by default).
 
@@ -108,62 +81,6 @@ def requires_service_password(param: dict) -> bool:
         return True
 
     return False
-
-
-def is_information_category(category_name: str | None) -> bool:
-    """Check if category is an Information category (read-only sensor).
-
-    Information categories should create read-only sensor entities,
-    not editable number entities.
-
-    Args:
-        category_name: Category name from rmCatsNames (e.g., "Information")
-
-    Returns:
-        True if category is Information type
-
-    """
-    if not category_name:
-        return False
-
-    category_lower = category_name.lower()
-    return "information" in category_lower
-
-
-def sanitize_category_for_device_id(category_name: str) -> str:
-    """Sanitize category name for use in device identifiers.
-
-    Args:
-        category_name: Category name from rmCatsNames (e.g., "Output modulation")
-
-    Returns:
-        Sanitized identifier safe for device IDs (e.g., "output_modulation")
-
-    """
-    if not category_name:
-        return ""
-
-    # Use similar logic to generate_translation_key
-    key = category_name.replace(" ", "_")
-    key = key.replace("%", "percent")
-    key = key.replace(".", "")
-    key = key.replace("-", "_")
-    key = key.replace("(", "")
-    key = key.replace(")", "")
-    key = key.replace(":", "")
-    key = key.replace("'", "")
-    key = key.replace('"', "")
-    key = key.replace("/", "_")
-    key = key.lower()
-
-    # Remove any remaining non-alphanumeric characters except underscore
-    key = re.sub(r"[^a-z0-9_]", "", key)
-
-    # Replace multiple underscores with single underscore
-    key = re.sub(r"_+", "_", key)
-
-    # Remove leading/trailing underscores
-    return key.strip("_")
 
 
 def extract_device_group_from_name(
@@ -412,12 +329,11 @@ def should_be_switch_entity(param: dict) -> bool:
                 return False
         except (ValueError, TypeError):
             pass
-    else:
-        # Fallback: require exactly 2 enum values when min/max unavailable
-        # This prevents 3+ option enums (e.g., ["off", "on", "auto"]) from being
-        # misclassified as switches just because their first 2 values match a binary pattern
-        if len(enum_values) != 2:
-            return False
+    # Fallback: require exactly 2 enum values when min/max unavailable
+    # This prevents 3+ option enums (e.g., ["off", "on", "auto"]) from being
+    # misclassified as switches just because their first 2 values match a binary pattern
+    elif len(enum_values) != 2:
+        return False
 
     # Check if enum values represent binary pattern
     return is_binary_enum(enum_values)

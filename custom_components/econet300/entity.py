@@ -9,7 +9,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
-from .common_functions import sanitize_category_for_device_id
 from .const import (
     DEVICE_INFO_CONTROLLER_NAME,
     DEVICE_INFO_ECOSTER_NAME,
@@ -361,63 +360,6 @@ class EcoSterEntity(EconetEntity):
         return DeviceInfo(
             identifiers={(DOMAIN, f"{self.api.uid}-ecoster-{self._idx}")},
             name=f"{DEVICE_INFO_ECOSTER_NAME} {self._idx}",
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            model_id=self.api.model_id,
-            configuration_url=self.api.host,
-            sw_version=self.api.sw_rev,
-            via_device=(DOMAIN, self.api.uid),
-        )
-
-
-class MenuCategoryEntity(EconetEntity):
-    """Entity grouped by menu category index for dynamic parameters.
-
-    This entity type creates Home Assistant devices based on the ecoNET
-    controller menu structure (rmCatsNames). Each unique category index
-    creates a separate device, allowing parameters to be grouped by their
-    menu location.
-    """
-
-    def __init__(
-        self,
-        description: EntityDescription,
-        coordinator: EconetDataCoordinator,
-        api: Econet300Api,
-        category_index: int,
-        category_name: str,
-    ):
-        """Initialize the MenuCategoryEntity.
-
-        Args:
-            description: Entity description with key, name, etc.
-            coordinator: Data coordinator for updates
-            api: API instance for device info
-            category_index: Index into rmCatsNames array
-            category_name: Human-readable category name from rmCatsNames
-
-        """
-        self.entity_description = description
-        self.api = api
-        self._category_index = category_index
-        self._category_name = category_name
-        super().__init__(coordinator, api)
-
-    @property
-    def device_info(self) -> DeviceInfo | None:
-        """Return device info grouping by menu category.
-
-        Creates a unique device for each menu category name,
-        using the sanitized category name as the device identifier.
-        This ensures entities with the same category name are grouped
-        together regardless of their category_index.
-        """
-        # Use sanitized category name for identifier to avoid duplicate devices
-        # when same category name has different indices
-        sanitized_name = sanitize_category_for_device_id(self._category_name)
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{self.api.uid}-menu-{sanitized_name}")},
-            name=self._category_name,
             manufacturer=DEVICE_INFO_MANUFACTURER,
             model=DEVICE_INFO_MODEL,
             model_id=self.api.model_id,

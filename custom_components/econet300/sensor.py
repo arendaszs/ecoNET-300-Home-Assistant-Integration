@@ -1,8 +1,8 @@
 """Sensor for Econet300."""
 
-import logging
 from collections.abc import Callable
 from dataclasses import dataclass
+import logging
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -11,16 +11,12 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
-from .common_functions import (
-    camel_to_snake,
-    extract_device_group_from_name,
-    is_information_category,
-)
+from .common_functions import camel_to_snake
 from .const import (
     DOMAIN,
     ENTITY_CATEGORY,
@@ -34,13 +30,7 @@ from .const import (
     SERVICE_COORDINATOR,
     STATE_CLASS_MAP,
 )
-from .entity import (
-    EconetEntity,
-    EcoSterEntity,
-    LambdaEntity,
-    MenuCategoryEntity,
-    MixerEntity,
-)
+from .entity import EconetEntity, EcoSterEntity, LambdaEntity, MixerEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -218,107 +208,6 @@ class InformationDynamicSensor(EconetEntity, SensorEntity):
                 break
 
         return None
-
-
-class MenuCategorySensor(MenuCategoryEntity, SensorEntity):  # type: ignore[misc]
-    """Dynamic sensor entity grouped by menu category.
-
-    This entity type creates sensor entities that are grouped into
-    Home Assistant devices based on the ecoNET controller menu structure.
-    Each unique category index creates a separate device.
-
-    Note: type: ignore[misc] is used because of entity_description type
-    conflict between MenuCategoryEntity and SensorEntity base classes.
-    """
-
-    entity_description: EconetSensorEntityDescription
-
-    def __init__(
-        self,
-        entity_description: EconetSensorEntityDescription,
-        coordinator: EconetDataCoordinator,
-        api: Econet300Api,
-        category_index: int,
-        category_name: str,
-        param_id: str,
-    ):
-        """Initialize a new MenuCategorySensor.
-
-        Args:
-            entity_description: Entity description with key, name, etc.
-            coordinator: Data coordinator for updates
-            api: API instance for device info
-            category_index: Index into rmCatsNames array
-            category_name: Human-readable category name from rmCatsNames
-            param_id: Parameter ID for looking up value in merged data
-
-        """
-        super().__init__(
-            entity_description, coordinator, api, category_index, category_name
-        )
-        self._param_id = param_id
-        self._attr_native_value: float | str | None = None
-
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Handle updated data from the coordinator."""
-        if self.coordinator.data is None:
-            return
-
-        merged_data = self.coordinator.data.get("mergedData", {})
-        if not merged_data:
-            return
-
-        merged_parameters = merged_data.get("parameters", {})
-        if not merged_parameters:
-            return
-
-        # Look up value using param_id
-        param_data = merged_parameters.get(self._param_id)
-        if param_data and isinstance(param_data, dict):
-            value = param_data.get("value")
-            if value is not None:
-                self._sync_state(value)
-                self.async_write_ha_state()
-
-    def _sync_state(self, value) -> None:
-        """Sync the state of the menu category sensor entity."""
-        _LOGGER.debug(
-            "MenuCategorySensor _sync_state for entity %s (param_id=%s): %s",
-            self.entity_description.key,
-            self._param_id,
-            value,
-        )
-        if value is not None:
-            try:
-                self._attr_native_value = float(value)
-            except (ValueError, TypeError):
-                # Keep as string if can't convert to float
-                self._attr_native_value = value
-
-    async def async_added_to_hass(self) -> None:
-        """Handle entity added to Home Assistant."""
-        await super().async_added_to_hass()
-
-        # Initialize value from coordinator data
-        if self.coordinator.data is None:
-            return
-
-        merged_data = self.coordinator.data.get("mergedData", {})
-        if not merged_data:
-            return
-
-        merged_parameters = merged_data.get("parameters", {})
-        param_data = merged_parameters.get(self._param_id)
-        if param_data and isinstance(param_data, dict):
-            value = param_data.get("value")
-            if value is not None:
-                self._sync_state(value)
-                _LOGGER.debug(
-                    "Initialized MenuCategorySensor %s with value %s",
-                    self.entity_description.key,
-                    value,
-                )
 
 
 def create_sensor_entity_description(key: str) -> EconetSensorEntityDescription:
@@ -627,168 +516,6 @@ def create_ecoster_sensors(coordinator: EconetDataCoordinator, api: Econet300Api
     return entities
 
 
-def create_dynamic_information_sensor_entity_description(
-    param_id: str, param: dict[str, Any]
-) -> EconetSensorEntityDescription:
-    """Create sensor entity description for Information category parameter.
-
-    Args:
-        param_id: Parameter ID
-        param: Parameter dictionary from merged data
-
-    Returns:
-        Sensor entity description
-
-    """
-    param_name = param.get("name", f"Parameter {param_id}")
-    unit_name = param.get("unit_name", "")
-    param_key = param.get("key", f"info_{param_id}")
-
-    return EconetSensorEntityDescription(
-        key=f"info_{param_key}",
-        name=param_name,
-        translation_key=param_key,
-        native_unit_of_measurement=unit_name if unit_name else None,
-        state_class=SensorStateClass.MEASUREMENT,
-        suggested_display_precision=1 if unit_name else 0,
-    )
-
-
-def create_information_sensors(
-    merged_data: dict[str, Any],
-    coordinator: EconetDataCoordinator,
-    api: Econet300Api,
-) -> list[SensorEntity]:
-    """Create read-only sensor entities for Information category parameters.
-
-    Creates MenuCategorySensor entities grouped by menu category index when
-    available, falling back to InformationDynamicSensor for parameters
-    without category index.
-
-    Args:
-        merged_data: Merged parameter data
-        coordinator: Data coordinator
-        api: API instance
-
-    Returns:
-        List of Information sensor entities (MenuCategorySensor or InformationDynamicSensor)
-
-    """
-    entities: list[SensorEntity] = []
-
-    if not merged_data or "parameters" not in merged_data:
-        return entities
-
-    parameters = merged_data.get("parameters", {})
-    _LOGGER.info(
-        "Creating Information sensor entities from %d parameters", len(parameters)
-    )
-
-    # Track created entity keys to avoid duplicates
-    created_entity_keys: set[str] = set()
-
-    for param_id, param in parameters.items():
-        if not isinstance(param, dict):
-            continue
-
-        # Get parameter key - this is what determines uniqueness
-        param_key = param.get("key", f"info_{param_id}")
-
-        # Skip if we've already created an entity for this parameter key
-        if param_key in created_entity_keys:
-            _LOGGER.debug(
-                "Skipping parameter %s - sensor for key '%s' already created",
-                param_id,
-                param_key,
-            )
-            continue
-
-        # Get all categories for this parameter
-        categories = param.get("categories", [param.get("category", "")])
-        if not categories:
-            continue
-
-        # Check if any category is Information
-        has_information_category = any(
-            is_information_category(cat) for cat in categories
-        )
-
-        if not has_information_category:
-            continue
-
-        # Create sensor entity for Information category
-        param_number = param.get("number")
-        if param_number is None:
-            continue
-
-        entity_description = create_dynamic_information_sensor_entity_description(
-            param_id, param
-        )
-
-        # Get category info for menu-based device grouping
-        category_index = param.get("category_index")
-        category_indices = param.get("category_indices", [])
-
-        # First, try to extract device group from parameter name (for better grouping)
-        param_name = param.get("name", "")
-        name_based_index, name_based_category = extract_device_group_from_name(
-            param_name, for_information=True
-        )
-
-        # Use name-based grouping if found, otherwise fall back to structure-based
-        info_category_index = name_based_index
-        info_category_name = name_based_category
-
-        if info_category_index is None:
-            # Fall back to finding the first Information category from structure
-            for i, cat in enumerate(categories):
-                if is_information_category(cat):
-                    # Use the corresponding index from category_indices
-                    if i < len(category_indices):
-                        info_category_index = category_indices[i]
-                    elif category_index is not None:
-                        info_category_index = category_index
-                    info_category_name = cat
-                    break
-
-        # Create entity - use MenuCategorySensor if we have category info
-        entity: SensorEntity
-        if info_category_index is not None and info_category_name:
-            entity = MenuCategorySensor(
-                entity_description,
-                coordinator,
-                api,
-                info_category_index,
-                info_category_name,
-                param_id,
-            )
-            _LOGGER.debug(
-                "Created MenuCategorySensor: %s (param %d, category: %s, index: %d)",
-                entity_description.key,
-                param_number,
-                info_category_name,
-                info_category_index,
-            )
-        else:
-            entity = InformationDynamicSensor(
-                entity_description, coordinator, api, param_number
-            )
-            _LOGGER.debug(
-                "Created InformationDynamicSensor: %s (param %d, categories: %s)",
-                entity_description.key,
-                param_number,
-                categories,
-            )
-
-        entities.append(entity)
-
-        # Track parameter key to avoid duplicates
-        created_entity_keys.add(param_key)
-
-    _LOGGER.info("Created %d Information sensor entities", len(entities))
-    return entities
-
-
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -822,18 +549,6 @@ async def async_setup_entry(
         ecoster_sensors = create_ecoster_sensors(coordinator, api)
         _LOGGER.info("Collected %d ecoSTER sensors", len(ecoster_sensors))
         entities.extend(ecoster_sensors)
-
-        # Gather Information category sensors (read-only from merged data)
-        if coordinator.data:
-            merged_data = coordinator.data.get("mergedData")
-            if merged_data:
-                information_sensors = create_information_sensors(
-                    merged_data, coordinator, api
-                )
-                _LOGGER.info(
-                    "Collected %d Information sensors", len(information_sensors)
-                )
-                entities.extend(information_sensors)
 
         _LOGGER.info("Total entities collected: %d", len(entities))
         return entities

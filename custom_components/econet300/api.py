@@ -1,11 +1,11 @@
 """Econet300 API class describing methods of getting and setting data."""
 
 import asyncio
+from datetime import datetime
+from http import HTTPStatus
 import json
 import logging
 import re
-from datetime import datetime
-from http import HTTPStatus
 from typing import Any
 
 import aiohttp
@@ -23,8 +23,6 @@ from .const import (
     API_REG_PARAMS_URI,
     API_RM_ACCESS_URI,
     API_RM_ALARMS_NAMES_URI,
-    API_RM_CATS_DESCS_URI,
-    API_RM_CATS_NAMES_URI,
     API_RM_CURRENT_DATA_PARAMS_EDITS_URI,
     API_RM_CURRENT_DATA_PARAMS_URI,
     API_RM_DATA_KEY,
@@ -159,6 +157,7 @@ class EconetClient:
 
         Returns:
             Parsed JSON data, or None if request fails
+
         """
         attempt = 1
         max_attempts = 5
@@ -822,68 +821,6 @@ class Econet300Api:
             _LOGGER.error("Error fetching parameter units: %s", e)
             return None
 
-    async def fetch_rm_cats_names(self, lang: str = "en") -> dict[str, Any] | None:
-        """Fetch category names from rmCatsNames endpoint.
-
-        This endpoint provides category names for organizing parameters in the web interface.
-
-        Args:
-            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
-
-        Returns:
-            Dictionary containing category names.
-            None if the request fails.
-
-        """
-        try:
-            url = (
-                f"{self.host}/econet/{API_RM_CATS_NAMES_URI}?uid={self.uid}&lang={lang}"
-            )
-            _LOGGER.debug("Fetching category names from: %s", url)
-
-            data = await self._client.get(url)
-            if data is None:
-                _LOGGER.warning("Failed to fetch category names from rmCatsNames")
-                return None
-
-            return data.get(API_RM_DATA_KEY, {})
-
-        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
-            _LOGGER.error("Error fetching category names: %s", e)
-            return None
-
-    async def fetch_rm_cats_descs(self, lang: str = "en") -> dict[str, Any] | None:
-        """Fetch category descriptions from rmCatsDescs endpoint.
-
-        This endpoint provides detailed descriptions of parameter categories.
-
-        Args:
-            lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
-
-        Returns:
-            Dictionary containing category descriptions.
-            None if the request fails.
-
-        """
-        try:
-            url = (
-                f"{self.host}/econet/{API_RM_CATS_DESCS_URI}?uid={self.uid}&lang={lang}"
-            )
-            _LOGGER.debug("Fetching category descriptions from: %s", url)
-
-            data = await self._client.get(url)
-            if data is None:
-                _LOGGER.warning(
-                    "Failed to fetch category descriptions from rmCatsDescs"
-                )
-                return None
-
-            return data.get(API_RM_DATA_KEY, {})
-
-        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
-            _LOGGER.error("Error fetching category descriptions: %s", e)
-            return None
-
     async def fetch_rm_structure(
         self, lang: str = "en", password: str | None = None
     ) -> dict[str, Any] | None:
@@ -1454,13 +1391,12 @@ class Econet300Api:
             if not step2_data:
                 return None
 
-            # Fetch additional data in parallel (always include categories for dynamic entities)
+            # Fetch additional data in parallel
             # Pass service password to structure endpoint for potential service params
             tasks = [
                 self.fetch_rm_structure(lang, password=service_password),
                 self.fetch_rm_params_enums(lang),
                 self.fetch_rm_params_units_names(lang),
-                self.fetch_rm_cats_names(lang),
                 self.fetch_rm_locks_names(lang),
             ]
 
@@ -1469,7 +1405,6 @@ class Econet300Api:
             structure: list[dict[str, Any]] = []
             enums: list[dict[str, Any]] = []
             units: list[str] = []
-            categories: list[str] = []
             lock_names: list[str] = []
 
             if (
@@ -1495,13 +1430,7 @@ class Econet300Api:
                 and results[3] is not None
                 and isinstance(results[3], list)
             ):
-                categories = results[3]  # type: ignore[assignment]
-            if (
-                not isinstance(results[4], Exception)
-                and results[4] is not None
-                and isinstance(results[4], list)
-            ):
-                lock_names = results[4]  # type: ignore[assignment]
+                lock_names = results[3]  # type: ignore[assignment]
 
             # Add parameter numbers, units, and keys
             self._add_parameter_numbers(step2_data["parameters"], structure)
@@ -1538,29 +1467,15 @@ class Econet300Api:
                 smart_enum_count,
             )
 
-            # Add category information from API structure
-            # This MUST run before _add_rmcats_names to set correct category_index
-            category_count = self._add_parameter_categories(
-                parameters_dict, structure, categories
-            )
-            _LOGGER.debug(
-                "Added category information to %d parameters",
-                category_count,
-            )
-
-            # Add rmCatsName from rmCatsNames
-            # This must run AFTER _add_parameter_categories to use corrected category_index
-            self._add_rmcats_names(list(parameters_dict.values()), categories)
-
             # Add lock status to parameters (with lock reasons from rmLocksNames)
             lock_count = self._add_parameter_locks(
                 parameters_dict, structure, lock_names
             )
             _LOGGER.debug("Added lock status to %d locked parameters", lock_count)
 
-            # Update version to include categories and locks
+            # Update version to include locks
             step2_data["version"] = (
-                "1.0-names-descs-structure-units-indexed-enums-categories-locks-cleaned"
+                "1.0-names-descs-structure-units-indexed-enums-locks-cleaned"
             )
 
             # Extract parameter entries from structure for logging
@@ -1572,12 +1487,11 @@ class Econet300Api:
             ]
 
             _LOGGER.debug(
-                "Added parameter numbers (%d), units (%d types), enum mappings (%d structure + %d smart), categories (%d) from rmStructure + rmParamsEnums + rmParamsUnitsNames + rmCatsNames. Converted to indexed format with cleaned structure.",
+                "Added parameter numbers (%d), units (%d types), enum mappings (%d structure + %d smart) from rmStructure + rmParamsEnums + rmParamsUnitsNames. Converted to indexed format with cleaned structure.",
                 len(param_structure_entries),
                 len(units),
                 enum_count,
                 smart_enum_count,
-                category_count,
             )
         except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
             _LOGGER.error(
@@ -1820,141 +1734,6 @@ class Econet300Api:
                 param["unit_name"] = units[unit_index]
             else:
                 param["unit_name"] = ""
-
-    def _add_rmcats_names(
-        self,
-        parameters: list[dict[str, Any]],
-        categories: list[str],
-    ) -> None:
-        """Add category name from rmCatsNames to each parameter.
-
-        Only adds rmCatsName if the parameter was actually assigned a category
-        (i.e., has non-empty categories list). This ensures consistency between
-        category and rmCatsName fields.
-
-        The rmCatsName field is used by requires_service_password() to
-        detect service/advanced parameters that should be disabled by default.
-
-        Args:
-            parameters: List of parameter dictionaries to update
-            categories: Category names from rmCatsNames endpoint
-
-        """
-        for param in parameters:
-            # Only set rmCatsName if param has valid category assignment
-            if param.get("categories"):  # Non-empty categories list
-                category_index = param.get("category_index", 0)
-                if (
-                    isinstance(category_index, int)
-                    and 0 <= category_index < len(categories)
-                    and isinstance(categories[category_index], str)
-                ):
-                    param["rmCatsName"] = categories[category_index]
-                else:
-                    param["rmCatsName"] = ""
-            else:
-                # No category assigned - keep consistent with empty category
-                param["rmCatsName"] = ""
-
-    def _add_parameter_categories(
-        self,
-        parameters_dict: dict[str, dict[str, Any]],
-        structure: list[dict[str, Any]],
-        categories: list[str],
-    ) -> int:
-        """Add category information to parameters from API structure.
-
-        Uses device menu structure from rmStructure (as-is from device).
-
-        Args:
-            parameters_dict: Dictionary of parameters indexed by string keys
-            structure: Structure data from rmStructure endpoint
-            categories: Category names from rmCatsNames endpoint
-
-        Returns:
-            Total number of category assignments
-
-        """
-        return self._apply_api_categories(parameters_dict, structure, categories)
-
-    def _apply_api_categories(
-        self,
-        parameters_dict: dict[str, dict[str, Any]],
-        structure: list[dict[str, Any]],
-        categories: list[str],
-    ) -> int:
-        """Apply category assignment from API structure (menu-based).
-
-        Maps parameters to their categories by parsing the structure:
-        - type 7 = category/menu group (index maps to rmCatsNames array)
-        - type 1 = parameter (index is the parameter number)
-        - Parameters follow their category in the structure
-        - Parameters can appear in multiple categories (collects all)
-
-        Args:
-            parameters_dict: Dictionary of parameters indexed by string keys
-            structure: Structure data from rmStructure endpoint
-            categories: Category names from rmCatsNames endpoint
-
-        Returns:
-            Total number of category assignments (may be > number of parameters)
-
-        """
-        if not categories:
-            return 0
-
-        # Map parameter numbers to their categories (can have multiple)
-        param_to_categories: dict[int, list[tuple[int, str]]] = {}
-        current_category_index: int | None = None
-
-        for entry in structure:
-            if not isinstance(entry, dict):
-                continue
-
-            entry_type = entry.get("type")
-            entry_index = entry.get("index")
-
-            if entry_type == RM_STRUCTURE_TYPE_MENU_GROUP:
-                if isinstance(entry_index, int) and 0 <= entry_index < len(categories):
-                    current_category_index = entry_index
-            elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
-                if isinstance(entry_index, int) and current_category_index is not None:
-                    category_name = categories[current_category_index]
-                    if entry_index not in param_to_categories:
-                        param_to_categories[entry_index] = []
-                    existing_indices = [
-                        idx for idx, _ in param_to_categories[entry_index]
-                    ]
-                    if current_category_index not in existing_indices:
-                        param_to_categories[entry_index].append(
-                            (current_category_index, category_name)
-                        )
-
-        # Add categories to parameters
-        category_count = 0
-        for param in parameters_dict.values():
-            param_number = param.get("number")
-            if isinstance(param_number, int) and param_number in param_to_categories:
-                category_tuples = param_to_categories[param_number]
-                param_category_indices = [idx for idx, _ in category_tuples]
-                param_category_names = [name for _, name in category_tuples]
-                param["categories"] = param_category_names
-                param["category"] = (
-                    param_category_names[0] if param_category_names else ""
-                )
-                param["category_indices"] = param_category_indices
-                param["category_index"] = (
-                    param_category_indices[0] if param_category_indices else 0
-                )
-                category_count += len(category_tuples)
-            else:
-                # Parameter not in structure - assign empty category
-                param["categories"] = []
-                param["category"] = ""
-                param["category_indices"] = []
-                param["category_index"] = 0
-
-        return category_count
 
     def _add_parameter_locks(
         self,

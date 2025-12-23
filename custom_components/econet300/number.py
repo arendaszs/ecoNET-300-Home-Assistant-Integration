@@ -1,10 +1,10 @@
 """Base entity number for Econet300."""
 
 import asyncio
+from dataclasses import dataclass
 import logging
 import re
 import traceback
-from dataclasses import dataclass
 from typing import Any
 
 import aiohttp
@@ -15,7 +15,7 @@ from homeassistant.components.number import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -26,8 +26,6 @@ from .common_functions import (
     camel_to_snake,
     extract_device_group_from_name,
     get_lock_reason,
-    get_parameter_type_from_category,
-    is_information_category,
     is_parameter_locked,
     mixer_exists,
     requires_service_password,
@@ -52,7 +50,7 @@ from .const import (
     SERVICE_COORDINATOR,
     UNIT_NAME_TO_HA_UNIT,
 )
-from .entity import EconetEntity, MenuCategoryEntity, MixerEntity
+from .entity import EconetEntity, MixerEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -697,219 +695,6 @@ class AdvancedParameterNumber(EconetNumber):
         )
 
 
-class MenuCategoryNumber(MenuCategoryEntity, NumberEntity):  # type: ignore[misc]
-    """Dynamic number entity grouped by menu category.
-
-    This entity type creates number entities that are grouped into
-    Home Assistant devices based on the ecoNET controller menu structure.
-    Each unique category index creates a separate device.
-
-    Note: type: ignore[misc] is used because of entity_description type
-    conflict between MenuCategoryEntity and NumberEntity base classes.
-    This is a known limitation with multiple inheritance in Python type checking.
-    """
-
-    _attr_entity_category = EntityCategory.CONFIG
-
-    def __init__(
-        self,
-        description: EconetNumberEntityDescription,
-        coordinator: EconetDataCoordinator,
-        api: Econet300Api,
-        category_index: int,
-        category_name: str,
-        param_id: str,
-    ):
-        """Initialize a new instance of the MenuCategoryNumber class.
-
-        Args:
-            description: Entity description with key, name, limits, etc.
-            coordinator: Data coordinator for updates
-            api: API instance for setting values
-            category_index: Index into rmCatsNames array
-            category_name: Human-readable category name from rmCatsNames
-            param_id: Parameter ID for looking up value in merged data
-
-        """
-        super().__init__(description, coordinator, api, category_index, category_name)
-        self._param_id = param_id
-        # Set attributes with defaults for None values
-        self._attr_native_min_value = (
-            description.native_min_value
-            if description.native_min_value is not None
-            else 0.0
-        )
-        self._attr_native_max_value = (
-            description.native_max_value
-            if description.native_max_value is not None
-            else 100.0
-        )
-        self._attr_native_step = (
-            description.native_step if description.native_step is not None else 1.0
-        )
-        self._attr_mode = (
-            description.mode if description.mode is not None else NumberMode.AUTO
-        )
-        self._attr_native_unit_of_measurement = description.native_unit_of_measurement
-        self._attr_native_value: float | None = None
-        # Lock state tracking
-        self._locked: bool = False
-        self._lock_reason: str | None = None
-
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Handle updated data from the coordinator."""
-        if self.coordinator.data is None:
-            return
-
-        merged_data = self.coordinator.data.get("mergedData", {})
-        if not merged_data:
-            return
-
-        merged_parameters = merged_data.get("parameters", {})
-        if not merged_parameters:
-            return
-
-        # Look up value using param_id, trying both string and integer keys
-        param_data = merged_parameters.get(self._param_id)
-        if param_data is None:
-            # Try string version of param_id (handles int param_id with string-keyed dict)
-            param_data = merged_parameters.get(str(self._param_id))
-        if param_data is None and str(self._param_id).isdigit():
-            # Try integer version (handles string param_id with int-keyed dict)
-            param_data = merged_parameters.get(int(self._param_id))
-
-        if param_data and isinstance(param_data, dict):
-            value = param_data.get("value")
-            if value is not None:
-                self._sync_state(value)
-
-            # Update lock state
-            self._locked = param_data.get("locked", False)
-            self._lock_reason = param_data.get("lock_reason")
-
-            self.async_write_ha_state()
-
-    def _sync_state(self, value) -> None:
-        """Sync the state of the menu category number entity."""
-        _LOGGER.debug(
-            "MenuCategoryNumber _sync_state for entity %s (param_id=%s): %s",
-            self.entity_description.key,
-            self._param_id,
-            value,
-        )
-        if value is not None:
-            try:
-                self._attr_native_value = float(value)
-            except (ValueError, TypeError):
-                _LOGGER.warning(
-                    "Could not convert value %s to float for entity %s",
-                    value,
-                    self.entity_description.key,
-                )
-
-    async def async_added_to_hass(self) -> None:
-        """Handle entity added to Home Assistant."""
-        await super().async_added_to_hass()
-
-        # Initialize value from coordinator data
-        if self.coordinator.data is None:
-            return
-
-        merged_data = self.coordinator.data.get("mergedData", {})
-        if not merged_data:
-            return
-
-        merged_parameters = merged_data.get("parameters", {})
-
-        # Look up value using param_id, trying both string and integer keys
-        param_data = merged_parameters.get(self._param_id)
-        if param_data is None:
-            # Try string version of param_id (handles int param_id with string-keyed dict)
-            param_data = merged_parameters.get(str(self._param_id))
-        if param_data is None and str(self._param_id).isdigit():
-            # Try integer version (handles string param_id with int-keyed dict)
-            param_data = merged_parameters.get(int(self._param_id))
-
-        if param_data and isinstance(param_data, dict):
-            value = param_data.get("value")
-            if value is not None:
-                self._sync_state(value)
-
-            # Initialize lock state
-            self._locked = param_data.get("locked", False)
-            self._lock_reason = param_data.get("lock_reason")
-
-            _LOGGER.debug(
-                "Initialized MenuCategoryNumber %s with value %s (locked=%s)",
-                self.entity_description.key,
-                value,
-                self._locked,
-            )
-
-    @property
-    def icon(self) -> str | None:
-        """Return icon for entity."""
-        if self._locked:
-            return "mdi:lock"  # Show lock icon for locked parameters
-        return None
-
-    @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        """Return extra state attributes including lock information."""
-        attrs: dict[str, Any] = {}
-        if self._locked:
-            attrs["locked"] = True
-            if self._lock_reason:
-                attrs["lock_reason"] = self._lock_reason
-        return attrs
-
-    async def async_set_native_value(self, value: float) -> None:
-        """Set the native value of the menu category number entity."""
-        _LOGGER.debug("Set menu category number value: %s", value)
-
-        # Check if parameter is locked
-        if self._locked:
-            reason = self._lock_reason or "Parameter is locked"
-            _LOGGER.warning(
-                "Cannot set value for %s: %s",
-                self.entity_description.key,
-                reason,
-            )
-            raise HomeAssistantError(f"Cannot change value: {reason}")
-
-        try:
-            # Validate value is within bounds
-            if self._attr_native_max_value is not None:
-                if value > self._attr_native_max_value:
-                    _LOGGER.warning(
-                        "Requested value: '%s' exceeds maximum allowed value: '%s'",
-                        value,
-                        self._attr_native_max_value,
-                    )
-                    return
-
-            if self._attr_native_min_value is not None:
-                if value < self._attr_native_min_value:
-                    _LOGGER.warning(
-                        "Requested value: '%s' is below allowed value: '%s'",
-                        value,
-                        self._attr_native_min_value,
-                    )
-                    return
-
-            # Use the API to set the parameter value
-            if not await self.api.set_param(self.entity_description.key, int(value)):
-                _LOGGER.warning("Setting menu category number value failed")
-                return
-
-            self._attr_native_value = value
-            self.async_write_ha_state()
-
-        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
-            _LOGGER.error("Error setting menu category number value: %s", e)
-
-
 def can_add(key: str, coordinator: EconetDataCoordinator) -> bool:
     """Check if a given entity can be added based on the availability of data in the coordinator."""
     try:
@@ -1229,7 +1014,7 @@ def _create_mixer_entity_by_category(
     """Create mixer entity based on category type.
 
     All mixer entities are now grouped into their respective "Mixer X settings"
-    devices using MenuCategoryNumber. Service/advanced params are disabled by default.
+    devices using EconetNumber. Service/advanced params are disabled by default.
 
     Args:
         entity_description: Entity description
@@ -1243,21 +1028,14 @@ def _create_mixer_entity_by_category(
         param: Parameter dictionary (for pass_index check)
 
     Returns:
-        MenuCategoryNumber entity grouped under Mixer device
+        EconetNumber entity grouped under Mixer device
 
     """
-    # Mixer settings devices are at index 5-8 (4 + mixer_num)
-    category_index = 4 + mixer_num
-    category_name = f"Mixer {mixer_num} settings"
-
-    # Create MenuCategoryNumber entity - grouped by mixer device
-    entity = MenuCategoryNumber(
+    # Create EconetNumber entity - categories removed
+    entity = EconetNumber(
         entity_description,
         coordinator,
         api,
-        category_index,
-        category_name,
-        param_id,
     )
 
     # Hide service/advanced params by default per HA documentation
@@ -1269,11 +1047,10 @@ def _create_mixer_entity_by_category(
         entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
 
     _LOGGER.info(
-        "Created mixer number entity: %s (Mixer %d, type: %s, category: %s, enabled_default: %s)",
+        "Created mixer number entity: %s (Mixer %d, type: %s, enabled_default: %s)",
         param_name,
         mixer_num,
         param_type,
-        category_name,
         getattr(entity, "_attr_entity_registry_enabled_default", True),
     )
 
@@ -1292,8 +1069,7 @@ def _create_regular_entity_by_category(
 ) -> NumberEntity:
     """Create regular entity based on category type.
 
-    Uses MenuCategoryNumber to group entities by their menu category index,
-    creating separate Home Assistant devices for each menu section.
+    Uses EconetNumber to create entities (categories removed).
 
     First tries to extract device group from parameter name (for better grouping
     when parameters are miscategorized in rmStructure), then falls back to
@@ -1310,7 +1086,7 @@ def _create_regular_entity_by_category(
         param: Parameter dictionary (should contain category_index)
 
     Returns:
-        MenuCategoryNumber entity grouped by menu category
+        EconetNumber entity
 
     """
     # First, try to extract device group from parameter name (for better grouping)
@@ -1318,29 +1094,13 @@ def _create_regular_entity_by_category(
         param_name, for_information=False
     )
 
-    # Use name-based grouping if found, otherwise fall back to structure-based
-    if name_based_index is not None and name_based_category is not None:
-        category_index = name_based_index
-        effective_category = name_based_category
-        _LOGGER.debug(
-            "Using name-based grouping for %s: %s (index %d)",
-            param_name,
-            effective_category,
-            category_index,
-        )
-    else:
-        # Get category index from param (added by API merge process)
-        category_index = param.get("category_index", 0)
-        effective_category = category
+    # Categories removed - all parameters are now basic
 
-    # Create MenuCategoryNumber entity - grouped by menu category
-    entity = MenuCategoryNumber(
+    # Create EconetNumber entity - categories removed
+    entity = EconetNumber(
         entity_description,
         coordinator,
         api,
-        category_index,
-        effective_category,
-        param_id,  # Pass param_id for value lookup
     )
 
     # Hide service/advanced params by default per HA documentation
@@ -1353,11 +1113,9 @@ def _create_regular_entity_by_category(
         entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
 
     _LOGGER.info(
-        "Created menu category number entity: %s (%s) - category[%d]: %s, type: %s, %s to %s %s, visible_default: %s, enabled_default: %s",
+        "Created number entity: %s (%s) - type: %s, %s to %s %s, visible_default: %s, enabled_default: %s",
         param_name,
         param_id,
-        category_index,
-        effective_category,
         param_type,
         param.get("minv", 0),
         param.get("maxv", 100),
@@ -1412,15 +1170,6 @@ def _create_dynamic_entity_from_param(
         )
         return None
 
-    # Skip Information categories (handled by sensors)
-    if is_information_category(category):
-        _LOGGER.debug(
-            "Skipping Information category '%s' for parameter %s",
-            category,
-            param_id,
-        )
-        return None
-
     # Skip locked parameters - they should be read-only sensors instead
     if is_parameter_locked(param):
         lock_reason = get_lock_reason(param) or "Parameter is locked"
@@ -1434,8 +1183,8 @@ def _create_dynamic_entity_from_param(
     if not should_be_number_entity(param):
         return None
 
-    # Determine parameter type from category
-    param_type = get_parameter_type_from_category(category)
+    # All parameters are basic type now (categories removed)
+    param_type = "basic"
     param_name = param.get("name", f"Parameter {param_id}")
 
     _LOGGER.debug(
@@ -1570,39 +1319,20 @@ async def _create_dynamic_entities_from_merged_data(
             )
             continue
 
-        # Get all categories for this parameter
-        categories = param.get("categories", [param.get("category", "")])
-        if not categories:
-            categories = [param.get("category", "")]
-
-        _LOGGER.debug("Parameter %s has categories: %s", param_id, categories)
-
-        # Iterate through all categories, skip Information (handled by sensors)
-        for category in categories:
-            # Skip Information categories (create read-only sensors instead)
-            if is_information_category(category):
-                _LOGGER.debug(
-                    "Skipping Information category '%s' for parameter %s (will be created as sensor)",
-                    category,
-                    param_id,
-                )
-                continue
-
-            # Create number entity for this category
-            entity = _create_dynamic_entity_from_param(
-                param_id,
-                param,
-                category,
-                coordinator,
-                api,
-                basic_param_ids,
-            )
-            if entity:
-                entities.append(entity)
-                number_entity_count += 1
-                # Track parameter key to avoid duplicates
-                created_entity_keys.add(param_key)
-                break  # Only create one number entity per parameter (first non-Information category)
+        # Create number entity (no category logic since categories removed)
+        entity = _create_dynamic_entity_from_param(
+            param_id,
+            param,
+            "",  # Empty category since categories removed
+            coordinator,
+            api,
+            basic_param_ids,
+        )
+        if entity:
+            entities.append(entity)
+            number_entity_count += 1
+            # Track parameter key to avoid duplicates
+            created_entity_keys.add(param_key)
 
     _LOGGER.debug(
         "Found %d parameters that qualify as number entities",

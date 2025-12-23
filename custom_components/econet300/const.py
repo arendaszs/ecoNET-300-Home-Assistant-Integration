@@ -89,8 +89,6 @@ API_RM_PARAMS_ENUMS_URI = "rmParamsEnums"
 API_RM_PARAMS_UNITS_NAMES_URI = "rmParamsUnitsNames"
 
 # RM endpoints for categories and structure
-API_RM_CATS_NAMES_URI = "rmCatsNames"
-API_RM_CATS_DESCS_URI = "rmCatsDescs"
 API_RM_STRUCTURE_URI = "rmStructure"
 
 # RM endpoints for current data

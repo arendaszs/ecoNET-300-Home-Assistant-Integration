@@ -1,6 +1,6 @@
 {
-  "version": "1.0-names-descs-structure-units-indexed-enums-categories-locks-cleaned",
-  "timestamp": "2025-12-23T15:01:56.844169",
+  "version": "1.0-names-descs-structure-units-indexed-enums-locks-cleaned",
+  "timestamp": "2025-12-23T19:17:58.266236",
   "device": {
     "uid": "ecoMAX810P-L-device",
     "controllerId": "ecoMAX810P-L",
@@ -23,15 +23,6 @@
       "data_id": "1536",
       "unit_name": "%",
       "key": "100percent_blow_in_output",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -61,15 +52,6 @@
         "first": 0,
         "detection_method": "structure_data_id"
       },
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -90,15 +72,6 @@
       "data_id": "1794",
       "unit_name": "sek.",
       "key": "100percent_feeder_interval",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -128,15 +101,6 @@
         "first": 0,
         "detection_method": "structure_data_id"
       },
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -157,15 +121,6 @@
       "data_id": "1540",
       "unit_name": "sek.",
       "key": "50percent_feeder_operation",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -186,15 +141,6 @@
       "data_id": "1541",
       "unit_name": "sek.",
       "key": "50percent_feeder_interval",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -215,15 +161,6 @@
       "data_id": "1542",
       "unit_name": "%",
       "key": "30percent_blow_in_output",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -244,15 +181,6 @@
       "data_id": "1287",
       "unit_name": "sek.",
       "key": "30percent_feeder_operation",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -273,15 +201,6 @@
       "data_id": "1544",
       "unit_name": "sek.",
       "key": "30percent_feeder_interval",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -301,15 +220,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "50percent_h2_hysteresis",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -329,15 +239,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "30percent_h1_hysteresis",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -357,15 +258,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "boiler_hysteresis",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -385,15 +277,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "fl_airfl_correction",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": true,
       "lock_index": 4,
       "lock_reason": "Function unavailable."
@@ -413,15 +296,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "minimum_boiler_output_fl",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": true,
       "lock_index": 4,
       "lock_reason": "Function unavailable."
@@ -441,15 +315,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "maximum_boiler_output_fl",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": true,
       "lock_index": 4,
       "lock_reason": "Function unavailable."
@@ -480,15 +345,6 @@
         "first": 0,
         "detection_method": "smart_detection"
       },
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -508,15 +364,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "parametr_b_fuzzylogic",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -536,15 +383,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "parametr_c_fuzzylogic",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -575,15 +413,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Standard",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -603,15 +432,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "airflow_power_correction_100percent",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -631,15 +451,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "100percent_feeder_work_correction",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -659,15 +470,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "50percent_airflow_power_correction",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -687,15 +489,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "50percent_feeder_work_correction",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -715,15 +508,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "airflow_power_correction_30percent",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -743,15 +527,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "30percent_feeder_work_correction",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -771,15 +546,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "firing_up_airflow",
-      "categories": [
-        "Chimney sweep mode"
-      ],
-      "category": "Chimney sweep mode",
-      "category_indices": [
-        9
-      ],
-      "category_index": 9,
-      "rmCatsName": "Chimney sweep mode",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -809,15 +575,6 @@
         "first": 0,
         "detection_method": "structure_data_id"
       },
-      "categories": [
-        "Chimney sweep mode"
-      ],
-      "category": "Chimney sweep mode",
-      "category_indices": [
-        9
-      ],
-      "category_index": 9,
-      "rmCatsName": "Chimney sweep mode",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -837,15 +594,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "ignition_test_time_2",
-      "categories": [
-        "Chimney sweep mode"
-      ],
-      "category": "Chimney sweep mode",
-      "category_indices": [
-        9
-      ],
-      "category_index": 9,
-      "rmCatsName": "Chimney sweep mode",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -876,15 +624,6 @@
         "first": 0,
         "detection_method": "structure_data_id"
       },
-      "categories": [
-        "Chimney sweep mode"
-      ],
-      "category": "Chimney sweep mode",
-      "category_indices": [
-        9
-      ],
-      "category_index": 9,
-      "rmCatsName": "Chimney sweep mode",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -904,15 +643,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "firing_up_time",
-      "categories": [
-        "Chimney sweep mode"
-      ],
-      "category": "Chimney sweep mode",
-      "category_indices": [
-        9
-      ],
-      "category_index": 9,
-      "rmCatsName": "Chimney sweep mode",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -932,15 +662,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "extempdelta",
-      "categories": [
-        "Chimney sweep mode"
-      ],
-      "category": "Chimney sweep mode",
-      "category_indices": [
-        9
-      ],
-      "category_index": 9,
-      "rmCatsName": "Chimney sweep mode",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -960,15 +681,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "extempdelta_2",
-      "categories": [
-        "Chimney sweep mode"
-      ],
-      "category": "Chimney sweep mode",
-      "category_indices": [
-        9
-      ],
-      "category_index": 9,
-      "rmCatsName": "Chimney sweep mode",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -988,15 +700,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "ex_temp_at_the_end_of_firing_up",
-      "categories": [
-        "Chimney sweep mode"
-      ],
-      "category": "Chimney sweep mode",
-      "category_indices": [
-        9
-      ],
-      "category_index": 9,
-      "rmCatsName": "Chimney sweep mode",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1016,15 +719,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "test_dose",
-      "categories": [
-        "Chimney sweep mode"
-      ],
-      "category": "Chimney sweep mode",
-      "category_indices": [
-        9
-      ],
-      "category_index": 9,
-      "rmCatsName": "Chimney sweep mode",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1044,15 +738,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "supervision_time",
-      "categories": [
-        "Summer/Winter"
-      ],
-      "category": "Summer/Winter",
-      "category_indices": [
-        4
-      ],
-      "category_index": 4,
-      "rmCatsName": "Summer/Winter",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1072,15 +757,6 @@
       "pass_index": 0,
       "unit_name": "sek.",
       "key": "feed_time",
-      "categories": [
-        "Summer/Winter"
-      ],
-      "category": "Summer/Winter",
-      "category_indices": [
-        4
-      ],
-      "category_index": 4,
-      "rmCatsName": "Summer/Winter",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1100,15 +776,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "feed_interval",
-      "categories": [
-        "Summer/Winter"
-      ],
-      "category": "Summer/Winter",
-      "category_indices": [
-        4
-      ],
-      "category_index": 4,
-      "rmCatsName": "Summer/Winter",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1128,15 +795,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "minimum_airflow_output",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1156,15 +814,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "parameter_a_lambda",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1184,15 +833,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "parameter_b_lambda",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1212,15 +852,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "parameter_c_lambda",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1240,15 +871,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "100percent_oxygen",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1268,15 +890,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "50percent_oxygen",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1296,15 +909,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "30percent_oxygen",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        12
-      ],
-      "category_index": 12,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1324,15 +928,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "airflow_correction_range",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1352,15 +947,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "fl_oxygen_correction",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": true,
       "lock_index": 4,
       "lock_reason": "Function unavailable."
@@ -1380,15 +966,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "preset_boiler_temperature",
-      "categories": [
-        "Mixer 3 settings"
-      ],
-      "category": "Mixer 3 settings",
-      "category_indices": [
-        7
-      ],
-      "category_index": 7,
-      "rmCatsName": "Mixer 3 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1408,15 +985,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "min_boiler_temperature",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1436,15 +1004,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "max_boiler_temperature",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1464,15 +1023,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "huw_preset_temperature",
-      "categories": [
-        "Mixer 1 settings"
-      ],
-      "category": "Mixer 1 settings",
-      "category_indices": [
-        5
-      ],
-      "category_index": 5,
-      "rmCatsName": "Mixer 1 settings",
       "locked": true,
       "lock_index": 3,
       "lock_reason": "HUW mode off."
@@ -1492,15 +1042,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "minimum_huw_temperature",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1520,15 +1061,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "maximum_huw_temperature",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1559,15 +1091,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Off",
-      "categories": [
-        "Mixer 1 settings"
-      ],
-      "category": "Mixer 1 settings",
-      "category_indices": [
-        5
-      ],
-      "category_index": 5,
-      "rmCatsName": "Mixer 1 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1587,15 +1110,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "huw_cont_hysteresis",
-      "categories": [
-        "Mixer 1 settings"
-      ],
-      "category": "Mixer 1 settings",
-      "category_indices": [
-        5
-      ],
-      "category_index": 5,
-      "rmCatsName": "Mixer 1 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1625,15 +1139,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Off",
-      "categories": [
-        "Mixer 1 settings"
-      ],
-      "category": "Mixer 1 settings",
-      "category_indices": [
-        5
-      ],
-      "category_index": 5,
-      "rmCatsName": "Mixer 1 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1666,15 +1171,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Winter",
-      "categories": [
-        "HUW settings"
-      ],
-      "category": "HUW settings",
-      "category_indices": [
-        3
-      ],
-      "category_index": 3,
-      "rmCatsName": "HUW settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1694,15 +1190,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "summer_mode_act_temperature",
-      "categories": [
-        "HUW settings"
-      ],
-      "category": "HUW settings",
-      "category_indices": [
-        3
-      ],
-      "category_index": 3,
-      "rmCatsName": "HUW settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1722,15 +1209,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "summer_mode_deact_temperature",
-      "categories": [
-        "HUW settings"
-      ],
-      "category": "HUW settings",
-      "category_indices": [
-        3
-      ],
-      "category_index": 3,
-      "rmCatsName": "HUW settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1750,15 +1228,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "ch_pump_activation_temperature",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1778,15 +1247,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "ch_pump_standstill_when_loading_huw",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1806,15 +1266,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "boiler_inc_by_huw,_mixer",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1834,15 +1285,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "extending_huw_pump_operation_time",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1872,15 +1314,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "No",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1900,15 +1333,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "preset_mixer1_temperature",
-      "categories": [
-        "Mixer 2 settings"
-      ],
-      "category": "Mixer 2 settings",
-      "category_indices": [
-        6
-      ],
-      "category_index": 6,
-      "rmCatsName": "Mixer 2 settings",
       "locked": true,
       "lock_index": 2,
       "lock_reason": "Weather control enabled."
@@ -1928,11 +1352,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "preset_mixer2_temperature",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1952,11 +1371,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "preset_mixer3_temperature",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -1976,11 +1390,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "preset_mixer4_temperature",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2000,15 +1409,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "min_mixer1_temp",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2028,11 +1428,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "min_mixer2_temp",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2052,11 +1447,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "min_mixer3_temp",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2076,11 +1466,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "min_mixer4_temp",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2100,15 +1485,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "max_mixer1_temp",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2128,11 +1504,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "max_mixer2_temp",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2152,11 +1523,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "max_mixer3_temp",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2176,11 +1542,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "max_mixer4_temp",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2200,15 +1561,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer1_room_therm",
-      "categories": [
-        "Mixer 2 settings"
-      ],
-      "category": "Mixer 2 settings",
-      "category_indices": [
-        6
-      ],
-      "category_index": 6,
-      "rmCatsName": "Mixer 2 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2228,11 +1580,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer2_room_therm",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2252,11 +1599,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer3_room_therm",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2276,11 +1618,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer4_room_therm",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2310,15 +1647,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "On",
-      "categories": [
-        "Mixer 2 settings"
-      ],
-      "category": "Mixer 2 settings",
-      "category_indices": [
-        6
-      ],
-      "category_index": 6,
-      "rmCatsName": "Mixer 2 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2348,11 +1676,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "On",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2382,11 +1705,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "On",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2416,11 +1734,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "On",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2440,15 +1753,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "heating_curve_mixer_1",
-      "categories": [
-        "Mixer 2 settings"
-      ],
-      "category": "Mixer 2 settings",
-      "category_indices": [
-        6
-      ],
-      "category_index": 6,
-      "rmCatsName": "Mixer 2 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2468,11 +1772,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "heating_curve_mixer_2",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2492,11 +1791,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "heating_curve_mixer_3",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2516,11 +1810,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "heating_curve_mixer_4",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2552,15 +1841,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Floor on",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2592,11 +1872,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Floor on",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2628,11 +1903,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Floor on",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2664,11 +1934,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Floor on",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2688,15 +1953,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "proportional_range",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2716,11 +1972,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "proportional_range",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2740,11 +1991,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "proportional_range",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2764,11 +2010,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "proportional_range",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2788,15 +2029,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "integration_time_constant",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2816,11 +2048,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "integration_time_constant",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2840,11 +2067,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "integration_time_constant",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2864,11 +2086,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "integration_time_constant",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2898,15 +2115,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Yes",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2936,11 +2144,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "No",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -2970,11 +2173,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "No",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3004,11 +2202,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "No",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3028,15 +2221,6 @@
       "pass_index": 0,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3056,11 +2240,6 @@
       "pass_index": 0,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3080,11 +2259,6 @@
       "pass_index": 0,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3104,11 +2278,6 @@
       "pass_index": 0,
       "unit_name": "sek.",
       "key": "valve_full_opening_time",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3128,15 +2297,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer1_input_dead_zone",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3156,11 +2316,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer2_input_dead_zone",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3180,11 +2335,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer3_input_dead_zone",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3204,11 +2354,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "mixer4_input_dead_zone",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3238,15 +2383,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Off",
-      "categories": [
-        "Mixer 3 settings"
-      ],
-      "category": "Mixer 3 settings",
-      "category_indices": [
-        7
-      ],
-      "category_index": 7,
-      "rmCatsName": "Mixer 3 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3266,15 +2402,6 @@
       "pass_index": 0,
       "unit_name": "",
       "key": "boiler_heating_curve",
-      "categories": [
-        "Mixer 3 settings"
-      ],
-      "category": "Mixer 3 settings",
-      "category_indices": [
-        7
-      ],
-      "category_index": 7,
-      "rmCatsName": "Mixer 3 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3295,15 +2422,6 @@
       "data_id": "113",
       "unit_name": "°C",
       "key": "boiler_cooling_temperature",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3366,11 +2484,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Off",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3432,11 +2545,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Universal",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3498,11 +2606,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Universal",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3565,11 +2668,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Universal",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3632,11 +2730,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Universal",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3656,11 +2749,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "circulating_pump_standstill_time",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3680,11 +2768,6 @@
       "pass_index": 0,
       "unit_name": "sek.",
       "key": "circulating_pump_operation_time",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3704,15 +2787,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "curve_shift",
-      "categories": [
-        "Mixer 3 settings"
-      ],
-      "category": "Mixer 3 settings",
-      "category_indices": [
-        7
-      ],
-      "category_index": 7,
-      "rmCatsName": "Mixer 3 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3732,15 +2806,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "curve_translation",
-      "categories": [
-        "Mixer 2 settings"
-      ],
-      "category": "Mixer 2 settings",
-      "category_indices": [
-        6
-      ],
-      "category_index": 6,
-      "rmCatsName": "Mixer 2 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3760,11 +2825,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "curve_translation",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3784,11 +2844,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "curve_translation",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3808,11 +2863,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "curve_translation",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3842,11 +2892,6 @@
         "detection_method": "smart_detection"
       },
       "enum_value": "OFF",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3876,11 +2921,6 @@
         "detection_method": "smart_detection"
       },
       "enum_value": "OFF",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3910,11 +2950,6 @@
         "detection_method": "smart_detection"
       },
       "enum_value": "OFF",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3944,11 +2979,6 @@
         "detection_method": "smart_detection"
       },
       "enum_value": "OFF",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -3978,11 +3008,6 @@
         "detection_method": "smart_detection"
       },
       "enum_value": "OFF",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4002,15 +3027,6 @@
       "pass_index": 0,
       "unit_name": "sek.",
       "key": "poker_cycle_time",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4030,15 +3046,6 @@
       "pass_index": 0,
       "unit_name": "h.",
       "key": "burner_cleaning",
-      "categories": [
-        "Mixer 3 settings"
-      ],
-      "category": "Mixer 3 settings",
-      "category_indices": [
-        7
-      ],
-      "category_index": 7,
-      "rmCatsName": "Mixer 3 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4058,15 +3065,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "stabilization_time",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4086,15 +3084,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "burning_off_time",
-      "categories": [
-        "Boiler settings"
-      ],
-      "category": "Boiler settings",
-      "category_indices": [
-        2
-      ],
-      "category_index": 2,
-      "rmCatsName": "Boiler settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4114,15 +3103,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "air_flush_intensity",
-      "categories": [
-        "Boiler settings"
-      ],
-      "category": "Boiler settings",
-      "category_indices": [
-        2
-      ],
-      "category_index": 2,
-      "rmCatsName": "Boiler settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4152,11 +3132,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "No",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4176,11 +3151,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "loading_start_temperature",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4200,11 +3170,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "loading_end_temperature",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4225,15 +3190,6 @@
       "data_id": "139",
       "unit_name": "%",
       "key": "alarm_level",
-      "categories": [
-        "Information"
-      ],
-      "category": "Information",
-      "category_indices": [
-        1
-      ],
-      "category_index": 1,
-      "rmCatsName": "Information",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4253,15 +3209,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "no_fuel_detection_time",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4291,11 +3238,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "On",
-      "categories": [],
-      "category": "",
-      "category_indices": [],
-      "category_index": 0,
-      "rmCatsName": "",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4315,15 +3257,6 @@
       "pass_index": 0,
       "unit_name": "sek.",
       "key": "feeder_operat_time_2",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4344,15 +3277,6 @@
       "data_id": "143",
       "unit_name": "sek.",
       "key": "feeder_interval_2",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4372,15 +3296,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "reserve_boiler",
-      "categories": [
-        "Summer/Winter"
-      ],
-      "category": "Summer/Winter",
-      "category_indices": [
-        4
-      ],
-      "category_index": 4,
-      "rmCatsName": "Summer/Winter",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4400,15 +3315,6 @@
       "pass_index": 0,
       "unit_name": "sek.",
       "key": "airflow_operextend",
-      "categories": [
-        "Summer/Winter"
-      ],
-      "category": "Summer/Winter",
-      "category_indices": [
-        4
-      ],
-      "category_index": 4,
-      "rmCatsName": "Summer/Winter",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4428,15 +3334,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "maxburner_temp",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4456,15 +3353,6 @@
       "pass_index": 0,
       "unit_name": "°C",
       "key": "extempwno_fuel",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4495,15 +3383,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "On",
-      "categories": [
-        "Mixer 1 settings"
-      ],
-      "category": "Mixer 1 settings",
-      "category_indices": [
-        5
-      ],
-      "category_index": 5,
-      "rmCatsName": "Mixer 1 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4533,15 +3412,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Yes",
-      "categories": [
-        "Mixer 1 settings"
-      ],
-      "category": "Mixer 1 settings",
-      "category_indices": [
-        5
-      ],
-      "category_index": 5,
-      "rmCatsName": "Mixer 1 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4571,15 +3441,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Yes",
-      "categories": [
-        "Information mixer 4"
-      ],
-      "category": "Information mixer 4",
-      "category_indices": [
-        19
-      ],
-      "category_index": 19,
-      "rmCatsName": "Information mixer 4",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4610,15 +3471,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Yes",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4648,15 +3500,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Yes",
-      "categories": [
-        "Mixer 1 settings"
-      ],
-      "category": "Mixer 1 settings",
-      "category_indices": [
-        5
-      ],
-      "category_index": 5,
-      "rmCatsName": "Mixer 1 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4686,15 +3529,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "On",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4714,15 +3548,6 @@
       "pass_index": 0,
       "unit_name": "%",
       "key": "feeder_lock",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4743,15 +3568,6 @@
       "data_id": "155",
       "unit_name": "%",
       "key": "fuel_detection_oxygen",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4772,15 +3588,6 @@
       "data_id": "156",
       "unit_name": "min.",
       "key": "fuel_detection_time",
-      "categories": [
-        "Mixer 4 settings"
-      ],
-      "category": "Mixer 4 settings",
-      "category_indices": [
-        8
-      ],
-      "category_index": 8,
-      "rmCatsName": "Mixer 4 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4801,15 +3608,6 @@
       "data_id": "157",
       "unit_name": "r/min",
       "key": "fan_rotation_detection",
-      "categories": [
-        "Mixer 1 settings"
-      ],
-      "category": "Mixer 1 settings",
-      "category_indices": [
-        5
-      ],
-      "category_index": 5,
-      "rmCatsName": "Mixer 1 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4840,15 +3638,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Feeder and grate",
-      "categories": [
-        "Mixer 1 settings"
-      ],
-      "category": "Mixer 1 settings",
-      "category_indices": [
-        5
-      ],
-      "category_index": 5,
-      "rmCatsName": "Mixer 1 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4880,15 +3669,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Alarms",
-      "categories": [
-        "Summer/Winter"
-      ],
-      "category": "Summer/Winter",
-      "category_indices": [
-        4
-      ],
-      "category_index": 4,
-      "rmCatsName": "Summer/Winter",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4920,15 +3700,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Reserve boiler",
-      "categories": [
-        "Summer/Winter"
-      ],
-      "category": "Summer/Winter",
-      "category_indices": [
-        4
-      ],
-      "category_index": 4,
-      "rmCatsName": "Summer/Winter",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4959,15 +3730,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "50%",
-      "categories": [
-        "Boiler settings"
-      ],
-      "category": "Boiler settings",
-      "category_indices": [
-        2
-      ],
-      "category_index": 2,
-      "rmCatsName": "Boiler settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -4987,15 +3749,6 @@
       "pass_index": 0,
       "unit_name": "min.",
       "key": "work_time",
-      "categories": [
-        "Boiler settings"
-      ],
-      "category": "Boiler settings",
-      "category_indices": [
-        2
-      ],
-      "category_index": 2,
-      "rmCatsName": "Boiler settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -5025,15 +3778,6 @@
         "detection_method": "unit_offset"
       },
       "enum_value": "Yes",
-      "categories": [
-        "Mixer 1 settings"
-      ],
-      "category": "Mixer 1 settings",
-      "category_indices": [
-        5
-      ],
-      "category_index": 5,
-      "rmCatsName": "Mixer 1 settings",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -5063,15 +3807,6 @@
         "detection_method": "smart_detection"
       },
       "enum_value": "OFF",
-      "categories": [
-        "Summer/Winter"
-      ],
-      "category": "Summer/Winter",
-      "category_indices": [
-        4
-      ],
-      "category_index": 4,
-      "rmCatsName": "Summer/Winter",
       "locked": false,
       "lock_index": null,
       "lock_reason": null
@@ -5092,7 +3827,6 @@
     "rmStructure": "Menu structure and parameter numbers",
     "rmParamsUnitsNames": "Unit symbols",
     "rmParamsEnums": "Enumeration values",
-    "rmCatsNames": "Category names",
     "rmLocksNames": "Lock reason messages"
   }
 }

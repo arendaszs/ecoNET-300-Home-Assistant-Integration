@@ -9,7 +9,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from custom_components.econet300.api import Econet300Api
 from custom_components.econet300.common import EconetDataCoordinator
-from custom_components.econet300.common_functions import is_information_category
+# Category functions removed - category support eliminated
 from custom_components.econet300.number import (
     async_setup_entry,
     create_dynamic_number_entity_description,
@@ -147,7 +147,7 @@ class TestDynamicNumberEntities:
         mock_add_entities.assert_called_once()
         entities = mock_add_entities.call_args[0][0]
 
-        # Should have created number entities (can be EconetNumber or MenuCategoryNumber)
+        # Should have created number entities (EconetNumber, categories removed)
         assert len(entities) > 0
         # All entities should be NumberEntity instances (base class)
         from homeassistant.components.number import NumberEntity as HANumberEntity
@@ -293,33 +293,7 @@ class TestDynamicNumberEntities:
 
         assert len(params_with_keys) > 0, "Should have parameters with key field"
 
-    def test_information_category_detection(self):
-        """Test Information category detection and entity type implications."""
-        # Test various Information category names
-        info_categories = [
-            "Information",
-            "information",
-            "INFORMATION",
-            "Information mixer 1",
-            "ecoNET WiFi information",
-        ]
-
-        for category in info_categories:
-            assert is_information_category(category) is True
-
-        # Test non-Information categories
-        non_info_categories = [
-            "Boiler settings",
-            "Service Settings",
-            "Advanced settings",
-            "Summer/Winter",
-            None,
-            "",
-        ]
-
-        for category in non_info_categories:
-            assert is_information_category(category) is False
-
+    
     def test_entity_key_generation_with_categories(self, mock_merged_data):
         """Test that entity keys include category prefixes for uniqueness."""
         # Test with mock parameters that simulate multiple categories
