@@ -201,7 +201,7 @@ class EconetClient:
                     fixed_text = re.sub(r'""([^"]+)""', r"\"\\1\"", raw_text)
 
                     # Also fix curly/smart quotes to straight quotes
-                    fixed_text = fixed_text.replace('"', '\\"').replace('"', '\\"')
+                    fixed_text = fixed_text.replace('"', '"').replace('"', '"')
 
                     try:
                         data = json.loads(fixed_text)
