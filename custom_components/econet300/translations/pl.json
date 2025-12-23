@@ -30,6 +30,110 @@
     "select": {
       "heater_mode": {
         "name": "Tryb grzania"
+      },
+      "parametr_a_fuzzylogic": {
+        "name": "Parametr A FuzzyLogic"
+      },
+      "exchanger": {
+        "name": "Wymiennik"
+      },
+      "mixer1_support": {
+        "name": "Obsługa mieszacza 1"
+      },
+      "off_by_thermostat": {
+        "name": "Wyłączenie termostatem"
+      },
+      "thermostat_lock": {
+        "name": "Blokada termostatu"
+      },
+      "boiler_pump_lock": {
+        "name": "Blokada pompy kotła"
+      },
+      "output_h1": {
+        "name": "Wyjście H1"
+      },
+      "output_h2_and_h3": {
+        "name": "Wyjście H2 i H3"
+      },
+      "alarms": {
+        "name": "Alarmy"
+      }
+    },
+    "number": {
+      "parametr_b_fuzzylogic": {
+        "name": "Parametr B FuzzyLogic"
+      },
+      "parametr_c_fuzzylogic": {
+        "name": "Parametr C FuzzyLogic"
+      },
+      "minimum_airflow_output": {
+        "name": "Minimalna moc nadmuchu"
+      },
+      "min_boiler_temperature": {
+        "name": "Min. temperatura kotła"
+      },
+      "max_boiler_temperature": {
+        "name": "Maks. temperatura kotła"
+      },
+      "minimum_huw_temperature": {
+        "name": "Min. temperatura CWU"
+      },
+      "maximum_huw_temperature": {
+        "name": "Maks. temperatura CWU"
+      },
+      "ch_pump_activation_temperature": {
+        "name": "Temp. załączenia pompy CO"
+      },
+      "ch_pump_standstill_when_loading_huw": {
+        "name": "Postój pompy CO przy ładowaniu CWU"
+      },
+      "boiler_inc_by_huw,_mixer": {
+        "name": "Podniesienie kotła przez CWU, Mieszacz"
+      },
+      "extending_huw_pump_operation_time": {
+        "name": "Przedłużenie pracy pompy CWU"
+      },
+      "min_mixer1_temp": {
+        "name": "Min. temp. mieszacza 1"
+      },
+      "max_mixer1_temp": {
+        "name": "Maks. temp. mieszacza 1"
+      },
+      "proportional_range": {
+        "name": "Zakres proporcjonalny"
+      },
+      "integration_time_constant": {
+        "name": "Stała czasowa całkowania"
+      },
+      "valve_full_opening_time": {
+        "name": "Czas pełnego otwarcia zaworu"
+      },
+      "mixer1_input_dead_zone": {
+        "name": "Strefa martwa wejścia mieszacza 1"
+      },
+      "boiler_cooling_temperature": {
+        "name": "Temperatura chłodzenia kotła"
+      },
+      "poker_cycle_time": {
+        "name": "Czas cyklu rusztu"
+      },
+      "no_fuel_detection_time": {
+        "name": "Czas wykrywania braku paliwa"
+      },
+      "feeder_operat_time_2": {
+        "name": "Czas pracy podajnika 2"
+      },
+      "feeder_interval_2": {
+        "name": "Interwał podajnika 2"
+      },
+      "reserve_boiler": {
+        "name": "Kocioł rezerwowy"
+      },
+      "maxburner_temp": {
+        "name": "Maks. temp. palnika"
+      },
+      "extempwno_fuel": {
+        "name": "Temp. zewn. bez paliwa"
       }
     },
     "binary_sensor": {
@@ -179,6 +283,33 @@
       },
       "lambda_level": {
         "name": "Czujnik Lambda"
+      },
+      "parameter_a_lambda": {
+        "name": "Parametr A Lambda"
+      },
+      "parameter_b_lambda": {
+        "name": "Parametr B Lambda"
+      },
+      "parameter_c_lambda": {
+        "name": "Parametr C Lambda"
+      },
+      "100percent_oxygen": {
+        "name": "100% Tlen"
+      },
+      "50percent_oxygen": {
+        "name": "50% Tlen"
+      },
+      "30percent_oxygen": {
+        "name": "30% Tlen"
+      },
+      "fl_oxygen_correction": {
+        "name": "Korekta tlenu FL"
+      },
+      "operation_with_lambda_sensor": {
+        "name": "Praca z czujnikiem Lambda"
+      },
+      "fuel_detection_oxygen": {
+        "name": "Wykrywanie paliwa: tlen"
       },
       "status_co": {
         "name": "Status ogrzewania",

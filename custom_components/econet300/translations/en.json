@@ -30,6 +30,110 @@
     "select": {
       "heater_mode": {
         "name": "Heater Mode"
+      },
+      "parametr_a_fuzzylogic": {
+        "name": "Parameter A FuzzyLogic"
+      },
+      "exchanger": {
+        "name": "Exchanger"
+      },
+      "mixer1_support": {
+        "name": "Mixer 1 support"
+      },
+      "off_by_thermostat": {
+        "name": "Off by thermostat"
+      },
+      "thermostat_lock": {
+        "name": "Thermostat lock"
+      },
+      "boiler_pump_lock": {
+        "name": "Boiler pump lock"
+      },
+      "output_h1": {
+        "name": "Output H1"
+      },
+      "output_h2_and_h3": {
+        "name": "Output H2 and H3"
+      },
+      "alarms": {
+        "name": "Alarms"
+      }
+    },
+    "number": {
+      "parametr_b_fuzzylogic": {
+        "name": "Parameter B FuzzyLogic"
+      },
+      "parametr_c_fuzzylogic": {
+        "name": "Parameter C FuzzyLogic"
+      },
+      "minimum_airflow_output": {
+        "name": "Minimum airflow output"
+      },
+      "min_boiler_temperature": {
+        "name": "Min. boiler temperature"
+      },
+      "max_boiler_temperature": {
+        "name": "Max. boiler temperature"
+      },
+      "minimum_huw_temperature": {
+        "name": "Minimum HUW temperature"
+      },
+      "maximum_huw_temperature": {
+        "name": "Maximum HUW temperature"
+      },
+      "ch_pump_activation_temperature": {
+        "name": "CH pump activation temperature"
+      },
+      "ch_pump_standstill_when_loading_huw": {
+        "name": "CH pump standstill when loading HUW"
+      },
+      "boiler_inc_by_huw,_mixer": {
+        "name": "Boiler inc. by HUW, Mixer"
+      },
+      "extending_huw_pump_operation_time": {
+        "name": "Extending HUW pump operation time"
+      },
+      "min_mixer1_temp": {
+        "name": "Min. mixer 1 temperature"
+      },
+      "max_mixer1_temp": {
+        "name": "Max. mixer 1 temperature"
+      },
+      "proportional_range": {
+        "name": "Proportional range"
+      },
+      "integration_time_constant": {
+        "name": "Integration time constant"
+      },
+      "valve_full_opening_time": {
+        "name": "Valve full opening time"
+      },
+      "mixer1_input_dead_zone": {
+        "name": "Mixer 1 input dead zone"
+      },
+      "boiler_cooling_temperature": {
+        "name": "Boiler cooling temperature"
+      },
+      "poker_cycle_time": {
+        "name": "Poker cycle time"
+      },
+      "no_fuel_detection_time": {
+        "name": "No fuel detection time"
+      },
+      "feeder_operat_time_2": {
+        "name": "Feeder operation time 2"
+      },
+      "feeder_interval_2": {
+        "name": "Feeder interval 2"
+      },
+      "reserve_boiler": {
+        "name": "Reserve boiler"
+      },
+      "maxburner_temp": {
+        "name": "Max burner temperature"
+      },
+      "extempwno_fuel": {
+        "name": "Ext. temp w/o fuel"
       }
     },
     "binary_sensor": {
@@ -182,6 +286,33 @@
       },
       "lambda_level": {
         "name": "Lambda level"
+      },
+      "parameter_a_lambda": {
+        "name": "Parameter A Lambda"
+      },
+      "parameter_b_lambda": {
+        "name": "Parameter B Lambda"
+      },
+      "parameter_c_lambda": {
+        "name": "Parameter C Lambda"
+      },
+      "100percent_oxygen": {
+        "name": "100% Oxygen"
+      },
+      "50percent_oxygen": {
+        "name": "50% Oxygen"
+      },
+      "30percent_oxygen": {
+        "name": "30% Oxygen"
+      },
+      "fl_oxygen_correction": {
+        "name": "FL Oxygen correction"
+      },
+      "operation_with_lambda_sensor": {
+        "name": "Operation with Lambda sensor"
+      },
+      "fuel_detection_oxygen": {
+        "name": "Fuel detection: oxygen"
       },
       "status_co": {
         "name": "Central heating status",

@@ -1,8 +1,8 @@
 """Sensor for Econet300."""
 
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-import logging
 from typing import Any
 
 from homeassistant.components.sensor import (

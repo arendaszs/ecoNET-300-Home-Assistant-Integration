@@ -1,6 +1,6 @@
 {
   "version": "1.0-names-descs-structure-units-indexed-enums-categories-locks-cleaned",
-  "timestamp": "2025-12-23T12:19:55.145038",
+  "timestamp": "2025-12-23T14:24:00.079965",
   "device": {
     "uid": "ecoMAX810P-L-device",
     "controllerId": "ecoMAX810P-L",
@@ -20,7 +20,7 @@
       "description": "Blow-in output when the burner runs at maximum output.",
       "number": 0,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "data_id": "1536",
       "unit_name": "%",
       "rmCatsName": "Information",
@@ -30,7 +30,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -49,7 +49,7 @@
       "description": "Feeder operation time when the burner runs at maximum output.",
       "number": 1,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "data_id": "1",
       "unit_name": "sek.",
       "rmCatsName": "Information",
@@ -68,7 +68,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -87,7 +87,7 @@
       "description": "Feeder interval time when the burner runs at maximum output.",
       "number": 2,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "data_id": "1794",
       "unit_name": "sek.",
       "rmCatsName": "Information",
@@ -97,7 +97,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -116,7 +116,7 @@
       "description": "Blow-in output when the blower runs with mid output.",
       "number": 3,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "data_id": "3",
       "unit_name": "%",
       "rmCatsName": "Information",
@@ -135,7 +135,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -154,7 +154,7 @@
       "description": "Feeder operation time when the burner runs at mid output.",
       "number": 4,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "data_id": "1540",
       "unit_name": "sek.",
       "rmCatsName": "Information",
@@ -164,7 +164,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -183,7 +183,7 @@
       "description": "Feeder interval time when the blower runs at mid power.",
       "number": 5,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "data_id": "1541",
       "unit_name": "sek.",
       "rmCatsName": "Information",
@@ -193,7 +193,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -212,7 +212,7 @@
       "description": "Blow-in output when the blower runs at minimum output.",
       "number": 6,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "data_id": "1542",
       "unit_name": "%",
       "rmCatsName": "Information",
@@ -222,7 +222,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -241,7 +241,7 @@
       "description": "Feeder operation time when the burner runs at minimum output.",
       "number": 7,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "data_id": "1287",
       "unit_name": "sek.",
       "rmCatsName": "Information",
@@ -251,7 +251,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -270,7 +270,7 @@
       "description": "Feeder interval time when the burner runs at minimum output.",
       "number": 8,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "data_id": "1544",
       "unit_name": "sek.",
       "rmCatsName": "Information",
@@ -280,7 +280,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -299,16 +299,16 @@
       "description": "50% H2 hysteresis",
       "number": 9,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "°C",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "50percent_h2_hysteresis",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -327,16 +327,16 @@
       "description": "Temperature treshold value ",
       "number": 10,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "°C",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "30percent_h1_hysteresis",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -355,16 +355,16 @@
       "description": "If the boiler temperature drops below the present boiler temperature by the boiler hysteresis value, then the automatic burner firing up will take place.",
       "number": 11,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "°C",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "boiler_hysteresis",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -383,16 +383,16 @@
       "description": "Airflow correction in Fuzzy Logic mode.",
       "number": 12,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "fl_airfl_correction",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": true,
       "lock_index": 4,
@@ -411,16 +411,16 @@
       "description": "Mimimum output at witch the burner can operate in Fuzzy Logic mode.",
       "number": 13,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "minimum_boiler_output_fl",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": true,
       "lock_index": 4,
@@ -439,16 +439,16 @@
       "description": "Maximum output at witch the burner can operate in Fuzzy Logic mode.",
       "number": 14,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "maximum_boiler_output_fl",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": true,
       "lock_index": 4,
@@ -467,9 +467,9 @@
       "description": "Param. related to aut. modul. of boiler output at remote stab. of boiler. Increas. the value acceler. the speed of boiler output increase. Too hogh value causes instab. to maintain pres. boiler temp.",
       "number": 15,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "parametr_a_fuzzylogic",
       "enum": {
         "id": 2,
@@ -483,11 +483,11 @@
         "detection_method": "smart_detection"
       },
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -506,16 +506,16 @@
       "description": "Param. related to aut. modul. of boiler output at remot. stab. of boiler. Increas. the value acceler. the speed of boiler output increase. Too low value causes instab. to maintain pres. boiler temp.",
       "number": 16,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "parametr_b_fuzzylogic",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -534,16 +534,16 @@
       "description": "Param. related to aut. modul. of boiler output at remote stab. of boiler. It is not recommended to change this parameter.",
       "number": 17,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "parametr_c_fuzzylogic",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -562,9 +562,9 @@
       "description": "STANDARD mode involves 3-step modulation of burner output. FUZZY LOGIC mode involves stepless adjustment of burner output based on the PID algotithm.",
       "number": 18,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "regulation_mode_",
       "enum": {
         "id": 8,
@@ -578,11 +578,11 @@
       },
       "enum_value": "Standard",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -601,16 +601,16 @@
       "description": "Allows for airflow power correction with a burner running at maximum output.",
       "number": 19,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "airflow_power_correction_100percent",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -629,16 +629,16 @@
       "description": "Allows for feeder work correction with a burner running at maximum output.",
       "number": 20,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "100percent_feeder_work_correction",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -657,16 +657,16 @@
       "description": "Allows for airflow power correction with a burner running at mid output.",
       "number": 21,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "50percent_airflow_power_correction",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -685,16 +685,16 @@
       "description": "Allows for feeder work correction with a burner running at mid output.",
       "number": 22,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "50percent_feeder_work_correction",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -713,16 +713,16 @@
       "description": "Allows for airflow power correction with a burner running at minimum output.",
       "number": 23,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "airflow_power_correction_30percent",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -741,16 +741,16 @@
       "description": "Allows for feeder work correction with a burner running at minimim output.",
       "number": 24,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "30percent_feeder_work_correction",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -769,16 +769,16 @@
       "description": "Airflow output durning the firing-up. Too high value slows the firing-up or causes unsuccessful attempt to fire up.",
       "number": 25,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 9,
       "unit_name": "%",
-      "rmCatsName": "Information",
+      "rmCatsName": "Chimney sweep mode",
       "key": "firing_up_airflow",
       "categories": [
-        "Information"
+        "Chimney sweep mode"
       ],
-      "category": "Information",
+      "category": "Chimney sweep mode",
       "category_indices": [
-        44
+        9
       ],
       "locked": false,
       "lock_index": null,
@@ -797,10 +797,10 @@
       "description": "Process of checking whether the furnace is already burning. Only the fan is running. If the flame is of sufficient brightness, the machine proceeds to OPERATION mode bypassing the FIRE UP mode.",
       "number": 26,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 9,
       "data_id": "26",
       "unit_name": "min.",
-      "rmCatsName": "Information",
+      "rmCatsName": "Chimney sweep mode",
       "key": "ignition_test_time",
       "enum": {
         "id": 26,
@@ -812,11 +812,11 @@
         "detection_method": "structure_data_id"
       },
       "categories": [
-        "Information"
+        "Chimney sweep mode"
       ],
-      "category": "Information",
+      "category": "Chimney sweep mode",
       "category_indices": [
-        44
+        9
       ],
       "locked": false,
       "lock_index": null,
@@ -835,16 +835,16 @@
       "description": "Process of cheching whether the furnace is burning; this process starts when the controller proceeds to OPERATION mode.",
       "number": 27,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 9,
       "unit_name": "min.",
-      "rmCatsName": "Information",
+      "rmCatsName": "Chimney sweep mode",
       "key": "ignition_test_time_2",
       "categories": [
-        "Information"
+        "Chimney sweep mode"
       ],
-      "category": "Information",
+      "category": "Chimney sweep mode",
       "category_indices": [
-        44
+        9
       ],
       "locked": false,
       "lock_index": null,
@@ -863,10 +863,10 @@
       "description": "Fuel dose feeding time during the firing-up. Refers to the first attempt to fire up. In another attempts the fuel dose is reduced.",
       "number": 28,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 9,
       "data_id": "28",
       "unit_name": "sek.",
-      "rmCatsName": "Information",
+      "rmCatsName": "Chimney sweep mode",
       "key": "feeding_time",
       "enum": {
         "id": 28,
@@ -879,11 +879,11 @@
         "detection_method": "structure_data_id"
       },
       "categories": [
-        "Information"
+        "Chimney sweep mode"
       ],
-      "category": "Information",
+      "category": "Chimney sweep mode",
       "category_indices": [
-        44
+        9
       ],
       "locked": false,
       "lock_index": null,
@@ -902,16 +902,16 @@
       "description": "Time of a signle attempt to fire up. After this time, controller proceeds to another attempt to fire up. After the failure of all attempts to fire up, the alarm: \"Failed to fire up\" is reported.",
       "number": 29,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 9,
       "unit_name": "min.",
-      "rmCatsName": "Information",
+      "rmCatsName": "Chimney sweep mode",
       "key": "firing_up_time",
       "categories": [
-        "Information"
+        "Chimney sweep mode"
       ],
-      "category": "Information",
+      "category": "Chimney sweep mode",
       "category_indices": [
-        44
+        9
       ],
       "locked": false,
       "lock_index": null,
@@ -930,16 +930,16 @@
       "description": "Parameter defines how much the exhaust temperature must rise during the firing-up so that the firing-up of the furnace is detected.",
       "number": 30,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 9,
       "unit_name": "°C",
-      "rmCatsName": "Information",
+      "rmCatsName": "Chimney sweep mode",
       "key": "extempdelta",
       "categories": [
-        "Information"
+        "Chimney sweep mode"
       ],
-      "category": "Information",
+      "category": "Chimney sweep mode",
       "category_indices": [
-        44
+        9
       ],
       "locked": false,
       "lock_index": null,
@@ -958,16 +958,16 @@
       "description": "Parameter defines how much the exhaust temperature must rise during the test to fire up conducted when the controller proceeds to OPERATION mode, so that the furnance is considered fired up.",
       "number": 31,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 9,
       "unit_name": "°C",
-      "rmCatsName": "Information",
+      "rmCatsName": "Chimney sweep mode",
       "key": "extempdelta_2",
       "categories": [
-        "Information"
+        "Chimney sweep mode"
       ],
-      "category": "Information",
+      "category": "Chimney sweep mode",
       "category_indices": [
-        44
+        9
       ],
       "locked": false,
       "lock_index": null,
@@ -986,16 +986,16 @@
       "description": "Ex. temp. above which the furnace is considered to be fired up durnig the ignition test or firing-up.",
       "number": 32,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 9,
       "unit_name": "°C",
-      "rmCatsName": "Information",
+      "rmCatsName": "Chimney sweep mode",
       "key": "ex_temp_at_the_end_of_firing_up",
       "categories": [
-        "Information"
+        "Chimney sweep mode"
       ],
-      "category": "Information",
+      "category": "Chimney sweep mode",
       "category_indices": [
-        44
+        9
       ],
       "locked": false,
       "lock_index": null,
@@ -1014,16 +1014,16 @@
       "description": "Fuel dose (feeding time) that is going to be fed during the ignition test before proceeding to FIRING UP mode.",
       "number": 33,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 9,
       "unit_name": "%",
-      "rmCatsName": "Information",
+      "rmCatsName": "Chimney sweep mode",
       "key": "test_dose",
       "categories": [
-        "Information"
+        "Chimney sweep mode"
       ],
-      "category": "Information",
+      "category": "Chimney sweep mode",
       "category_indices": [
-        44
+        9
       ],
       "locked": false,
       "lock_index": null,
@@ -1042,16 +1042,16 @@
       "description": "It is a max. time of cont. being in SUPERV. mode. After this time, the control. proceeds to SUPERVISION mode and b. is automat. burned off. When SUPERV. TIME= 0 is set, SUPERV. mode is turned off.",
       "number": 34,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 4,
       "unit_name": "min.",
-      "rmCatsName": "Information",
+      "rmCatsName": "Summer/Winter",
       "key": "supervision_time",
       "categories": [
-        "Information"
+        "Summer/Winter"
       ],
-      "category": "Information",
+      "category": "Summer/Winter",
       "category_indices": [
-        44
+        4
       ],
       "locked": false,
       "lock_index": null,
@@ -1070,16 +1070,16 @@
       "description": "F. feed. t. in SUPERV.. It influ. the b. out. in SUPERV. The val. sh. be as small as pos. so as to keep the fl. Too high val. leads to b. overh.The val. sh. be adjust. so that furn. isn't burn. off.",
       "number": 35,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 4,
       "unit_name": "sek.",
-      "rmCatsName": "Information",
+      "rmCatsName": "Summer/Winter",
       "key": "feed_time",
       "categories": [
-        "Information"
+        "Summer/Winter"
       ],
-      "category": "Information",
+      "category": "Summer/Winter",
       "category_indices": [
-        44
+        4
       ],
       "locked": false,
       "lock_index": null,
@@ -1098,16 +1098,16 @@
       "description": "F. feed. int. in SUPERV. It influ. the b. out. in SUPERV. The val. sh. be as high as pos. so as to keep the fl. Too small val. leads to b. overh. The val. sh. be adjust. so that furn. isn't burn. off.",
       "number": 36,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 4,
       "unit_name": "min.",
-      "rmCatsName": "Information",
+      "rmCatsName": "Summer/Winter",
       "key": "feed_interval",
       "categories": [
-        "Information"
+        "Summer/Winter"
       ],
-      "category": "Information",
+      "category": "Summer/Winter",
       "category_indices": [
-        44
+        4
       ],
       "locked": false,
       "lock_index": null,
@@ -1126,16 +1126,16 @@
       "description": "Min. airflow output that the user can set. It is used only to reduce the aval. pow. range of the cont. It should be as small as possible but allow the fan to rotate slowly and freely.",
       "number": 37,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "minimum_airflow_output",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -1154,16 +1154,16 @@
       "description": "Affects the adjustment speed of oxygen value present in exhaust to present oxygen value; it also affects the stability to keep the oxygen in exhaust. It is not recommended to change this value.",
       "number": 38,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 8,
       "unit_name": "",
-      "rmCatsName": "Information",
+      "rmCatsName": "Mixer 4 settings",
       "key": "parameter_a_lambda",
       "categories": [
-        "Information"
+        "Mixer 4 settings"
       ],
-      "category": "Information",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        44
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1182,16 +1182,16 @@
       "description": "Affects the adjustment speed of oxygen value present in exhaust to present oxygen value; it also affects the stability to keep the oxygen in exhaust. It is not recommended to change this value.",
       "number": 39,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 8,
       "unit_name": "",
-      "rmCatsName": "Information",
+      "rmCatsName": "Mixer 4 settings",
       "key": "parameter_b_lambda",
       "categories": [
-        "Information"
+        "Mixer 4 settings"
       ],
-      "category": "Information",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        44
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1210,16 +1210,16 @@
       "description": "Affects the adjustment speed of oxygen value present in exhaust to present oxygen value; it also affects the stability to keep the oxygen in exhaust. It is not recommended to change this value.",
       "number": 40,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 8,
       "unit_name": "",
-      "rmCatsName": "Information",
+      "rmCatsName": "Mixer 4 settings",
       "key": "parameter_c_lambda",
       "categories": [
-        "Information"
+        "Mixer 4 settings"
       ],
-      "category": "Information",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        44
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1238,7 +1238,7 @@
       "description": "Present oxygen value in exhaust when the burner runs at maximum output.",
       "number": 41,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "unit_name": "%",
       "rmCatsName": "Information",
       "key": "100percent_oxygen",
@@ -1247,7 +1247,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -1266,7 +1266,7 @@
       "description": "Present oxygen value when the burner runs at mid output.",
       "number": 42,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "unit_name": "%",
       "rmCatsName": "Information",
       "key": "50percent_oxygen",
@@ -1275,7 +1275,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -1294,7 +1294,7 @@
       "description": "Present oxygen value when the burner runs at minimum output.",
       "number": 43,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 12,
       "unit_name": "%",
       "rmCatsName": "Information",
       "key": "30percent_oxygen",
@@ -1303,7 +1303,7 @@
       ],
       "category": "Information",
       "category_indices": [
-        44
+        12
       ],
       "locked": false,
       "lock_index": null,
@@ -1322,16 +1322,16 @@
       "description": "Defines the acceptable airflow range variation during the operation using Lambda sensor.",
       "number": 44,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 8,
       "unit_name": "%",
-      "rmCatsName": "Information",
+      "rmCatsName": "Mixer 4 settings",
       "key": "airflow_correction_range",
       "categories": [
-        "Information"
+        "Mixer 4 settings"
       ],
-      "category": "Information",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        44
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1350,16 +1350,16 @@
       "description": "Correction of present oxygen value in exhaust in FL mode.",
       "number": 45,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "fl_oxygen_correction",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": true,
       "lock_index": 4,
@@ -1378,16 +1378,16 @@
       "description": "Present boiler temperature when weather control is off. It can be automatically changed by the controller, for example, when present boiler temperature is lower than present HUW temperature.",
       "number": 46,
       "pass_index": 0,
-      "category_index": 9,
+      "category_index": 7,
       "unit_name": "°C",
-      "rmCatsName": "Chimney sweep mode",
+      "rmCatsName": "Mixer 3 settings",
       "key": "preset_boiler_temperature",
       "categories": [
-        "Chimney sweep mode"
+        "Mixer 3 settings"
       ],
-      "category": "Chimney sweep mode",
+      "category": "Mixer 3 settings",
       "category_indices": [
-        9
+        7
       ],
       "locked": false,
       "lock_index": null,
@@ -1406,16 +1406,16 @@
       "description": "Min. present boiler temperature that can be set by the user in menu and min. temperature that can be set by the controller, for example, from night time decreases, weather control, etc.",
       "number": 47,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "min_boiler_temperature",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -1434,16 +1434,16 @@
       "description": "Max. present boiler temperature that can be set by the user in menu and max. temperature that can be set by the controller, for example, form weather control, etc.",
       "number": 48,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "max_boiler_temperature",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -1462,16 +1462,16 @@
       "description": "Temperature, to which the HUW tank will be heated. Note: too high temperature may cause scalding from hot tap water!",
       "number": 49,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 5,
       "unit_name": "°C",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Mixer 1 settings",
       "key": "huw_preset_temperature",
       "categories": [
-        "Fuel level"
+        "Mixer 1 settings"
       ],
-      "category": "Fuel level",
+      "category": "Mixer 1 settings",
       "category_indices": [
-        25
+        5
       ],
       "locked": true,
       "lock_index": 3,
@@ -1490,16 +1490,16 @@
       "description": "It is a parameter which can be used to limit the user's ability to set to low HUW present temperature.",
       "number": 50,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "minimum_huw_temperature",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1518,16 +1518,16 @@
       "description": "This param. determ. the max. temp. to which the HUW feed. will be heated while discharg. exceed. boiler heat in alarm states. Setting too high value can lead to the risk of scladning from hot water.",
       "number": 51,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "maximum_huw_temperature",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1546,9 +1546,9 @@
       "description": "Allows for the select. of oper. mode of HUW. NO PRIORITY - parallel operation of HUW pump and cent. heat. pumps, PRIORITY - only HUW pump operates, SUMMER - prep. only HUW (building heating disabled).",
       "number": 52,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 5,
       "unit_name": "",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Mixer 1 settings",
       "key": "huw_pump_mode",
       "enum": {
         "id": 9,
@@ -1562,11 +1562,11 @@
       },
       "enum_value": "Off",
       "categories": [
-        "Fuel level"
+        "Mixer 1 settings"
       ],
-      "category": "Fuel level",
+      "category": "Mixer 1 settings",
       "category_indices": [
-        25
+        5
       ],
       "locked": false,
       "lock_index": null,
@@ -1585,16 +1585,16 @@
       "description": "This parameter defines after what temperature drop measured by HUW sensor, the HUW pump will be activated (HUW = hot tap water), when compared with HUW present temperature, ",
       "number": 53,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 5,
       "unit_name": "°C",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Mixer 1 settings",
       "key": "huw_cont_hysteresis",
       "categories": [
-        "Fuel level"
+        "Mixer 1 settings"
       ],
-      "category": "Fuel level",
+      "category": "Mixer 1 settings",
       "category_indices": [
-        25
+        5
       ],
       "locked": false,
       "lock_index": null,
@@ -1613,9 +1613,9 @@
       "description": "Once this parameter is enabled every week, on Monday, at 2:00, hot tap water will be heated to 70°C in order to disinfect the HUW tank. Note: risk of scalding form hot water!",
       "number": 54,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 5,
       "unit_name": "",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Mixer 1 settings",
       "key": "huw_disinfection",
       "enum": {
         "id": 10,
@@ -1628,11 +1628,11 @@
       },
       "enum_value": "Off",
       "categories": [
-        "Fuel level"
+        "Mixer 1 settings"
       ],
-      "category": "Fuel level",
+      "category": "Mixer 1 settings",
       "category_indices": [
-        25
+        5
       ],
       "locked": false,
       "lock_index": null,
@@ -1651,9 +1651,9 @@
       "description": "SUMMER mode means deactivation of central heating while leaving HUW heating. Automatic activation of the mode is executed on basis of indications of weather temperature sensor.",
       "number": 55,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 3,
       "unit_name": "",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "HUW settings",
       "key": "summer_mode",
       "enum": {
         "id": 11,
@@ -1669,11 +1669,11 @@
       },
       "enum_value": "Winter",
       "categories": [
-        "Fuel level"
+        "HUW settings"
       ],
-      "category": "Fuel level",
+      "category": "HUW settings",
       "category_indices": [
-        25
+        3
       ],
       "locked": false,
       "lock_index": null,
@@ -1692,16 +1692,16 @@
       "description": "External temperature, above which the SUMMER mode will be activated, if the automatic detection of the SUMMER mode is on.",
       "number": 56,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 3,
       "unit_name": "°C",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "HUW settings",
       "key": "summer_mode_act_temperature",
       "categories": [
-        "Fuel level"
+        "HUW settings"
       ],
-      "category": "Fuel level",
+      "category": "HUW settings",
       "category_indices": [
-        25
+        3
       ],
       "locked": false,
       "lock_index": null,
@@ -1720,16 +1720,16 @@
       "description": "External temperature, below which the SUMMER mode will be deactivated, if the automatic detection of the SUMMER mode is on.",
       "number": 57,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 3,
       "unit_name": "°C",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "HUW settings",
       "key": "summer_mode_deact_temperature",
       "categories": [
-        "Fuel level"
+        "HUW settings"
       ],
-      "category": "Fuel level",
+      "category": "HUW settings",
       "category_indices": [
-        25
+        3
       ],
       "locked": false,
       "lock_index": null,
@@ -1748,16 +1748,16 @@
       "description": "Param. determines the temp. at which the CH boiler pump will be activated. This protects the boiler from retting due to cooling it with cold water returning from the system.",
       "number": 58,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "ch_pump_activation_temperature",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1776,16 +1776,16 @@
       "description": "Param. allows for  period. activ. of b. p. (CH) durnig load. with HUW feed priority. After this time, CH p. will be activ. for a program., const. time of 30 s. To enable this funct., set param. on 0.",
       "number": 59,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "min.",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "ch_pump_standstill_when_loading_huw",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1804,16 +1804,16 @@
       "description": "Par. det. by how many deg. pres. boiler temp. must be higher to load the HUW feed., buffer, and mix. circuit. Increas. pres. b. temp. is achieved only when pres. b. temp. is low. than other pres temp.",
       "number": 60,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "boiler_inc_by_huw,_mixer",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1832,16 +1832,16 @@
       "description": "Allows for removal of heat from boiler by HUW feed. directly after the HUW feed. is load. In order to cool the boiler, the oper. of HUW pump can be extended by a period of extended oper. of HUW pump.",
       "number": 61,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "min.",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "extending_huw_pump_operation_time",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1860,9 +1860,9 @@
       "description": "Applies only to hydraul. install. with heat exch. between o. and c. syst. Avail. opt.:YES=b. p. runs cont. in short circ. b. exch. & is not on to SUMMER or HUW priority,NO=boiler p. runs normally.",
       "number": 62,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "exchanger",
       "enum": {
         "id": 12,
@@ -1875,11 +1875,11 @@
       },
       "enum_value": "No",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -1898,16 +1898,16 @@
       "description": "Present temperature for controlled heating circuit when the weather control is on. When the weather control is on, the parameter is not included by the controller for the heating circuit of the mixer.",
       "number": 63,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 6,
       "unit_name": "°C",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Mixer 2 settings",
       "key": "preset_mixer1_temperature",
       "categories": [
-        "Fuel level"
+        "Mixer 2 settings"
       ],
-      "category": "Fuel level",
+      "category": "Mixer 2 settings",
       "category_indices": [
-        25
+        6
       ],
       "locked": true,
       "lock_index": 2,
@@ -1998,16 +1998,16 @@
       "description": "Param. allows for limiting  the user's ability to set too low pres. temp. of the mixer. Autom. change of pres.  temp.,e.g. tempor. reduct. will not reduce pres. temp. val. below val. set in the param.",
       "number": 67,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "min_mixer1_temp",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -2098,16 +2098,16 @@
       "description": "Limits possibility of setting too high a preset mixer temperature by the user and by the controller. For MIXER SERVICE = ROOF ACTIVATED determines value of maximum temperature in heating circuit above which mixer pump will be switched off.",
       "number": 71,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "max_mixer1_temp",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -2198,16 +2198,16 @@
       "description": "Present temperature reduction in the heating circuit of the mixer when the contacts of the room therm. are open (present room temp. is reached).",
       "number": 75,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 6,
       "unit_name": "°C",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Mixer 2 settings",
       "key": "mixer1_room_therm",
       "categories": [
-        "Fuel level"
+        "Mixer 2 settings"
       ],
-      "category": "Fuel level",
+      "category": "Mixer 2 settings",
       "category_indices": [
-        25
+        6
       ],
       "locked": false,
       "lock_index": null,
@@ -2298,9 +2298,9 @@
       "description": "When the weather control is on, present temperature is calculated based on the heating curve and weather sensor readings.",
       "number": 79,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 6,
       "unit_name": "",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Mixer 2 settings",
       "key": "mixer1_weather_control",
       "enum": {
         "id": 13,
@@ -2313,11 +2313,11 @@
       },
       "enum_value": "On",
       "categories": [
-        "Fuel level"
+        "Mixer 2 settings"
       ],
-      "category": "Fuel level",
+      "category": "Mixer 2 settings",
       "category_indices": [
-        25
+        6
       ],
       "locked": false,
       "lock_index": null,
@@ -2438,16 +2438,16 @@
       "description": "Heating curve reflects the thermal characteristics of the building. Recommended settings for mixer circuit: 0,2 - 0,6",
       "number": 83,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 6,
       "unit_name": "",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Mixer 2 settings",
       "key": "heating_curve_mixer_1",
       "categories": [
-        "Fuel level"
+        "Mixer 2 settings"
       ],
-      "category": "Fuel level",
+      "category": "Mixer 2 settings",
       "category_indices": [
-        25
+        6
       ],
       "locked": false,
       "lock_index": null,
@@ -2538,9 +2538,9 @@
       "description": "OFF=mixer actuator & pump are off. CH ON=mixer circ. supplies radiator syst. FLOOR ON=mixer circ. supplies floor instal.. PUMP ONLY=actuator is off, pump turns off, when present temp. is reached.",
       "number": 87,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "mixer1_support",
       "enum": {
         "id": 14,
@@ -2555,11 +2555,11 @@
       },
       "enum_value": "Floor on",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -2686,16 +2686,16 @@
       "description": "The higher the value, the faster the mixer reaches the present temperature. Too high parameter value causes temperature overshoot and unnecessary movements of the actuator.",
       "number": 91,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "proportional_range",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -2786,16 +2786,16 @@
       "description": "The lower the value, the faster the mixer reaches the present temperature. Too low parameter value causes temperature overshoot and unnecessary movements of the actuator.",
       "number": 95,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "integration_time_constant",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -2886,9 +2886,9 @@
       "description": "Setting parameter on YES value closes the mixer actuator and turns off the mixer pump when the contacts of the room thermostat are open (heated room).",
       "number": 99,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "off_by_thermostat",
       "enum": {
         "id": 15,
@@ -2901,11 +2901,11 @@
       },
       "enum_value": "Yes",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -3026,16 +3026,16 @@
       "description": "Read the valve full opening time form the nameplate of the valve actuator and eneter it, e.g. 140s.",
       "number": 103,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "sek.",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "valve_full_opening_time",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -3126,16 +3126,16 @@
       "description": "Setting of param. defining the value temp. dead zone for mixer control system. Adjustment is made when the intended temp. of mixer circuit is higher or lower than the present temp. by MDZ value.",
       "number": 107,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "mixer1_input_dead_zone",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -3226,9 +3226,9 @@
       "description": "When weather control is on, present boiler temperature is calculated based on the heating curve and weather sensor readings.",
       "number": 111,
       "pass_index": 0,
-      "category_index": 9,
+      "category_index": 7,
       "unit_name": "",
-      "rmCatsName": "Chimney sweep mode",
+      "rmCatsName": "Mixer 3 settings",
       "key": "weather_control_the_boiler",
       "enum": {
         "id": 13,
@@ -3241,11 +3241,11 @@
       },
       "enum_value": "Off",
       "categories": [
-        "Chimney sweep mode"
+        "Mixer 3 settings"
       ],
-      "category": "Chimney sweep mode",
+      "category": "Mixer 3 settings",
       "category_indices": [
-        9
+        7
       ],
       "locked": false,
       "lock_index": null,
@@ -3264,16 +3264,16 @@
       "description": "Heating curve reflects the thermal characteristics of the building. Recommended settings for boiler: 1,8 - 4",
       "number": 112,
       "pass_index": 0,
-      "category_index": 9,
+      "category_index": 7,
       "unit_name": "",
-      "rmCatsName": "Chimney sweep mode",
+      "rmCatsName": "Mixer 3 settings",
       "key": "boiler_heating_curve",
       "categories": [
-        "Chimney sweep mode"
+        "Mixer 3 settings"
       ],
-      "category": "Chimney sweep mode",
+      "category": "Mixer 3 settings",
       "category_indices": [
-        9
+        7
       ],
       "locked": false,
       "lock_index": null,
@@ -3292,17 +3292,17 @@
       "description": "Above this temp., cont. enabl. HUW p. & opens mix. circ. to cool boiler. Cont. turns off HUW p., if temp. of this water exceeds max. value. Cont. wcn't open the mix. circ. when MIX CONT = floor on.",
       "number": 113,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "data_id": "113",
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "boiler_cooling_temperature",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -3702,16 +3702,16 @@
       "description": "Allows for increasing or decreasing temperature in heating circuit when the heating curve does not exactly match the characteristics of the building.",
       "number": 121,
       "pass_index": 0,
-      "category_index": 9,
+      "category_index": 7,
       "unit_name": "°C",
-      "rmCatsName": "Chimney sweep mode",
+      "rmCatsName": "Mixer 3 settings",
       "key": "curve_shift",
       "categories": [
-        "Chimney sweep mode"
+        "Mixer 3 settings"
       ],
-      "category": "Chimney sweep mode",
+      "category": "Mixer 3 settings",
       "category_indices": [
-        9
+        7
       ],
       "locked": false,
       "lock_index": null,
@@ -3730,16 +3730,16 @@
       "description": "Allows for correction -  temperature increase/decrease in the controlled heating circuit when the weather control is on and when the heating curve does not match the building characteristics.",
       "number": 122,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 6,
       "unit_name": "°C",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Mixer 2 settings",
       "key": "curve_translation",
       "categories": [
-        "Fuel level"
+        "Mixer 2 settings"
       ],
-      "category": "Fuel level",
+      "category": "Mixer 2 settings",
       "category_indices": [
-        25
+        6
       ],
       "locked": false,
       "lock_index": null,
@@ -4000,16 +4000,16 @@
       "description": "Time of actuator mechanism operation for furnace cleaning",
       "number": 131,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "sek.",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "poker_cycle_time",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -4028,16 +4028,16 @@
       "description": "It is a time of continous operation of burner, after which the burner will be automatically burned off, cleaned, and fired up again.",
       "number": 132,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 7,
       "unit_name": "h.",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Mixer 3 settings",
       "key": "burner_cleaning",
       "categories": [
-        "Fuel level"
+        "Mixer 3 settings"
       ],
-      "category": "Fuel level",
+      "category": "Mixer 3 settings",
       "category_indices": [
-        25
+        7
       ],
       "locked": false,
       "lock_index": null,
@@ -4056,16 +4056,16 @@
       "description": "Duration STABILIZATION mode. This mode occurs immediately after lighting the furnace and is aimed at stabilizing the combustion process before moving on to the OPERATION mode.",
       "number": 133,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 19,
       "unit_name": "min.",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information mixer 4",
       "key": "stabilization_time",
       "categories": [
-        "Service information"
+        "Information mixer 4"
       ],
-      "category": "Service information",
+      "category": "Information mixer 4",
       "category_indices": [
-        29
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -4084,16 +4084,16 @@
       "description": "BURNING OFF mode time.",
       "number": 134,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 2,
       "unit_name": "min.",
-      "rmCatsName": "Information",
+      "rmCatsName": "Boiler settings",
       "key": "burning_off_time",
       "categories": [
-        "Information"
+        "Boiler settings"
       ],
-      "category": "Information",
+      "category": "Boiler settings",
       "category_indices": [
-        44
+        2
       ],
       "locked": false,
       "lock_index": null,
@@ -4112,16 +4112,16 @@
       "description": "Blow-in output during burning off.",
       "number": 135,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 2,
       "unit_name": "%",
-      "rmCatsName": "Information",
+      "rmCatsName": "Boiler settings",
       "key": "air_flush_intensity",
       "categories": [
-        "Information"
+        "Boiler settings"
       ],
-      "category": "Information",
+      "category": "Boiler settings",
       "category_indices": [
-        44
+        2
       ],
       "locked": false,
       "lock_index": null,
@@ -4222,17 +4222,17 @@
       "description": "Fuel threshold value in which the following warning will be displayed: LOW FUEL LEVEL!",
       "number": 139,
       "pass_index": 0,
-      "category_index": 29,
+      "category_index": 1,
       "data_id": "139",
       "unit_name": "%",
-      "rmCatsName": "Service information",
+      "rmCatsName": "Information",
       "key": "alarm_level",
       "categories": [
-        "Service information"
+        "Information"
       ],
-      "category": "Service information",
+      "category": "Information",
       "category_indices": [
-        29
+        1
       ],
       "locked": false,
       "lock_index": null,
@@ -4251,16 +4251,16 @@
       "description": "The t. is count. when the exh. temp. drops below EX.TEMP.W. NO FUEL val. After this t., the cont. proceeds to a. of firing up the b., & after 3 unsuc. a., the alarm \"Failed to fire up\" occurs.",
       "number": 140,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "min.",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "no_fuel_detection_time",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -4313,16 +4313,16 @@
       "description": "Extra feeder operat. time (external).",
       "number": 142,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "sek.",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "feeder_operat_time_2",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -4341,17 +4341,17 @@
       "description": "Extra feeder interval (external).",
       "number": 143,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "data_id": "143",
       "unit_name": "sek.",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "feeder_interval_2",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -4370,16 +4370,16 @@
       "description": "Defines the temp. of pellet boiler below which reserve boiler is activated (e.g. gas boiler). Setting to \"0\" value turnes off control of reserve boiler and switches 39-40 contact to alarm control.",
       "number": 144,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 4,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Summer/Winter",
       "key": "reserve_boiler",
       "categories": [
-        "Lambda sensor"
+        "Summer/Winter"
       ],
-      "category": "Lambda sensor",
+      "category": "Summer/Winter",
       "category_indices": [
-        43
+        4
       ],
       "locked": false,
       "lock_index": null,
@@ -4398,16 +4398,16 @@
       "description": "Fan operation time extend. after provision of fuel dose in SUPERVISION.",
       "number": 145,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 4,
       "unit_name": "sek.",
-      "rmCatsName": "Information",
+      "rmCatsName": "Summer/Winter",
       "key": "airflow_operextend",
       "categories": [
-        "Information"
+        "Summer/Winter"
       ],
-      "category": "Information",
+      "category": "Summer/Winter",
       "category_indices": [
-        44
+        4
       ],
       "locked": false,
       "lock_index": null,
@@ -4426,16 +4426,16 @@
       "description": "Defines max. feeder temp. at which an alarm of exceeding max. temperature will be reported. ",
       "number": 146,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "maxburner_temp",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -4454,16 +4454,16 @@
       "description": "If, for a longer time than set in NO FUEL DETET. T.  param., the ex. temp will be lower than this value, the fuel shortage will be detected and another attempt to fire up the burner will be made.",
       "number": 147,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "°C",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "extempwno_fuel",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -4482,9 +4482,9 @@
       "description": "Hysteresis function",
       "number": 148,
       "pass_index": 0,
-      "category_index": 37,
+      "category_index": 5,
       "unit_name": "",
-      "rmCatsName": "Output H",
+      "rmCatsName": "Mixer 1 settings",
       "key": "hysteresis_function",
       "enum": {
         "id": 20,
@@ -4498,11 +4498,11 @@
       },
       "enum_value": "On",
       "categories": [
-        "Output H"
+        "Mixer 1 settings"
       ],
-      "category": "Output H",
+      "category": "Mixer 1 settings",
       "category_indices": [
-        37
+        5
       ],
       "locked": false,
       "lock_index": null,
@@ -4521,9 +4521,9 @@
       "description": "Once the parameter is on, boiler operation lock is available in service menu when the contacts of the thermostat are open (when the present room temperature is reached).",
       "number": 149,
       "pass_index": 0,
-      "category_index": 37,
+      "category_index": 5,
       "unit_name": "",
-      "rmCatsName": "Output H",
+      "rmCatsName": "Mixer 1 settings",
       "key": "boiler_lock_from_thermostate",
       "enum": {
         "id": 21,
@@ -4536,11 +4536,11 @@
       },
       "enum_value": "Yes",
       "categories": [
-        "Output H"
+        "Mixer 1 settings"
       ],
-      "category": "Output H",
+      "category": "Mixer 1 settings",
       "category_indices": [
-        37
+        5
       ],
       "locked": false,
       "lock_index": null,
@@ -4559,9 +4559,9 @@
       "description": "If the parameter is turned off, the boiler operation will be stopped, when the contact of the room thermostat will be opened.",
       "number": 150,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 19,
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Information mixer 4",
       "key": "thermostat_lock",
       "enum": {
         "id": 22,
@@ -4574,11 +4574,11 @@
       },
       "enum_value": "Yes",
       "categories": [
-        "Lambda sensor"
+        "Information mixer 4"
       ],
-      "category": "Lambda sensor",
+      "category": "Information mixer 4",
       "category_indices": [
-        43
+        19
       ],
       "locked": false,
       "lock_index": null,
@@ -4597,10 +4597,10 @@
       "description": "If the parameter is on, the boiler pump will be stopped when the room thermostat contact are open (present room temp. is reached).",
       "number": 151,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 8,
       "data_id": "151",
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Mixer 4 settings",
       "key": "boiler_pump_lock",
       "enum": {
         "id": 23,
@@ -4613,11 +4613,11 @@
       },
       "enum_value": "Yes",
       "categories": [
-        "Lambda sensor"
+        "Mixer 4 settings"
       ],
-      "category": "Lambda sensor",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        43
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -4636,9 +4636,9 @@
       "description": "Allows for bolier operation in accordance with programmend schedule.",
       "number": 152,
       "pass_index": 0,
-      "category_index": 37,
+      "category_index": 5,
       "unit_name": "",
-      "rmCatsName": "Output H",
+      "rmCatsName": "Mixer 1 settings",
       "key": "work_on_time",
       "enum": {
         "id": 24,
@@ -4651,11 +4651,11 @@
       },
       "enum_value": "Yes",
       "categories": [
-        "Output H"
+        "Mixer 1 settings"
       ],
-      "category": "Output H",
+      "category": "Mixer 1 settings",
       "category_indices": [
-        37
+        5
       ],
       "locked": false,
       "lock_index": null,
@@ -4674,9 +4674,9 @@
       "description": "Turns off and on the operation of Lambda sensor.",
       "number": 153,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 8,
       "unit_name": "",
-      "rmCatsName": "Information",
+      "rmCatsName": "Mixer 4 settings",
       "key": "operation_with_lambda_sensor",
       "enum": {
         "id": 26,
@@ -4689,11 +4689,11 @@
       },
       "enum_value": "On",
       "categories": [
-        "Information"
+        "Mixer 4 settings"
       ],
-      "category": "Information",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        44
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -4712,16 +4712,16 @@
       "description": "Oxygen value in exhaust below which the feeder operation will be stopped untill another increase of this value.",
       "number": 154,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 8,
       "unit_name": "%",
-      "rmCatsName": "Information",
+      "rmCatsName": "Mixer 4 settings",
       "key": "feeder_lock",
       "categories": [
-        "Information"
+        "Mixer 4 settings"
       ],
-      "category": "Information",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        44
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -4740,17 +4740,17 @@
       "description": "The oxygen content in exhaust, above which the furnace is considered to be burned off.",
       "number": 155,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 8,
       "data_id": "155",
       "unit_name": "%",
-      "rmCatsName": "Information",
+      "rmCatsName": "Mixer 4 settings",
       "key": "fuel_detection_oxygen",
       "categories": [
-        "Information"
+        "Mixer 4 settings"
       ],
-      "category": "Information",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        44
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -4769,17 +4769,17 @@
       "description": "The t. is count. when the ox. cont. in ex. incres. above FUEL DET.-OX. val. After this t., the cont. proceeds to a. of firing up the b., & after 3 unsuc. a., the alarm \"Failed to fire up\" occurs.",
       "number": 156,
       "pass_index": 0,
-      "category_index": 44,
+      "category_index": 8,
       "data_id": "156",
       "unit_name": "min.",
-      "rmCatsName": "Information",
+      "rmCatsName": "Mixer 4 settings",
       "key": "fuel_detection_time",
       "categories": [
-        "Information"
+        "Mixer 4 settings"
       ],
-      "category": "Information",
+      "category": "Mixer 4 settings",
       "category_indices": [
-        44
+        8
       ],
       "locked": false,
       "lock_index": null,
@@ -4798,17 +4798,17 @@
       "description": "Fan rotation speed, below which the alarm of blocked fan will be reported during the normal operation. Once the parameter is set on \"0\", the rotation detection is off.",
       "number": 157,
       "pass_index": 0,
-      "category_index": 37,
+      "category_index": 5,
       "data_id": "157",
       "unit_name": "r/min",
-      "rmCatsName": "Output H",
+      "rmCatsName": "Mixer 1 settings",
       "key": "fan_rotation_detection",
       "categories": [
-        "Output H"
+        "Mixer 1 settings"
       ],
-      "category": "Output H",
+      "category": "Mixer 1 settings",
       "category_indices": [
-        37
+        5
       ],
       "locked": false,
       "lock_index": null,
@@ -4827,10 +4827,10 @@
       "description": "FEEDER AND GRATE - during the alarm of exceeded feed. temp., the feed. and grate operation is stopped. GRATE ONLY - during the alarm of exceeded feed. temp., only the feed. operstion is stopped.",
       "number": 158,
       "pass_index": 0,
-      "category_index": 37,
+      "category_index": 5,
       "data_id": "158",
       "unit_name": "",
-      "rmCatsName": "Output H",
+      "rmCatsName": "Mixer 1 settings",
       "key": "feeder_sensor_mode",
       "enum": {
         "id": 27,
@@ -4843,11 +4843,11 @@
       },
       "enum_value": "Feeder and grate",
       "categories": [
-        "Output H"
+        "Mixer 1 settings"
       ],
-      "category": "Output H",
+      "category": "Mixer 1 settings",
       "category_indices": [
-        37
+        5
       ],
       "locked": false,
       "lock_index": null,
@@ -4866,10 +4866,10 @@
       "description": "Configuration output H1.",
       "number": 159,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 4,
       "data_id": "159",
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Summer/Winter",
       "key": "output_h1",
       "enum": {
         "id": 28,
@@ -4883,11 +4883,11 @@
       },
       "enum_value": "Alarms",
       "categories": [
-        "Lambda sensor"
+        "Summer/Winter"
       ],
-      "category": "Lambda sensor",
+      "category": "Summer/Winter",
       "category_indices": [
-        43
+        4
       ],
       "locked": false,
       "lock_index": null,
@@ -4906,10 +4906,10 @@
       "description": "Configuration output H2 and H3.",
       "number": 160,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 4,
       "data_id": "160",
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Summer/Winter",
       "key": "output_h2_and_h3",
       "enum": {
         "id": 28,
@@ -4923,11 +4923,11 @@
       },
       "enum_value": "Reserve boiler",
       "categories": [
-        "Lambda sensor"
+        "Summer/Winter"
       ],
-      "category": "Lambda sensor",
+      "category": "Summer/Winter",
       "category_indices": [
-        43
+        4
       ],
       "locked": false,
       "lock_index": null,
@@ -4946,9 +4946,9 @@
       "description": "Chimney sweep mode preset power",
       "number": 161,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 2,
       "unit_name": "",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Boiler settings",
       "key": "preset_power",
       "enum": {
         "id": 30,
@@ -4962,11 +4962,11 @@
       },
       "enum_value": "50%",
       "categories": [
-        "Fuel level"
+        "Boiler settings"
       ],
-      "category": "Fuel level",
+      "category": "Boiler settings",
       "category_indices": [
-        25
+        2
       ],
       "locked": false,
       "lock_index": null,
@@ -4985,16 +4985,16 @@
       "description": "Chimney sweep mode work time",
       "number": 162,
       "pass_index": 0,
-      "category_index": 25,
+      "category_index": 2,
       "unit_name": "min.",
-      "rmCatsName": "Fuel level",
+      "rmCatsName": "Boiler settings",
       "key": "work_time",
       "categories": [
-        "Fuel level"
+        "Boiler settings"
       ],
-      "category": "Fuel level",
+      "category": "Boiler settings",
       "category_indices": [
-        25
+        2
       ],
       "locked": false,
       "lock_index": null,
@@ -5013,9 +5013,9 @@
       "description": "Setting on YES value will cause a display of hidden advanced parameters in respective places in menu. ",
       "number": 163,
       "pass_index": 0,
-      "category_index": 37,
+      "category_index": 5,
       "unit_name": "",
-      "rmCatsName": "Output H",
+      "rmCatsName": "Mixer 1 settings",
       "key": "show_advanced_setup",
       "enum": {
         "id": 29,
@@ -5028,11 +5028,11 @@
       },
       "enum_value": "Yes",
       "categories": [
-        "Output H"
+        "Mixer 1 settings"
       ],
-      "category": "Output H",
+      "category": "Mixer 1 settings",
       "category_indices": [
-        37
+        5
       ],
       "locked": false,
       "lock_index": null,
@@ -5051,9 +5051,9 @@
       "description": "Allows for defining the number of alarm or group of alarms, after which the output 39-40 will be enabled. Alarms will enable this output, if the RESERVE BOILER param. is set on \"0\" value.",
       "number": 164,
       "pass_index": 0,
-      "category_index": 43,
+      "category_index": 4,
       "unit_name": "",
-      "rmCatsName": "Lambda sensor",
+      "rmCatsName": "Summer/Winter",
       "key": "alarms",
       "enum": {
         "id": 1,
@@ -5066,11 +5066,11 @@
       },
       "enum_value": "OFF",
       "categories": [
-        "Lambda sensor"
+        "Summer/Winter"
       ],
-      "category": "Lambda sensor",
+      "category": "Summer/Winter",
       "category_indices": [
-        43
+        4
       ],
       "locked": false,
       "lock_index": null,

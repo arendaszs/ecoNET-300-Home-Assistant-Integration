@@ -184,14 +184,15 @@ def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None
         entry_pass_index = entry.get("pass_index", 0)
 
         if entry_type == RM_STRUCTURE_TYPE_MENU_GROUP:
-            # Menu group - only reset pass_index, keep category context
+            # Menu group - this IS the category context (same as add_parameter_categories)
+            # Reset pass_index and update category_index from the menu group's index
             current_pass_index = 0
-            # Note: Do NOT reset current_category_index here
-            # Parameters should inherit the last seen category
-        elif entry_type == RM_STRUCTURE_TYPE_CATEGORY:
-            # Category entry - update tracking for subsequent params
-            current_pass_index = entry_pass_index
             current_category_index = entry.get("index", 0)
+        elif entry_type == RM_STRUCTURE_TYPE_CATEGORY:
+            # Category entry (type 0) - these appear to be sub-items, not main categories
+            # Only update pass_index, don't change category context
+            current_pass_index = entry_pass_index
+            # Note: Do NOT update current_category_index from type 0 entries
         elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
             # Parameter entry - map by param index (structure's index field)
             param_index = entry.get("index")
@@ -294,7 +295,8 @@ def add_parameter_categories(
         entry_type = entry.get("type")
         entry_index = entry.get("index")
 
-        if entry_type == RM_STRUCTURE_TYPE_CATEGORY:
+        if entry_type == RM_STRUCTURE_TYPE_MENU_GROUP:
+            # Menu group (type 7) - this is the category context
             if isinstance(entry_index, int) and entry_index < len(categories):
                 current_category_index = entry_index
         elif entry_type == RM_STRUCTURE_TYPE_PARAMETER:
