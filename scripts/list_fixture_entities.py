@@ -83,6 +83,7 @@ def get_via_device(category: str, param_type: str) -> str:
 
 
 def main() -> None:
+    """Main entry point for generating fixture entities report."""
     fixtures_root = Path("tests/fixtures/ecoMAX810P-L")
     structure_file = fixtures_root / "rmStructure.json"
     cats_file = fixtures_root / "rmCatsNames.json"
@@ -176,7 +177,7 @@ def main() -> None:
     output_file = output_dir / "fixture_entities_report.md"
 
     # Write to file
-    with open(output_file, "w", encoding="utf-8") as f:
+    with output_file.open("w", encoding="utf-8") as f:
         # Write header
         f.write("# Fixture Entities Report\n\n")
         f.write(
@@ -235,8 +236,8 @@ def main() -> None:
             f.write("| Entity name | Entity key | Type | Category | Unit |\n")
             f.write("| --- | --- | --- | --- | --- |\n")
             for (
-                device,
-                via_device,
+                _device,
+                _via_device,
                 entity_name,
                 entity_key,
                 entity_type,

@@ -146,7 +146,7 @@ class EconetClient:
         return None
 
     async def get_with_fix_quotes(self, url):
-        """Fetch data with preprocessing to fix malformed JSON quote escaping.
+        r"""Fetch data with preprocessing to fix malformed JSON quote escaping.
 
         The ecoNET device API sometimes returns JSON with double-double-quotes ("")
         instead of properly escaped quotes (\"). This method fetches raw text,
@@ -204,8 +204,6 @@ class EconetClient:
 
                     try:
                         data = json.loads(fixed_text)
-                        _LOGGER.debug("Fetched and fixed data successfully")
-                        return data
                     except json.JSONDecodeError as e:
                         _LOGGER.warning(
                             "JSON decode error after quote fix: %s, trying original",
@@ -217,6 +215,9 @@ class EconetClient:
                         except json.JSONDecodeError:
                             _LOGGER.error("Failed to parse JSON from URL: %s", url)
                             return None
+                    else:
+                        _LOGGER.debug("Fetched and fixed data successfully")
+                        return data
 
             except TimeoutError:
                 _LOGGER.warning("Timeout error, retry(%i/%i)", attempt, max_attempts)
@@ -600,8 +601,10 @@ class Econet300Api:
             _LOGGER.debug("Authenticating with service password via rmAccess")
 
             async with asyncio.timeout(10):
-                async with self._client._session.get(
-                    url, params={"password": password}, auth=self._client._auth
+                async with self._client._session.get(  # noqa: SLF001  # Accessing private member for service auth
+                    url,
+                    params={"password": password},
+                    auth=self._client._auth,  # noqa: SLF001  # Accessing private member for service auth
                 ) as response:
                     if response.status == HTTPStatus.OK:
                         data = await response.json()
@@ -623,7 +626,7 @@ class Econet300Api:
             _LOGGER.debug("Service authentication timed out")
         except (aiohttp.ClientError, ValueError) as e:
             _LOGGER.debug("Service authentication error: %s", e)
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             _LOGGER.debug("Service authentication unexpected error: %s", e)
         return False
 

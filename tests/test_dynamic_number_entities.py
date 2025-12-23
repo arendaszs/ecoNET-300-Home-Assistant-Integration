@@ -4,11 +4,13 @@ import json
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
-import pytest
+from homeassistant.components.number import NumberEntity as HANumberEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+import pytest
 
 from custom_components.econet300.api import Econet300Api
 from custom_components.econet300.common import EconetDataCoordinator
+
 # Category functions removed - category support eliminated
 from custom_components.econet300.number import (
     async_setup_entry,
@@ -150,8 +152,6 @@ class TestDynamicNumberEntities:
         # Should have created number entities (EconetNumber, categories removed)
         assert len(entities) > 0
         # All entities should be NumberEntity instances (base class)
-        from homeassistant.components.number import NumberEntity as HANumberEntity
-
         assert all(isinstance(entity, HANumberEntity) for entity in entities)
 
         # Check that we have the expected number of entities
@@ -293,7 +293,6 @@ class TestDynamicNumberEntities:
 
         assert len(params_with_keys) > 0, "Should have parameters with key field"
 
-    
     def test_entity_key_generation_with_categories(self, mock_merged_data):
         """Test that entity keys include category prefixes for uniqueness."""
         # Test with mock parameters that simulate multiple categories

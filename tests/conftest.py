@@ -108,7 +108,7 @@ def mock_config_entry_minimal():
 @pytest.fixture
 def mock_api():
     """Create a mock Econet300Api for testing."""
-    from custom_components.econet300.api import Econet300Api
+    from custom_components.econet300.api import Econet300Api  # type: ignore[import]
 
     api = MagicMock(spec=Econet300Api)
     api.uid = "test-device-uid"
@@ -121,7 +121,7 @@ def mock_api():
 @pytest.fixture
 def mock_coordinator():
     """Create a mock EconetDataCoordinator for testing."""
-    from custom_components.econet300.common import EconetDataCoordinator
+    from custom_components.econet300.common import EconetDataCoordinator  # type: ignore[import]
 
     coordinator = MagicMock(spec=EconetDataCoordinator)
     coordinator.data = {
@@ -195,7 +195,7 @@ def ecomax810p_merged_data(load_fixture):
 @pytest.fixture
 def mock_integration_setup(mock_hass, mock_config_entry, mock_api, mock_coordinator):
     """Set up a mock integration environment."""
-    from custom_components.econet300 import DOMAIN
+    from custom_components.econet300 import DOMAIN  # type: ignore[import]
 
     mock_hass.data[DOMAIN] = {
         mock_config_entry.entry_id: {

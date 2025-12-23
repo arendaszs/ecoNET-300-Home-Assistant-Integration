@@ -80,7 +80,7 @@ def generate_translation_key(name: str) -> str:
 
 
 def fix_json_quote_escaping(text: str) -> str:
-    """Fix malformed JSON quote escaping from ecoNET device.
+    r"""Fix malformed JSON quote escaping from ecoNET device.
 
     The device API sometimes returns JSON with:
     - Double-double-quotes ("") instead of properly escaped quotes (\")
@@ -114,8 +114,6 @@ def load_json_file(file_path: Path) -> dict | list | None:
     try:
         raw_text = file_path.read_text(encoding="utf-8")
         data = json.loads(raw_text)
-        print(f"  [OK] {file_path.name}")
-        return data
     except json.JSONDecodeError:
         # Try to fix malformed JSON escaping
         print(
@@ -124,11 +122,15 @@ def load_json_file(file_path: Path) -> dict | list | None:
         try:
             fixed_text = fix_json_quote_escaping(raw_text)
             data = json.loads(fixed_text)
-            print(f"  [OK] {file_path.name} (after quote fix)")
-            return data
         except json.JSONDecodeError as e2:
             print(f"  [ERROR] {file_path.name}: {e2}")
             return None
+        else:
+            print(f"  [OK] {file_path.name} (after quote fix)")
+            return data
+    else:
+        print(f"  [OK] {file_path.name}")
+        return data
 
 
 def extract_data_array(json_data: dict | list | None) -> list:

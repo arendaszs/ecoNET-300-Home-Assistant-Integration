@@ -12,8 +12,8 @@ This module tests:
 # Note: Redefining fixture names in test parameters is expected pytest pattern
 
 import json
-import re
 from pathlib import Path
+import re
 
 import pytest
 

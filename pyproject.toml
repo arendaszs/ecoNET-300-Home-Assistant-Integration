@@ -329,8 +329,6 @@ runtime-typing = false
 [tool.pylint.CODE_STYLE]
 max-line-length-suggestions = 72
 
-[tool.ruff]
-
 [tool.ruff.lint]
 select = [
     "A001", # Variable {name} is shadowing a Python builtin

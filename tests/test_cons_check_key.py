@@ -165,14 +165,14 @@ class TestBinaryVsRegularClassification:
 
     def test_boolean_values_are_binary_sensors(self, reg_params):
         """Test that boolean values in fixtures are classified as binary sensors."""
-        for key, value in reg_params.items():
+        for value in reg_params.values():
             if isinstance(value, bool):
                 # This is correctly classified as a binary sensor
                 assert True
 
     def test_non_boolean_values_are_regular_sensors(self, reg_params):
         """Test that non-boolean values are classified as regular sensors."""
-        for key, value in reg_params.items():
+        for value in reg_params.values():
             if not isinstance(value, bool):
                 # This is correctly classified as a regular sensor
                 assert True
