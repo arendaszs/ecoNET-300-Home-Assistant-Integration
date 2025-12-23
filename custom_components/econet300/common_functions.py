@@ -87,9 +87,8 @@ def get_parameter_type_from_category(category_name: str | None) -> str:
 def requires_service_password(param: dict) -> bool:
     """Check if parameter requires service password (should be disabled by default).
 
-    Parameters are considered service-level if:
-    1. pass_index > 0 in rmStructure (inherited from parent category), OR
-    2. Any of the parameter's categories contains "Service" or "Advanced"
+    Parameters are considered service-level if pass_index > 0 in rmStructure
+    (inherited from parent category).
 
     These should be disabled by default in Home Assistant to prevent
     accidental changes by regular users.
@@ -101,19 +100,10 @@ def requires_service_password(param: dict) -> bool:
         True if parameter requires service password
 
     """
-    # Primary check: pass_index from structure hierarchy
+    # Check pass_index from structure hierarchy
     pass_index = param.get("pass_index", 0)
     if isinstance(pass_index, int) and pass_index > 0:
         return True
-
-    # Fallback: check if any category indicates service/advanced
-    categories = param.get("categories", [])
-    if isinstance(categories, list):
-        for cat in categories:
-            if isinstance(cat, str):
-                cat_lower = cat.lower()
-                if "service" in cat_lower or "advanced" in cat_lower:
-                    return True
 
     return False
 

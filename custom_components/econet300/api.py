@@ -1,7 +1,9 @@
 """Econet300 API class describing methods of getting and setting data."""
 
 import asyncio
+import json
 import logging
+import re
 from datetime import datetime
 from http import HTTPStatus
 from typing import Any
@@ -39,14 +41,9 @@ from .const import (
     API_SYS_PARAMS_PARAM_SW_REV,
     API_SYS_PARAMS_PARAM_UID,
     API_SYS_PARAMS_URI,
-    CATEGORY_MODE_NONE,
-    CATEGORY_MODE_SIMPLIFIED,
-    CATEGORY_OTHER,
     CONTROL_PARAMS,
-    DEFAULT_CATEGORY_MODE,
     NUMBER_MAP,
     RMNEWPARAM_PARAMS,
-    SIMPLIFIED_CATEGORY_KEYWORDS,
 )
 from .mem_cache import MemCache
 
@@ -135,6 +132,87 @@ class EconetClient:
                     data = await resp.json()
                     _LOGGER.debug("Fetched data: %s", data)
                     return data
+
+            except TimeoutError:
+                _LOGGER.warning("Timeout error, retry(%i/%i)", attempt, max_attempts)
+                await asyncio.sleep(1)
+            attempt += 1
+        _LOGGER.error(
+            "Failed to fetch data from %s after %d attempts", url, max_attempts
+        )
+        return None
+
+    async def get_with_fix_quotes(self, url):
+        """Fetch data with preprocessing to fix malformed JSON quote escaping.
+
+        The ecoNET device API sometimes returns JSON with double-double-quotes ("")
+        instead of properly escaped quotes (\"). This method fetches raw text,
+        fixes the escaping, and then parses JSON.
+
+        Args:
+            url: URL to fetch from
+
+        Returns:
+            Parsed JSON data, or None if request fails
+        """
+        attempt = 1
+        max_attempts = 5
+
+        while attempt <= max_attempts:
+            try:
+                _LOGGER.debug(
+                    "Fetching data with quote fix from URL: %s (Attempt %d)",
+                    url,
+                    attempt,
+                )
+
+                async with await self._session.get(
+                    url, auth=self._auth, timeout=ClientTimeout(total=15)
+                ) as resp:
+                    _LOGGER.debug("Received response with status: %s", resp.status)
+                    if resp.status == HTTPStatus.UNAUTHORIZED:
+                        _LOGGER.error("Unauthorized access to URL: %s", url)
+                        raise AuthError
+
+                    if resp.status != HTTPStatus.OK:
+                        try:
+                            error_message = await resp.text()
+                        except (aiohttp.ClientError, aiohttp.ClientResponseError) as e:
+                            error_message = f"Could not retrieve error message: {e}"
+
+                        _LOGGER.error(
+                            "Failed to fetch data from URL: %s (Status: %s) - Response: %s",
+                            url,
+                            resp.status,
+                            error_message,
+                        )
+                        return None
+
+                    # Get raw text and fix quote escaping
+                    raw_text = await resp.text()
+
+                    # Fix double-double-quotes ("") to proper JSON escaping (\")
+                    # Pattern: look for "" that are inside strings (not at string boundaries)
+                    fixed_text = re.sub(r'""([^"]+)""', r"\"\\1\"", raw_text)
+
+                    # Also fix curly/smart quotes to straight quotes
+                    fixed_text = fixed_text.replace('"', '\\"').replace('"', '\\"')
+
+                    try:
+                        data = json.loads(fixed_text)
+                        _LOGGER.debug("Fetched and fixed data successfully")
+                        return data
+                    except json.JSONDecodeError as e:
+                        _LOGGER.warning(
+                            "JSON decode error after quote fix: %s, trying original",
+                            e,
+                        )
+                        # Try original if fix made it worse
+                        try:
+                            return json.loads(raw_text)
+                        except json.JSONDecodeError:
+                            _LOGGER.error("Failed to parse JSON from URL: %s", url)
+                            return None
 
             except TimeoutError:
                 _LOGGER.warning("Timeout error, retry(%i/%i)", attempt, max_attempts)
@@ -594,6 +672,10 @@ class Econet300Api:
         This endpoint provides detailed descriptions of parameters in the specified language.
         Used for help text and parameter explanations in the web interface.
 
+        Note: The API sometimes returns malformed JSON with double-double-quotes ("")
+        instead of properly escaped quotes. This method uses get_with_fix_quotes()
+        to handle this automatically.
+
         Args:
             lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
 
@@ -616,7 +698,8 @@ class Econet300Api:
             url = f"{self.host}/econet/{API_RM_PARAMS_DESCS_URI}?uid={self.uid}&lang={lang}"
             _LOGGER.debug("Fetching parameter descriptions from: %s", url)
 
-            data = await self._client.get(url)
+            # Use get_with_fix_quotes to handle malformed JSON escaping from device
+            data = await self._client.get_with_fix_quotes(url)
             if data is None:
                 _LOGGER.warning(
                     "Failed to fetch parameter descriptions from rmParamsDescs"
@@ -1257,7 +1340,6 @@ class Econet300Api:
     async def fetch_merged_rm_data_with_names_descs_and_structure(
         self,
         lang: str = "en",
-        category_mode: str = DEFAULT_CATEGORY_MODE,
         sys_params: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         """Merge rmParamsData with rmParamsNames, rmParamsDescs, rmStructure, and rmParamsEnums.
@@ -1270,7 +1352,6 @@ class Econet300Api:
 
         Args:
             lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
-            category_mode: Category assignment mode (simplified/api/none). Defaults to simplified.
             sys_params: Optional sysParams data containing servicePassword for authentication.
 
         Returns:
@@ -1410,9 +1491,10 @@ class Econet300Api:
             ):
                 lock_names = results[4]  # type: ignore[assignment]
 
-            # Add parameter numbers, units, and keys using helper methods
+            # Add parameter numbers, units, rmCatsName, and keys
             self._add_parameter_numbers(step2_data["parameters"], structure)
             self._add_unit_names(step2_data["parameters"], units)
+            self._add_rmcats_names(step2_data["parameters"], categories)
 
             # Add keys using generate_translation_key
             for param in step2_data["parameters"]:
@@ -1445,14 +1527,13 @@ class Econet300Api:
                 smart_enum_count,
             )
 
-            # Add category information based on selected mode
+            # Add category information from API structure
             category_count = self._add_parameter_categories(
-                parameters_dict, structure, categories, category_mode
+                parameters_dict, structure, categories
             )
             _LOGGER.debug(
-                "Added category information to %d parameters (mode: %s)",
+                "Added category information to %d parameters",
                 category_count,
-                category_mode,
             )
 
             # Add lock status to parameters (with lock reasons from rmLocksNames)
@@ -1626,7 +1707,7 @@ class Econet300Api:
     def _add_parameter_numbers(
         self, parameters: list[dict[str, Any]], structure: list[dict[str, Any]]
     ) -> None:
-        """Add parameter numbers and pass_index based on structure data.
+        """Add parameter numbers, pass_index, and data_id based on structure data.
 
         The pass_index field indicates access level:
         - 0 = User accessible (no password required)
@@ -1635,19 +1716,27 @@ class Econet300Api:
         The structure is hierarchical:
         - type 0 = category entry (can have pass_index > 0)
         - type 1 = parameter entry (inherits pass_index from parent category)
+        - type 3 = data reference entry (has data_id for sysParams mapping)
         - type 7 = menu group (resets pass_index tracking)
 
         Parameters inherit pass_index from their parent category.
+
+        IMPORTANT: The structure type=1 entry's "index" field refers to the param's
+        position in rmParamsData. We use a dictionary keyed by this index to look up
+        the correct category for each param.
 
         Args:
             parameters: List of parameter dictionaries to update
             structure: Structure data from rmStructure endpoint
 
         """
-        # Build list of parameter structure entries with inherited pass_index
-        # by iterating through structure in order and tracking category pass_index
-        param_structure_entries: list[dict[str, int]] = []
+        # Build dictionary mapping param index -> {pass_index, category_index}
+        # The structure type=1 "index" field is the param's position in rmParamsData
+        param_structure_map: dict[int, dict[str, int]] = {}
+        # Also build mapping of param index -> data_id from type 3 entries
+        data_id_map: dict[int, str] = {}
         current_pass_index = 0
+        current_category_index = 0
 
         for entry in structure:
             if not isinstance(entry, dict):
@@ -1657,33 +1746,48 @@ class Econet300Api:
             entry_pass_index = entry.get("pass_index", 0)
 
             if entry_type == 7:
-                # Menu group - reset pass_index tracking
+                # Menu group - only reset pass_index, keep category context
                 current_pass_index = 0
+                # Note: Do NOT reset current_category_index here
+                # Parameters should inherit the last seen category
             elif entry_type == 0:
-                # Category entry - update current pass_index for subsequent params
+                # Category entry - update tracking for subsequent params
                 current_pass_index = entry_pass_index
+                current_category_index = entry.get("index", 0)
             elif entry_type == 1:
-                # Parameter entry - inherits pass_index from current category
-                param_structure_entries.append(
-                    {
-                        "number": entry.get("index", len(param_structure_entries)),
+                # Parameter entry - map by param index (structure's index field)
+                param_index = entry.get("index")
+                if param_index is not None:
+                    param_structure_map[param_index] = {
                         "pass_index": current_pass_index,
+                        "category_index": current_category_index,
                     }
-                )
+            elif entry_type == 3:
+                # Data reference entry - has data_id for sysParams mapping
+                param_index = entry.get("index")
+                data_id = entry.get("data_id")
+                if param_index is not None and data_id is not None:
+                    data_id_map[param_index] = data_id
 
-        # Add numbers and inherited pass_index to parameters
-        # param_index is used as array index into param_structure_entries
+        # Add numbers, pass_index, category_index, and data_id to parameters
+        # Use the param's index to look up in the structure map
         for param in parameters:
             param_index = param.get("index", 0)
 
-            if param_index < len(param_structure_entries):
-                structure_entry = param_structure_entries[param_index]
-                param["number"] = structure_entry["number"]
+            if param_index in param_structure_map:
+                structure_entry = param_structure_map[param_index]
+                param["number"] = param_index  # Number is same as index
                 param["pass_index"] = structure_entry["pass_index"]
+                param["category_index"] = structure_entry["category_index"]
             else:
-                # Fallback to parameter index if no structure entry
+                # Fallback for params not in structure
                 param["number"] = param_index
                 param["pass_index"] = 0  # Default to user-accessible
+                param["category_index"] = 0
+
+            # Add data_id if available from type 3 entries
+            if param_index in data_id_map:
+                param["data_id"] = data_id_map[param_index]
 
     def _add_unit_names(
         self, parameters: list[dict[str, Any]], units: list[str]
@@ -1709,86 +1813,56 @@ class Econet300Api:
             else:
                 param["unit_name"] = ""
 
+    def _add_rmcats_names(
+        self,
+        parameters: list[dict[str, Any]],
+        categories: list[str],
+    ) -> None:
+        """Add category name from rmCatsNames to each parameter.
+
+        Uses the category_index stored by _add_parameter_numbers() to look up
+        the category name from rmCatsNames. This preserves the API's original
+        categorization even when simplified mode is used.
+
+        The rmCatsName field is used by requires_service_password() to
+        detect service/advanced parameters that should be disabled by default.
+
+        Args:
+            parameters: List of parameter dictionaries to update
+            categories: Category names from rmCatsNames endpoint
+
+        """
+        for param in parameters:
+            category_index = param.get("category_index", 0)
+            if (
+                isinstance(category_index, int)
+                and 0 <= category_index < len(categories)
+                and isinstance(categories[category_index], str)
+            ):
+                param["rmCatsName"] = categories[category_index]
+            else:
+                param["rmCatsName"] = ""
+
     def _add_parameter_categories(
         self,
         parameters_dict: dict[str, dict[str, Any]],
         structure: list[dict[str, Any]],
         categories: list[str],
-        category_mode: str = DEFAULT_CATEGORY_MODE,
     ) -> int:
-        """Add category information to parameters based on selected mode.
+        """Add category information to parameters from API structure.
 
-        Supports three modes:
-        - simplified: Groups into Boiler/HUW/Mixer/Other using keyword matching
-        - api: Uses device menu structure from rmStructure (as-is)
-        - none: No categories assigned
+        Uses device menu structure from rmStructure (as-is from device).
 
         Args:
             parameters_dict: Dictionary of parameters indexed by string keys
             structure: Structure data from rmStructure endpoint
             categories: Category names from rmCatsNames endpoint
-            category_mode: Category mode (simplified/api/none)
 
         Returns:
             Total number of category assignments
 
         """
-        if category_mode == CATEGORY_MODE_NONE:
-            # No categories - set empty values for all parameters
-            for param in parameters_dict.values():
-                param["categories"] = []
-                param["category"] = ""
-                param["category_indices"] = []
-                param["category_index"] = 0
-            return 0
-
-        if category_mode == CATEGORY_MODE_SIMPLIFIED:
-            return self._apply_simplified_categories(parameters_dict)
-
-        # Default: CATEGORY_MODE_API - use structure-based mapping
         return self._apply_api_categories(parameters_dict, structure, categories)
-
-    def _apply_simplified_categories(
-        self,
-        parameters_dict: dict[str, dict[str, Any]],
-    ) -> int:
-        """Apply simplified category assignment using keyword matching.
-
-        Groups parameters into: Boiler settings, HUW settings, Mixer settings, Other
-
-        Args:
-            parameters_dict: Dictionary of parameters indexed by string keys
-
-        Returns:
-            Number of category assignments
-
-        """
-        category_count = 0
-
-        for param in parameters_dict.values():
-            param_name = param.get("name", "").lower()
-            param_desc = param.get("description", "").lower()
-            combined_text = f"{param_name} {param_desc}"
-
-            # Find matching category
-            matched_category = CATEGORY_OTHER  # Default fallback
-
-            for category, keywords in SIMPLIFIED_CATEGORY_KEYWORDS.items():
-                for keyword in keywords:
-                    if keyword in combined_text:
-                        matched_category = category
-                        break
-                if matched_category != CATEGORY_OTHER:
-                    break
-
-            # Assign category
-            param["categories"] = [matched_category]
-            param["category"] = matched_category
-            param["category_indices"] = []
-            param["category_index"] = 0
-            category_count += 1
-
-        return category_count
 
     def _apply_api_categories(
         self,

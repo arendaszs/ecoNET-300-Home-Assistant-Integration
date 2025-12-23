@@ -33,19 +33,16 @@ Examples:
 """
 
 import argparse
-from datetime import datetime
 import json
-from pathlib import Path
 import re
 import sys
+from datetime import datetime
+from pathlib import Path
 
 # Add parent directory to path for imports from custom_components
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from custom_components.econet300.const import (
-    CATEGORY_OTHER,
-    SIMPLIFIED_CATEGORY_KEYWORDS,
-)
+# Category constants removed - we now always use API structure categories
 
 
 def generate_translation_key(name: str) -> str:
@@ -75,18 +72,55 @@ def generate_translation_key(name: str) -> str:
     return re.sub(r"(\w+)(\d+)_(\w+)", r"\1\2_\3", key)
 
 
+def fix_json_quote_escaping(text: str) -> str:
+    """Fix malformed JSON quote escaping from ecoNET device.
+
+    The device API sometimes returns JSON with:
+    - Double-double-quotes ("") instead of properly escaped quotes (\")
+    - Curly/smart quotes ("") instead of straight quotes
+
+    Args:
+        text: Raw JSON text that may have malformed escaping
+
+    Returns:
+        Fixed JSON text with proper escaping
+    """
+    # Fix double-double-quotes ("") to proper JSON escaping (\")
+    # Pattern: look for "" that are inside strings (not at string boundaries)
+    fixed_text = re.sub(r'""([^"]+)""', r"\"\\1\"", text)
+
+    # Also fix curly/smart quotes to straight quotes (properly escaped)
+    fixed_text = fixed_text.replace('"', '\\"').replace('"', '\\"')
+
+    return fixed_text
+
+
 def load_json_file(file_path: Path) -> dict | list | None:
-    """Load and parse a JSON file."""
+    """Load and parse a JSON file.
+
+    Automatically handles malformed JSON escaping from ecoNET device responses.
+    """
     if not file_path.exists():
         print(f"  [MISSING] {file_path.name}")
         return None
     try:
-        data = json.loads(file_path.read_text(encoding="utf-8"))
+        raw_text = file_path.read_text(encoding="utf-8")
+        data = json.loads(raw_text)
         print(f"  [OK] {file_path.name}")
         return data
-    except json.JSONDecodeError as e:
-        print(f"  [ERROR] {file_path.name}: {e}")
-        return None
+    except json.JSONDecodeError:
+        # Try to fix malformed JSON escaping
+        print(
+            f"  [WARN] {file_path.name}: JSON error, attempting to fix quote escaping..."
+        )
+        try:
+            fixed_text = fix_json_quote_escaping(raw_text)
+            data = json.loads(fixed_text)
+            print(f"  [OK] {file_path.name} (after quote fix)")
+            return data
+        except json.JSONDecodeError as e2:
+            print(f"  [ERROR] {file_path.name}: {e2}")
+            return None
 
 
 def extract_data_array(json_data: dict | list | None) -> list:
@@ -104,25 +138,36 @@ def extract_data_array(json_data: dict | list | None) -> list:
 
 
 def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None:
-    """Add parameter numbers and pass_index based on structure data.
+    """Add parameter numbers, pass_index, and category_index based on structure data.
 
     The pass_index field indicates access level:
     - 0 = User accessible (no password required)
     - 1, 2, 3, 4 = Requires service password (should be disabled by default)
 
+    The category_index field stores the original category from rmStructure,
+    used to look up the category name from rmCatsNames.
+
     The structure is hierarchical:
     - type 0 = category entry (can have pass_index > 0)
     - type 1 = parameter entry (inherits pass_index from parent category)
+    - type 3 = data reference entry (has data_id field for sysParams mapping)
     - type 7 = menu group (resets pass_index tracking)
 
-    Parameters inherit pass_index from their parent category.
+    Parameters inherit pass_index and category_index from their parent category.
+
+    IMPORTANT: The structure type=1 entry's "index" field refers to the param's
+    position in rmParamsData. We use a dictionary keyed by this index to look up
+    the correct category for each param.
 
     This matches api.py _add_parameter_numbers() method.
     """
-    # Build list of parameter structure entries with inherited pass_index
-    # by iterating through structure in order and tracking category pass_index
-    param_structure_entries: list[dict[str, int]] = []
+    # Build dictionary mapping param index -> {pass_index, category_index}
+    # The structure type=1 "index" field is the param's position in rmParamsData
+    param_structure_map: dict[int, dict[str, int]] = {}
+    # Also build mapping of param index -> data_id from type 3 entries
+    data_id_map: dict[int, str] = {}
     current_pass_index = 0
+    current_category_index = 0
 
     for entry in structure:
         if not isinstance(entry, dict):
@@ -132,31 +177,48 @@ def add_parameter_numbers(parameters: list[dict], structure: list[dict]) -> None
         entry_pass_index = entry.get("pass_index", 0)
 
         if entry_type == 7:
-            # Menu group - reset pass_index tracking
+            # Menu group - only reset pass_index, keep category context
             current_pass_index = 0
+            # Note: Do NOT reset current_category_index here
+            # Parameters should inherit the last seen category
         elif entry_type == 0:
-            # Category entry - update current pass_index for subsequent params
+            # Category entry - update tracking for subsequent params
             current_pass_index = entry_pass_index
+            current_category_index = entry.get("index", 0)
         elif entry_type == 1:
-            # Parameter entry - inherits pass_index from current category
-            param_structure_entries.append({
-                "number": entry.get("index", len(param_structure_entries)),
-                "pass_index": current_pass_index,
-            })
+            # Parameter entry - map by param index (structure's index field)
+            param_index = entry.get("index")
+            if param_index is not None:
+                param_structure_map[param_index] = {
+                    "pass_index": current_pass_index,
+                    "category_index": current_category_index,
+                }
+        elif entry_type == 3:
+            # Data reference entry - has data_id for sysParams mapping
+            param_index = entry.get("index")
+            data_id = entry.get("data_id")
+            if param_index is not None and data_id is not None:
+                data_id_map[param_index] = data_id
 
-    # Add numbers and inherited pass_index to parameters
-    # param_index is used as array index into param_structure_entries
+    # Add numbers, pass_index, category_index, and data_id to parameters
+    # Use the param's index to look up in the structure map
     for param in parameters:
         param_index = param.get("index", 0)
 
-        if param_index < len(param_structure_entries):
-            structure_entry = param_structure_entries[param_index]
-            param["number"] = structure_entry["number"]
+        if param_index in param_structure_map:
+            structure_entry = param_structure_map[param_index]
+            param["number"] = param_index  # Number is same as index
             param["pass_index"] = structure_entry["pass_index"]
+            param["category_index"] = structure_entry["category_index"]
         else:
-            # Fallback to parameter index if no structure entry
+            # Fallback for params not in structure
             param["number"] = param_index
             param["pass_index"] = 0  # Default to user-accessible
+            param["category_index"] = 0
+
+        # Add data_id if available from type 3 entries
+        if param_index in data_id_map:
+            param["data_id"] = data_id_map[param_index]
 
 
 def add_unit_names(parameters: list[dict], units: list[str]) -> None:
@@ -177,72 +239,39 @@ def add_unit_names(parameters: list[dict], units: list[str]) -> None:
             param["unit_name"] = ""
 
 
-def get_simplified_category(param_name: str, param_desc: str = "") -> str:
-    """Get simplified category for a parameter using keywords from const.py.
+def add_rmcats_names(parameters: list[dict], categories: list[str]) -> None:
+    """Add category name from rmCatsNames to each parameter.
 
-    Uses the same logic as api.py _apply_simplified_categories() method.
+    Uses the category_index stored by add_parameter_numbers() to look up
+    the category name from rmCatsNames.
 
-    Args:
-        param_name: Parameter name (e.g., "100% Blow-in output")
-        param_desc: Parameter description
-
-    Returns:
-        Simplified category name (Boiler settings/HUW settings/Mixer settings/Other)
-
+    This matches api.py _add_rmcats_names() method.
     """
-    combined_text = f"{param_name.lower()} {param_desc.lower()}"
-
-    for category, keywords in SIMPLIFIED_CATEGORY_KEYWORDS.items():
-        for keyword in keywords:
-            if keyword in combined_text:
-                return category
-
-    return CATEGORY_OTHER
+    for param in parameters:
+        category_index = param.get("category_index", 0)
+        if (
+            isinstance(category_index, int)
+            and 0 <= category_index < len(categories)
+            and isinstance(categories[category_index], str)
+        ):
+            param["rmCatsName"] = categories[category_index]
+        else:
+            param["rmCatsName"] = ""
 
 
 def add_parameter_categories(
-    parameters_dict: dict[str, dict],
-    structure: list[dict],  # kept for API compatibility, not used in simplified mode
-    categories: list[str],  # kept for API compatibility, not used in simplified mode
-) -> int:
-    """Add simplified category information to parameters using keyword matching.
-
-    Uses the same simplified category system as api.py _apply_simplified_categories().
-    Categories: Boiler settings, HUW settings, Mixer settings, Other
-
-    This matches api.py _add_parameter_categories() with CATEGORY_MODE_SIMPLIFIED.
-    """
-    category_count = 0
-
-    for param in parameters_dict.values():
-        param_name = param.get("name", "")
-        param_desc = param.get("description", "")
-
-        # Use simplified category assignment (same as api.py)
-        category = get_simplified_category(param_name, param_desc)
-
-        param["categories"] = [category]
-        param["category"] = category
-        param["category_indices"] = []
-        param["category_index"] = 0
-        category_count += 1
-
-    return category_count
-
-
-def add_parameter_categories_from_structure(
     parameters_dict: dict[str, dict],
     structure: list[dict],
     categories: list[str],
 ) -> int:
     """Add category information to parameters based on API structure data.
 
-    This is the original structure-based mapping (CATEGORY_MODE_API).
-    Kept for reference but not used by default.
+    Uses API structure to map parameters to their categories from rmCatsNames.
 
     Structure types:
-    - type 7 = category/menu group (index maps to rmCatsNames array)
-    - type 1 = parameter (index is the parameter number)
+    - type 0 = category entry (index maps to rmCatsNames array)
+    - type 1 = parameter entry (index is the parameter number)
+    - type 7 = menu separator (resets context but keeps category)
     """
     if not categories:
         return 0
@@ -258,10 +287,10 @@ def add_parameter_categories_from_structure(
         entry_type = entry.get("type")
         entry_index = entry.get("index")
 
-        if entry_type == 7:  # Category/menu group
+        if entry_type == 0:  # Category entry - update current category
             if isinstance(entry_index, int) and entry_index < len(categories):
                 current_category_index = entry_index
-        elif entry_type == 1:  # Parameter
+        elif entry_type == 1:  # Parameter entry
             if isinstance(entry_index, int) and current_category_index is not None:
                 category_name = categories[current_category_index]
                 if entry_index not in param_to_categories:
@@ -696,6 +725,10 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
     # Step 4: Add unit names (_add_unit_names)
     print("Step 4: Adding unit names from rmParamsUnitsNames...")
     add_unit_names(merged_params, units)
+
+    # Step 4b: Add rmCatsName from rmCatsNames (_add_rmcats_names)
+    print("Step 4b: Adding rmCatsName from rmCatsNames...")
+    add_rmcats_names(merged_params, categories)
 
     # Step 5: Add translation keys (generate_translation_key)
     print("Step 5: Generating translation keys...")

@@ -32,9 +32,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         data: dict[str, str] = dict(entry.data)
         api = await make_api(hass, cache, data)
 
-        # Pass options to coordinator for category mode and other settings
-        options = dict(entry.options) if entry.options else {}
-        coordinator = EconetDataCoordinator(hass, api, options)
+        coordinator = EconetDataCoordinator(hass, api)
         await coordinator.async_config_entry_first_refresh()
 
         hass.data[DOMAIN][entry.entry_id] = {
@@ -47,16 +45,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         raise ConfigEntryNotReady("Target not found") from timeout_error
     else:
         await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-
-        # Set up options update listener to reload when options change
-        entry.async_on_unload(entry.add_update_listener(async_reload_entry))
-
         return True
-
-
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Reload entry when options are updated."""
-    await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

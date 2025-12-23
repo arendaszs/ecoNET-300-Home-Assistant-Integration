@@ -13,12 +13,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import ApiError, AuthError, Econet300Api
-from .const import (
-    CONF_CATEGORY_MODE,
-    DEFAULT_CATEGORY_MODE,
-    DOMAIN,
-    ECOSOL_CONTROLLER_IDS,
-)
+from .const import DOMAIN, ECOSOL_CONTROLLER_IDS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -65,9 +60,6 @@ class EconetDataCoordinator(DataUpdateCoordinator):
         )
         self._api = api
         self._options = options or {}
-        self._category_mode = self._options.get(
-            CONF_CATEGORY_MODE, DEFAULT_CATEGORY_MODE
-        )
 
     def has_sys_data(self, key: str) -> bool:
         """Check if data key is present in sysParams."""
@@ -120,13 +112,11 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                 merged_data = None
                 try:
                     merged_data = await self._api.fetch_merged_rm_data_with_names_descs_and_structure(
-                        category_mode=self._category_mode,
                         sys_params=sys_params,
                     )
                     _LOGGER.info(
-                        "Coordinator fetched merged data: %s parameters (category_mode: %s)",
+                        "Coordinator fetched merged data: %s parameters",
                         len(merged_data.get("parameters", {})) if merged_data else 0,
-                        self._category_mode,
                     )
                 except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
                     _LOGGER.warning(

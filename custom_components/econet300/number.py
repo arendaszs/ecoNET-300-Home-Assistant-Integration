@@ -1,10 +1,10 @@
 """Base entity number for Econet300."""
 
 import asyncio
-from dataclasses import dataclass
 import logging
 import re
 import traceback
+from dataclasses import dataclass
 from typing import Any
 
 import aiohttp

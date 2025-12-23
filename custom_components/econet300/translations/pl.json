@@ -18,20 +18,6 @@
       "already_configured": "Urządzenie zostało już skonfigutowane"
     }
   },
-  "options": {
-    "step": {
-      "init": {
-        "title": "Opcje ecoNET300",
-        "description": "Skonfiguruj sposób grupowania parametrów w kategorie.",
-        "data": {
-          "category_mode": "Tryb kategorii"
-        },
-        "data_description": {
-          "category_mode": "Wybierz sposób organizacji parametrów: Uproszczony grupuje je w Kocioł/CWU/Mieszacz/Inne, API używa struktury menu urządzenia, Brak pokazuje płaską listę."
-        }
-      }
-    }
-  },
   "entity": {
     "switch": {
       "boiler_control": {

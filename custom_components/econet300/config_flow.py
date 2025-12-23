@@ -5,17 +5,16 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from homeassistant import config_entries
-from homeassistant.config_entries import ConfigEntry, ConfigFlowResult
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import HomeAssistantError
 import voluptuous as vol
+from homeassistant import config_entries
+from homeassistant.config_entries import ConfigFlowResult
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 
 from .api import make_api
 from .common import AuthError
 from .const import CONF_ENTRY_DESCRIPTION, CONF_ENTRY_TITLE, DOMAIN
 from .mem_cache import MemCache
-from .options_flow import EconetOptionsFlowHandler
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,14 +47,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for ecoNET300 integration."""
 
     VERSION = 1
-
-    @staticmethod
-    @callback
-    def async_get_options_flow(
-        config_entry: ConfigEntry,  # noqa: ARG004
-    ) -> EconetOptionsFlowHandler:
-        """Get the options flow handler."""
-        return EconetOptionsFlowHandler()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
