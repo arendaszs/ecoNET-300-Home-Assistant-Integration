@@ -2053,6 +2053,10 @@ class Econet300Api:
                 # Get enum data if available
                 if isinstance(enum_id, int) and 0 <= enum_id < len(enums):
                     enum_data = enums[enum_id]
+                    # Validate enum_data is a dict before accessing
+                    if not isinstance(enum_data, dict):
+                        continue
+
                     param["enum"] = {
                         "id": enum_id,
                         "values": enum_data.get("values", []),
@@ -2125,6 +2129,10 @@ class Econet300Api:
                 # Get enum data if available
                 if isinstance(enum_id, int) and 0 <= enum_id < len(enums):
                     enum_data = enums[enum_id]
+                    # Validate enum_data is a dict before accessing
+                    if not isinstance(enum_data, dict):
+                        continue
+
                     param["enum"] = {
                         "id": enum_id,
                         "values": enum_data.get("values", []),
@@ -2175,6 +2183,10 @@ class Econet300Api:
                     and 0 <= best_enum_id < len(enums)
                 ):
                     enum_data = enums[best_enum_id]
+                    # Validate enum_data is a dict before accessing
+                    if not isinstance(enum_data, dict):
+                        continue
+
                     param["enum"] = {
                         "id": best_enum_id,
                         "values": enum_data.get("values", []),
