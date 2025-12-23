@@ -402,17 +402,28 @@ class MenuCategorySelect(MenuCategoryEntity, SelectEntity):  # type: ignore[misc
 
             self.async_write_ha_state()
 
-    def _update_from_value(self, value: int) -> None:
+    def _update_from_value(self, value: int | float) -> None:
         """Update current option from numeric value."""
+        # Convert value to int (API may return float)
+        try:
+            int_value = int(value)
+        except (ValueError, TypeError):
+            _LOGGER.warning(
+                "Could not convert value %s to int for entity %s",
+                value,
+                self.entity_description.key,
+            )
+            return
+
         # Convert API value to option index
-        option_index = value - self._enum_first
+        option_index = int_value - self._enum_first
         if 0 <= option_index < len(self._enum_values):
             self._attr_current_option = self._enum_values[option_index]
             self._attr_available = True
         else:
             _LOGGER.warning(
                 "Invalid value %d for %s (valid range: %d-%d)",
-                value,
+                int_value,
                 self.entity_description.key,
                 self._enum_first,
                 self._enum_first + len(self._enum_values) - 1,
