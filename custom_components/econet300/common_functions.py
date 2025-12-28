@@ -528,3 +528,95 @@ def get_entity_component(name: str | None, key: str | None) -> str:
 
     # Default to boiler
     return "boiler"
+
+
+def get_duplicate_display_name(
+    param_name: str,
+    sequence_num: int,
+    description: str | None = None,
+) -> str:
+    """Generate display name for duplicate parameters with meaningful suffix.
+
+    For parameters that appear multiple times (e.g., same name for Mixer 1-4),
+    this function determines the appropriate suffix based on the description.
+
+    Args:
+        param_name: Original parameter name (e.g., "Off by thermostat")
+        sequence_num: Sequence number (1, 2, 3, 4) for the duplicate
+        description: Parameter description for component detection
+
+    Returns:
+        Display name with appropriate suffix:
+        - "Off by thermostat (Mixer 1)" for mixer-related params
+        - "Parameter Name (HUW)" for HUW-related params
+        - "Parameter Name 1" as fallback for unknown params
+
+    """
+    if description:
+        desc_lower = description.lower()
+
+        # Check for mixer-related parameters
+        if "mixer" in desc_lower:
+            return f"{param_name} (Mixer {sequence_num})"
+
+        # Check for HUW-related parameters
+        if any(kw in desc_lower for kw in ["hot water", "huw", "dhw", "tap water"]):
+            return (
+                f"{param_name} (HUW {sequence_num})" if sequence_num > 1 else param_name
+            )
+
+        # Check for thermostat-related parameters
+        if "thermostat" in desc_lower and "room" in desc_lower:
+            return f"{param_name} (Circuit {sequence_num})"
+
+        # Check for buffer-related parameters
+        if "buffer" in desc_lower:
+            return (
+                f"{param_name} (Buffer {sequence_num})"
+                if sequence_num > 1
+                else param_name
+            )
+
+    # Fallback: use simple numbering
+    return f"{param_name} {sequence_num}"
+
+
+def get_duplicate_entity_key(
+    base_key: str,
+    sequence_num: int,
+    description: str | None = None,
+) -> str:
+    """Generate entity key for duplicate parameters with meaningful suffix.
+
+    Args:
+        base_key: Base entity key (e.g., "off_by_thermostat")
+        sequence_num: Sequence number (1, 2, 3, 4) for the duplicate
+        description: Parameter description for component detection
+
+    Returns:
+        Entity key with appropriate suffix:
+        - "off_by_thermostat_mixer_1" for mixer-related params
+        - "param_name_1" as fallback
+
+    """
+    if description:
+        desc_lower = description.lower()
+
+        # Check for mixer-related parameters
+        if "mixer" in desc_lower:
+            return f"{base_key}_mixer_{sequence_num}"
+
+        # Check for HUW-related parameters
+        if any(kw in desc_lower for kw in ["hot water", "huw", "dhw", "tap water"]):
+            return f"{base_key}_huw_{sequence_num}" if sequence_num > 1 else base_key
+
+        # Check for thermostat-related parameters
+        if "thermostat" in desc_lower and "room" in desc_lower:
+            return f"{base_key}_circuit_{sequence_num}"
+
+        # Check for buffer-related parameters
+        if "buffer" in desc_lower:
+            return f"{base_key}_buffer_{sequence_num}" if sequence_num > 1 else base_key
+
+    # Fallback: use simple numbering
+    return f"{base_key}_{sequence_num}"

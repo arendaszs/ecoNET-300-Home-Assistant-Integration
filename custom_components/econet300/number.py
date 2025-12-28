@@ -24,6 +24,8 @@ from .api import Limits
 from .common import Econet300Api, EconetDataCoordinator, skip_params_edits
 from .common_functions import (
     camel_to_snake,
+    get_duplicate_display_name,
+    get_duplicate_entity_key,
     get_entity_component,
     mixer_exists,
     validate_parameter_data,
@@ -1025,13 +1027,18 @@ async def create_mixer_number_entities(
 
 
 def create_dynamic_number_entity_description(
-    param_id: str, param: dict
+    param_id: str,
+    param: dict,
+    display_name: str | None = None,
+    entity_key_override: str | None = None,
 ) -> EconetNumberEntityDescription:
     """Create a number entity description from parameter data.
 
     Args:
         param_id: Parameter ID (string)
         param: Parameter dictionary from merged data
+        display_name: Optional display name override for duplicate handling
+        entity_key_override: Optional entity key override for duplicate handling
 
     Returns:
         EconetNumberEntityDescription for the parameter
@@ -1057,8 +1064,11 @@ def create_dynamic_number_entity_description(
     param_key = param.get("key", f"parameter_{param_id}")
     translation_key = param_key
 
-    # Generate entity key
-    entity_key = f"basic_{param_key}"
+    # Generate entity key - use override if provided (for duplicates)
+    entity_key = entity_key_override or f"basic_{param_key}"
+
+    # Use display_name override if provided (for duplicates)
+    name = display_name or param.get("name", f"Parameter {param_id}")
 
     # Determine component for device grouping
     param_name = param.get("name", "")
@@ -1067,7 +1077,7 @@ def create_dynamic_number_entity_description(
     _LOGGER.debug(
         "Creating entity description for param_id=%s, name=%s, key=%s, entity_key=%s, component=%s",
         param_id,
-        param.get("name", "No name"),
+        name,
         param_key,
         entity_key,
         component,
@@ -1075,7 +1085,7 @@ def create_dynamic_number_entity_description(
 
     return EconetNumberEntityDescription(
         key=entity_key,  # Use category-prefixed key
-        name=param.get("name", f"Parameter {param_id}"),  # Add explicit name
+        name=name,  # Add explicit name (or override for duplicates)
         translation_key=translation_key,
         device_class=None,  # No specific device class for dynamic entities
         mode=NumberMode.BOX,  # Always show as number input box
@@ -1213,6 +1223,8 @@ def _create_dynamic_entity_from_param(
     coordinator: EconetDataCoordinator,
     api: Econet300Api,
     basic_param_ids: set[str],
+    display_name: str | None = None,
+    entity_key_override: str | None = None,
 ) -> NumberEntity | None:
     """Create a dynamic entity from a parameter.
 
@@ -1222,6 +1234,8 @@ def _create_dynamic_entity_from_param(
         coordinator: Data coordinator
         api: API instance
         basic_param_ids: Set of basic parameter IDs to skip
+        display_name: Optional display name override for duplicate handling
+        entity_key_override: Optional entity key override for duplicate handling
 
     Returns:
         Created entity or None if skipped
@@ -1248,7 +1262,7 @@ def _create_dynamic_entity_from_param(
     if not should_be_number_entity(param):
         return None
 
-    param_name = param.get("name", f"Parameter {param_id}")
+    param_name = display_name or param.get("name", f"Parameter {param_id}")
 
     _LOGGER.debug(
         "Parameter %s qualifies as number entity: name=%s, unit_name=%s, edit=%s",
@@ -1259,7 +1273,9 @@ def _create_dynamic_entity_from_param(
     )
 
     try:
-        entity_description = create_dynamic_number_entity_description(param_id, param)
+        entity_description = create_dynamic_number_entity_description(
+            param_id, param, display_name, entity_key_override
+        )
 
         # Check if this is a mixer-related entity
         param_key = param.get("key", f"parameter_{param_id}")
@@ -1331,6 +1347,7 @@ async def _create_dynamic_entities_from_merged_data(
 
     """
     entities: list[NumberEntity] = []
+    key_counts: dict[str, int] = {}  # Track how many times each key has been used
     _LOGGER.debug("Using dynamic number entity creation from merged parameter data")
 
     _LOGGER.debug(
@@ -1352,25 +1369,37 @@ async def _create_dynamic_entities_from_merged_data(
                 categories,
             )
 
+    # First pass: count duplicates to know which keys need numbering
+    key_totals: dict[str, int] = {}
+    for param_id, param in merged_data["parameters"].items():
+        if not should_be_number_entity(param):
+            continue
+        if param_id in basic_param_ids:
+            continue
+        param_key = param.get("key", f"parameter_{param_id}")
+        key_totals[param_key] = key_totals.get(param_key, 0) + 1
+
     number_entity_count = 0
-    created_entity_keys: set[str] = (
-        set()
-    )  # Track created entity keys to avoid duplicates
 
     for param_id, param in merged_data["parameters"].items():
         _LOGGER.debug("Processing parameter %s: %s", param_id, param)
 
         # Get parameter key - this is what determines uniqueness
         param_key = param.get("key", f"parameter_{param_id}")
+        description = param.get("description", "")
 
-        # Skip if we've already created an entity for this parameter key
-        if param_key in created_entity_keys:
-            _LOGGER.debug(
-                "Skipping parameter %s - entity for key '%s' already created",
-                param_id,
-                param_key,
+        # Handle duplicates with meaningful suffixes (e.g., "Mixer 1" instead of "1")
+        display_name = None
+        entity_key_override = None
+
+        if key_totals.get(param_key, 1) > 1:
+            key_counts[param_key] = key_counts.get(param_key, 0) + 1
+            sequence_num = key_counts[param_key]
+            param_name = param.get("name", f"Parameter {param_id}")
+            display_name = get_duplicate_display_name(
+                param_name, sequence_num, description
             )
-            continue
+            entity_key_override = f"basic_{get_duplicate_entity_key(param_key, sequence_num, description)}"
 
         # Create number entity
         entity = _create_dynamic_entity_from_param(
@@ -1379,12 +1408,12 @@ async def _create_dynamic_entities_from_merged_data(
             coordinator,
             api,
             basic_param_ids,
+            display_name,
+            entity_key_override,
         )
         if entity:
             entities.append(entity)
             number_entity_count += 1
-            # Track parameter key to avoid duplicates
-            created_entity_keys.add(param_key)
 
     _LOGGER.debug(
         "Found %d parameters that qualify as number entities",

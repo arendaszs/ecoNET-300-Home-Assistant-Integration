@@ -14,7 +14,13 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .common import Econet300Api, EconetDataCoordinator
-from .common_functions import camel_to_snake, get_entity_component, mixer_exists
+from .common_functions import (
+    camel_to_snake,
+    get_duplicate_display_name,
+    get_duplicate_entity_key,
+    get_entity_component,
+    mixer_exists,
+)
 from .const import BOILER_CONTROL, DOMAIN, SERVICE_API, SERVICE_COORDINATOR
 from .entity import EconetEntity, get_device_info_for_component
 
@@ -350,6 +356,7 @@ def create_dynamic_switches(
 ) -> list[SwitchEntity]:
     """Create dynamic switch entities from mergedData."""
     entities: list[SwitchEntity] = []
+    key_counts: dict[str, int] = {}  # Track how many times each key has been used
 
     if coordinator.data is None:
         _LOGGER.debug("No coordinator data for dynamic switches")
@@ -362,6 +369,15 @@ def create_dynamic_switches(
 
     parameters = merged_data.get("parameters", {})
     _LOGGER.debug("Creating dynamic switches from %d parameters", len(parameters))
+
+    # First pass: count duplicates to know which keys need numbering
+    key_totals: dict[str, int] = {}
+    for param_id, param in parameters.items():
+        if not should_be_switch_entity(param):
+            continue
+        param_name = param.get("name", f"Parameter {param_id}")
+        base_key = param.get("key") or camel_to_snake(param_name)
+        key_totals[base_key] = key_totals.get(base_key, 0) + 1
 
     for param_id, param in parameters.items():
         if not should_be_switch_entity(param):
@@ -384,12 +400,25 @@ def create_dynamic_switches(
                     )
                     continue
 
-        # Create entity key
-        entity_key = param.get("key") or camel_to_snake(param_name)
+        # Create entity key - handle duplicates with meaningful suffixes
+        base_key = param.get("key") or camel_to_snake(param_name)
+        description = param.get("description", "")
+
+        # Only add suffixes if there are duplicates
+        if key_totals.get(base_key, 1) > 1:
+            key_counts[base_key] = key_counts.get(base_key, 0) + 1
+            sequence_num = key_counts[base_key]
+            entity_key = get_duplicate_entity_key(base_key, sequence_num, description)
+            display_name = get_duplicate_display_name(
+                param_name, sequence_num, description
+            )
+        else:
+            entity_key = base_key
+            display_name = param_name
 
         entity_description = SwitchEntityDescription(
             key=entity_key,
-            name=param_name,
+            name=display_name,
             translation_key=entity_key,
         )
 
@@ -404,7 +433,7 @@ def create_dynamic_switches(
         entities.append(entity)
         _LOGGER.debug(
             "Created dynamic switch: %s (param_id=%s, values=%s)",
-            param_name,
+            display_name,
             param_id,
             param.get("enum", {}).get("values", []),
         )

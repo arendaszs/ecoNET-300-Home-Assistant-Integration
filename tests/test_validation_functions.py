@@ -478,3 +478,83 @@ class TestSwitchSelectMutualExclusion:
         assert should_be_switch_entity(param) is True
         assert should_be_select_entity(param) is False
 
+
+class TestDuplicateNaming:
+    """Tests for get_duplicate_display_name and get_duplicate_entity_key functions."""
+
+    def test_mixer_description_display_name(self):
+        """Test that mixer description produces (Mixer X) format."""
+        from custom_components.econet300.common_functions import (
+            get_duplicate_display_name,
+        )
+
+        description = "Setting parameter on YES value closes the mixer actuator"
+        result = get_duplicate_display_name("Off by thermostat", 1, description)
+        assert result == "Off by thermostat (Mixer 1)"
+
+        result = get_duplicate_display_name("Off by thermostat", 2, description)
+        assert result == "Off by thermostat (Mixer 2)"
+
+    def test_mixer_description_entity_key(self):
+        """Test that mixer description produces _mixer_X format."""
+        from custom_components.econet300.common_functions import (
+            get_duplicate_entity_key,
+        )
+
+        description = "The higher the value, the faster the mixer reaches"
+        result = get_duplicate_entity_key("proportional_range", 1, description)
+        assert result == "proportional_range_mixer_1"
+
+        result = get_duplicate_entity_key("proportional_range", 3, description)
+        assert result == "proportional_range_mixer_3"
+
+    def test_huw_description_display_name(self):
+        """Test that HUW/hot water description produces (HUW X) format."""
+        from custom_components.econet300.common_functions import (
+            get_duplicate_display_name,
+        )
+
+        description = "Temperature to which the hot water tank will be heated"
+        result = get_duplicate_display_name("HUW preset", 1, description)
+        assert result == "HUW preset"  # First one doesn't need suffix
+
+        result = get_duplicate_display_name("HUW preset", 2, description)
+        assert result == "HUW preset (HUW 2)"
+
+    def test_fallback_numbering(self):
+        """Test that unknown descriptions fall back to simple numbering."""
+        from custom_components.econet300.common_functions import (
+            get_duplicate_display_name,
+            get_duplicate_entity_key,
+        )
+
+        description = "Some unknown parameter description"
+        result = get_duplicate_display_name("Parameter", 3, description)
+        assert result == "Parameter 3"
+
+        result = get_duplicate_entity_key("parameter", 3, description)
+        assert result == "parameter_3"
+
+    def test_no_description_fallback(self):
+        """Test that missing description falls back to simple numbering."""
+        from custom_components.econet300.common_functions import (
+            get_duplicate_display_name,
+            get_duplicate_entity_key,
+        )
+
+        result = get_duplicate_display_name("Parameter", 2, None)
+        assert result == "Parameter 2"
+
+        result = get_duplicate_entity_key("parameter", 2, None)
+        assert result == "parameter_2"
+
+    def test_thermostat_circuit_naming(self):
+        """Test that room thermostat description produces (Circuit X) format."""
+        from custom_components.econet300.common_functions import (
+            get_duplicate_display_name,
+        )
+
+        description = "Controls the room thermostat connection"
+        result = get_duplicate_display_name("Thermostat control", 1, description)
+        assert result == "Thermostat control (Circuit 1)"
+
