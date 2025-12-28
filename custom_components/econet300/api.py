@@ -371,6 +371,49 @@ class Econet300Api:
 
         return True
 
+    async def set_param_by_index(self, param_index: str | int, value: float) -> bool:
+        """Set parameter value using rmNewParam endpoint with parameter index.
+
+        This is used for dynamic entities from mergedData that use parameter numbers
+        (like heating curve with index 83) instead of parameter keys.
+
+        Args:
+            param_index: The parameter index/number from mergedData (e.g., "83" or 83)
+            value: The value to set (already scaled if needed)
+
+        Returns:
+            True if successful, False otherwise
+
+        """
+        if param_index is None:
+            _LOGGER.warning("Cannot set param with None index")
+            return False
+
+        url = f"{self.host}/econet/rmNewParam?newParamIndex={param_index}&newParamValue={value}"
+        _LOGGER.debug(
+            "Setting parameter by index %s to value %s: %s",
+            param_index,
+            value,
+            url,
+        )
+
+        data = await self._client.get(url)
+        if data is None or "result" not in data:
+            _LOGGER.warning(
+                "Failed to set param by index %s: no result in response", param_index
+            )
+            return False
+        if data["result"] != "OK":
+            _LOGGER.warning(
+                "Failed to set param by index %s: result=%s",
+                param_index,
+                data.get("result"),
+            )
+            return False
+
+        _LOGGER.debug("Successfully set param %s to %s", param_index, value)
+        return True
+
     async def _force_refresh_params_edits(self):
         """Force refresh paramsEdits data by fetching fresh data and updating cache."""
         try:

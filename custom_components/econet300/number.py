@@ -352,7 +352,35 @@ class EconetNumber(EconetEntity, NumberEntity):
             )
             return
 
-        if not await self.api.set_param(self.entity_description.key, int(value)):
+        # For dynamic entities (param_id set), use param_id with rmNewParam
+        # For static entities (NUMBER_MAP), use entity key with rmCurrNewParam
+        param_id = getattr(self.entity_description, "param_id", None)
+        if param_id:
+            # Dynamic entity - use param_id (parameter number) with rmNewParam
+            # API stores raw float values (mult is just step size, not scaling)
+            # Get the parameter's number (index in rmParamsData array)
+            merged_data = (
+                self.coordinator.data.get("mergedData", {})
+                if self.coordinator.data
+                else {}
+            )
+            merged_parameters = merged_data.get("parameters", {})
+            param_data = merged_parameters.get(param_id, {})
+            param_number = param_data.get("number", param_id)
+
+            _LOGGER.debug(
+                "Dynamic entity: param_id=%s, param_number=%s, value=%s",
+                param_id,
+                param_number,
+                value,
+            )
+            if not await self.api.set_param_by_index(param_number, value):
+                _LOGGER.warning(
+                    "Setting value failed for param_number %s", param_number
+                )
+                return
+        elif not await self.api.set_param(self.entity_description.key, int(value)):
+            # Static entity - use entity key (for NUMBER_MAP entities)
             _LOGGER.warning("Setting value failed")
             return
 
