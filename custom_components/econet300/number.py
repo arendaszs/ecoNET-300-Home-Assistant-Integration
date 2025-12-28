@@ -70,8 +70,14 @@ class EconetNumber(EconetEntity, NumberEntity):
 
     entity_description: EconetNumberEntityDescription
 
-    # CONFIG entities are disabled by default - users can enable the ones they need
-    _attr_entity_registry_enabled_default = False
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Other entities (DIAGNOSTIC or no category) are enabled.
+        """
+        return self.entity_description.entity_category != EntityCategory.CONFIG
 
     def __init__(
         self,
@@ -393,8 +399,14 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
 
     entity_description: EconetNumberEntityDescription
 
-    # CONFIG entities are disabled by default - users can enable the ones they need
-    _attr_entity_registry_enabled_default = False
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Other entities (DIAGNOSTIC or no category) are enabled.
+        """
+        return self.entity_description.entity_category != EntityCategory.CONFIG
 
     def __init__(
         self,
@@ -587,8 +599,14 @@ class MixerNumber(MixerEntity, NumberEntity):
 
     entity_description: EconetNumberEntityDescription
 
-    # CONFIG entities are disabled by default - users can enable the ones they need
-    _attr_entity_registry_enabled_default = False
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Other entities (DIAGNOSTIC or no category) are enabled.
+        """
+        return self.entity_description.entity_category != EntityCategory.CONFIG
 
     def __init__(
         self,

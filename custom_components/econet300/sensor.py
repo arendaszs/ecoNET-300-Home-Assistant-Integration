@@ -11,6 +11,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -155,8 +156,16 @@ class InformationDynamicSensor(EconetEntity, SensorEntity):
 
     entity_description: EconetSensorEntityDescription
 
-    # CONFIG entities are disabled by default - users can enable the ones they need
-    _attr_entity_registry_enabled_default = False
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Other entities (DIAGNOSTIC or no category) are enabled.
+        Sensors are typically read-only data, so they're enabled by default.
+        """
+        entity_category = getattr(self.entity_description, "entity_category", None)
+        return entity_category != EntityCategory.CONFIG
 
     def __init__(
         self,

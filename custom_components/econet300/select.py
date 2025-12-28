@@ -10,6 +10,7 @@ from typing import Any
 
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -304,8 +305,16 @@ class EconetDynamicSelect(SelectEntity):
 
     _attr_has_entity_name = True
 
-    # CONFIG entities are disabled by default - users can enable the ones they need
-    _attr_entity_registry_enabled_default = False
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Selects without category are also disabled (they are config controls).
+        """
+        entity_category = getattr(self.entity_description, "entity_category", None)
+        # Selects are disabled by default unless explicitly not CONFIG
+        return entity_category is not None and entity_category != EntityCategory.CONFIG
 
     def __init__(
         self,
