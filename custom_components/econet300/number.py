@@ -1514,6 +1514,17 @@ async def _create_dynamic_entities_from_merged_data(
         if key_totals.get(param_key, 1) > 1:
             key_counts[param_key] = key_counts.get(param_key, 0) + 1
             sequence_num = key_counts[param_key]
+
+            # For mixer-related duplicates, validate mixer exists before creating
+            if description and "mixer" in description.lower():
+                if not mixer_exists(coordinator.data, sequence_num):
+                    _LOGGER.debug(
+                        "Skipping number %s (Mixer %d) - mixer not connected",
+                        param.get("name", param_id),
+                        sequence_num,
+                    )
+                    continue
+
             param_name = param.get("name", f"Parameter {param_id}")
             display_name = get_duplicate_display_name(
                 param_name, sequence_num, description
