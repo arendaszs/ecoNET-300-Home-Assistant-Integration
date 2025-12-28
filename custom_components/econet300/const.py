@@ -38,7 +38,7 @@ SERVICE_COORDINATOR = "coordinator"
 # =============================================================================
 DEVICE_INFO_MANUFACTURER = "PLUM"
 DEVICE_INFO_MODEL = "ecoNET300"
-DEVICE_INFO_CONTROLLER_NAME = "PLUM ecoNET300"
+DEVICE_INFO_CONTROLLER_NAME = "Boiler"
 DEVICE_INFO_MIXER_NAME = "Mixer device"
 DEVICE_INFO_LAMBDA_NAME = "Module Lambda"
 DEVICE_INFO_ECOSTER_NAME = "ecoSTER"

@@ -305,15 +305,8 @@ class TestDynamicNumberEntities:
 
         assert len(params_with_keys) > 0, "Should have parameters with key field"
 
-    def test_entity_key_generation_with_categories(self, mock_merged_data):
-        """Test that entity keys include category prefixes for uniqueness."""
-        # Test with mock parameters that simulate multiple categories
-        test_cases = [
-            ("basic", "basic_"),
-            ("service", "service_"),
-            ("advanced", "advanced_"),
-        ]
-
+    def test_entity_key_generation(self, mock_merged_data):
+        """Test that entity keys include basic_ prefix."""
         # Create a test parameter
         test_param = {
             "name": "Test Parameter",
@@ -324,23 +317,18 @@ class TestDynamicNumberEntities:
             "edit": True,
         }
 
-        for param_type, expected_prefix in test_cases:
-            entity_desc = create_dynamic_number_entity_description(
-                "123", test_param, param_type
-            )
+        entity_desc = create_dynamic_number_entity_description("123", test_param)
 
-            # Verify entity key includes category prefix
-            assert entity_desc.key.startswith(expected_prefix), (
-                f"Entity key {entity_desc.key} should start with {expected_prefix} for {param_type} type"
-            )
-            assert entity_desc.key.endswith("test_param"), (
-                f"Entity key {entity_desc.key} should end with param key"
-            )
+        # Verify entity key includes basic_ prefix
+        assert entity_desc.key.startswith("basic_"), (
+            f"Entity key {entity_desc.key} should start with basic_"
+        )
+        assert entity_desc.key.endswith("test_param"), (
+            f"Entity key {entity_desc.key} should end with param key"
+        )
 
-    def test_create_dynamic_number_entity_description_with_param_type(
-        self, mock_merged_data
-    ):
-        """Test create_dynamic_number_entity_description with param_type parameter."""
+    def test_entity_description_from_merged_data(self, mock_merged_data):
+        """Test create_dynamic_number_entity_description with real merged data parameter."""
         # Get a test parameter
         test_param = None
         test_param_id = None
@@ -353,20 +341,16 @@ class TestDynamicNumberEntities:
         assert test_param is not None, "Should have test parameter"
         assert test_param_id is not None, "Should have test parameter ID"
 
-        # Test different param types
-        param_types = ["basic", "service", "advanced"]
-        for param_type in param_types:
-            entity_desc = create_dynamic_number_entity_description(
-                test_param_id, test_param, param_type
-            )
+        entity_desc = create_dynamic_number_entity_description(
+            test_param_id, test_param
+        )
 
-            # Verify entity key includes appropriate prefix
-            expected_prefix = f"{param_type}_"
-            assert entity_desc.key.startswith(expected_prefix), (
-                f"Entity key should start with {expected_prefix} for {param_type} type"
-            )
+        # Verify entity key starts with basic_
+        assert entity_desc.key.startswith("basic_"), (
+            "Entity key should start with basic_"
+        )
 
-            # Verify other properties are preserved
-            assert entity_desc.translation_key == test_param["key"]
-            assert entity_desc.native_min_value == float(test_param.get("minv", 0))
-            assert entity_desc.native_max_value == float(test_param.get("maxv", 100))
+        # Verify other properties are preserved
+        assert entity_desc.translation_key == test_param["key"]
+        assert entity_desc.native_min_value == float(test_param.get("minv", 0))
+        assert entity_desc.native_max_value == float(test_param.get("maxv", 100))

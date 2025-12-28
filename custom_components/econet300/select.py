@@ -298,6 +298,9 @@ class EconetDynamicSelect(SelectEntity):
 
     _attr_has_entity_name = True
 
+    # CONFIG entities are disabled by default - users can enable the ones they need
+    _attr_entity_registry_enabled_default = False
+
     def __init__(
         self,
         entity_description: SelectEntityDescription,

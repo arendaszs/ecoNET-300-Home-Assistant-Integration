@@ -59,30 +59,6 @@ def generate_translation_key(name: str) -> str:
     return re.sub(r"(\w+)(\d+)_(\w+)", r"\1\2_\3", key)
 
 
-def requires_service_password(param: dict) -> bool:
-    """Check if parameter requires service password (should be disabled by default).
-
-    Parameters are considered service-level if pass_index > 0 in rmStructure
-    (inherited from parent category).
-
-    These should be disabled by default in Home Assistant to prevent
-    accidental changes by regular users.
-
-    Args:
-        param: Parameter dictionary from mergedData
-
-    Returns:
-        True if parameter requires service password
-
-    """
-    # Check pass_index from structure hierarchy
-    pass_index = param.get("pass_index", 0)
-    if isinstance(pass_index, int) and pass_index > 0:
-        return True
-
-    return False
-
-
 def extract_device_group_from_name(
     name: str | None, for_information: bool = False
 ) -> tuple[int | None, str | None]:

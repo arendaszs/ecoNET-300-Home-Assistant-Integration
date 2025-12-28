@@ -24,10 +24,8 @@ from .api import Limits
 from .common import Econet300Api, EconetDataCoordinator, skip_params_edits
 from .common_functions import (
     camel_to_snake,
-    extract_device_group_from_name,
     get_entity_component,
     mixer_exists,
-    requires_service_password,
     validate_parameter_data,
 )
 from .const import (
@@ -69,6 +67,9 @@ class EconetNumber(EconetEntity, NumberEntity):
     """Describes ecoNET number sensor entity."""
 
     entity_description: EconetNumberEntityDescription
+
+    # CONFIG entities are disabled by default - users can enable the ones they need
+    _attr_entity_registry_enabled_default = False
 
     def __init__(
         self,
@@ -344,6 +345,9 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
     """Mixer-related dynamic number class."""
 
     entity_description: EconetNumberEntityDescription
+
+    # CONFIG entities are disabled by default - users can enable the ones they need
+    _attr_entity_registry_enabled_default = False
 
     def __init__(
         self,
@@ -1006,14 +1010,13 @@ async def create_mixer_number_entities(
 
 
 def create_dynamic_number_entity_description(
-    param_id: str, param: dict, param_type: str = "basic"
+    param_id: str, param: dict
 ) -> EconetNumberEntityDescription:
     """Create a number entity description from parameter data.
 
     Args:
         param_id: Parameter ID (string)
         param: Parameter dictionary from merged data
-        param_type: Parameter type (basic/service/advanced) for entity ID prefix
 
     Returns:
         EconetNumberEntityDescription for the parameter
@@ -1035,30 +1038,23 @@ def create_dynamic_number_entity_description(
     else:
         step = 1.0
 
-    # Generate translation key with category prefix
+    # Generate translation key
     param_key = param.get("key", f"parameter_{param_id}")
     translation_key = param_key
 
-    # Generate entity key with category prefix to avoid conflicts
-    if param_type == "service":
-        entity_key = f"service_{param_key}"
-    elif param_type == "advanced":
-        entity_key = f"advanced_{param_key}"
-    else:
-        entity_key = f"basic_{param_key}"
+    # Generate entity key
+    entity_key = f"basic_{param_key}"
 
     # Determine component for device grouping
     param_name = param.get("name", "")
     component = get_entity_component(param_name, param_key)
 
     _LOGGER.debug(
-        "Creating entity description for param_id=%s, name=%s, key=%s, translation_key=%s, entity_key=%s, type=%s, component=%s",
+        "Creating entity description for param_id=%s, name=%s, key=%s, entity_key=%s, component=%s",
         param_id,
         param.get("name", "No name"),
         param_key,
-        translation_key,
         entity_key,
-        param_type,
         component,
     )
 
@@ -1124,53 +1120,33 @@ def _create_mixer_entity_by_category(
     coordinator: EconetDataCoordinator,
     api: Econet300Api,
     mixer_num: int,
-    param_type: str,
     param_name: str,
-    category: str,
-    param_id: str,
-    param: dict,
 ) -> NumberEntity:
-    """Create mixer entity based on category type.
+    """Create mixer entity.
 
-    All mixer entities are now grouped into their respective "Mixer X settings"
-    devices using EconetNumber. Service/advanced params are disabled by default.
+    All mixer entities are grouped into their respective "Mixer X settings" devices.
 
     Args:
         entity_description: Entity description
         coordinator: Data coordinator
         api: API instance
         mixer_num: Mixer number (1-4)
-        param_type: Parameter type (service/advanced/basic)
         param_name: Parameter name
-        category: Category name
-        param_id: Parameter ID for value lookup
-        param: Parameter dictionary (for pass_index check)
 
     Returns:
         EconetNumber entity grouped under Mixer device
 
     """
-    # Create EconetNumber entity - categories removed
     entity = EconetNumber(
         entity_description,
         coordinator,
         api,
     )
 
-    # Hide service/advanced params by default per HA documentation
-    if param_type in ("service", "advanced"):
-        entity._attr_entity_registry_visible_default = False  # noqa: SLF001
-
-    # Disable params requiring service password (pass_index > 0)
-    if requires_service_password(param):
-        entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
-
     _LOGGER.info(
-        "Created mixer number entity: %s (Mixer %d, type: %s, enabled_default: %s)",
+        "Created mixer number entity: %s (Mixer %d)",
         param_name,
         mixer_num,
-        param_type,
-        getattr(entity, "_attr_entity_registry_enabled_default", True),
     )
 
     return entity
@@ -1180,67 +1156,37 @@ def _create_regular_entity_by_category(
     entity_description: EconetNumberEntityDescription,
     coordinator: EconetDataCoordinator,
     api: Econet300Api,
-    param_type: str,
     param_name: str,
     param_id: str,
-    category: str,
     param: dict,
 ) -> NumberEntity:
-    """Create regular entity based on category type.
-
-    Uses EconetNumber to create entities (categories removed).
-
-    First tries to extract device group from parameter name (for better grouping
-    when parameters are miscategorized in rmStructure), then falls back to
-    structure-based category.
+    """Create regular number entity.
 
     Args:
         entity_description: Entity description
         coordinator: Data coordinator
         api: API instance
-        param_type: Parameter type (service/advanced/basic)
         param_name: Parameter name
         param_id: Parameter ID
-        category: Category name
-        param: Parameter dictionary (should contain category_index)
+        param: Parameter dictionary
 
     Returns:
         EconetNumber entity
 
     """
-    # First, try to extract device group from parameter name (for better grouping)
-    name_based_index, name_based_category = extract_device_group_from_name(
-        param_name, for_information=False
-    )
-
-    # Categories removed - all parameters are now basic
-
-    # Create EconetNumber entity - categories removed
     entity = EconetNumber(
         entity_description,
         coordinator,
         api,
     )
 
-    # Hide service/advanced params by default per HA documentation
-    if param_type in ("service", "advanced"):
-        entity._attr_entity_registry_visible_default = False  # noqa: SLF001
-
-    # Disable params requiring service password (pass_index > 0)
-    # User can enable in HA UI if needed
-    if requires_service_password(param):
-        entity._attr_entity_registry_enabled_default = False  # noqa: SLF001
-
     _LOGGER.info(
-        "Created number entity: %s (%s) - type: %s, %s to %s %s, visible_default: %s, enabled_default: %s",
+        "Created number entity: %s (%s) - %s to %s %s",
         param_name,
         param_id,
-        param_type,
         param.get("minv", 0),
         param.get("maxv", 100),
         param.get("unit_name", ""),
-        getattr(entity, "_attr_entity_registry_visible_default", True),
-        getattr(entity, "_attr_entity_registry_enabled_default", True),
     )
 
     return entity
@@ -1249,20 +1195,15 @@ def _create_regular_entity_by_category(
 def _create_dynamic_entity_from_param(
     param_id: str,
     param: dict,
-    category: str,
     coordinator: EconetDataCoordinator,
     api: Econet300Api,
     basic_param_ids: set[str],
 ) -> NumberEntity | None:
     """Create a dynamic entity from a parameter.
 
-    Service and advanced parameters are created but disabled by default
-    using entity_registry_visible_default = False per HA documentation.
-
     Args:
         param_id: Parameter ID
         param: Parameter dictionary
-        category: Category name for this entity
         coordinator: Data coordinator
         api: API instance
         basic_param_ids: Set of basic parameter IDs to skip
@@ -1292,24 +1233,18 @@ def _create_dynamic_entity_from_param(
     if not should_be_number_entity(param):
         return None
 
-    # All parameters are basic type now (categories removed)
-    param_type = "basic"
     param_name = param.get("name", f"Parameter {param_id}")
 
     _LOGGER.debug(
-        "Parameter %s qualifies as number entity: name=%s, unit_name=%s, edit=%s, category=%s, type=%s",
+        "Parameter %s qualifies as number entity: name=%s, unit_name=%s, edit=%s",
         param_id,
         param_name,
         param.get("unit_name", "No unit"),
         param.get("edit", False),
-        category,
-        param_type,
     )
 
     try:
-        entity_description = create_dynamic_number_entity_description(
-            param_id, param, param_type
-        )
+        entity_description = create_dynamic_number_entity_description(param_id, param)
 
         # Check if this is a mixer-related entity
         param_key = param.get("key", f"parameter_{param_id}")
@@ -1322,7 +1257,7 @@ def _create_dynamic_entity_from_param(
                 mixer_num,
             )
 
-        # Create entity based on type and category
+        # Create entity based on type
         if is_mixer_related and mixer_num is not None:
             # Check if the mixer actually exists in the boiler
             if not mixer_exists(coordinator.data, mixer_num):
@@ -1338,21 +1273,15 @@ def _create_dynamic_entity_from_param(
                 coordinator,
                 api,
                 mixer_num,
-                param_type,
                 param_name,
-                category,
-                param_id,
-                param,
             )
 
         return _create_regular_entity_by_category(
             entity_description,
             coordinator,
             api,
-            param_type,
             param_name,
             param_id,
-            category,
             param,
         )
 
@@ -1428,11 +1357,10 @@ async def _create_dynamic_entities_from_merged_data(
             )
             continue
 
-        # Create number entity (no category logic since categories removed)
+        # Create number entity
         entity = _create_dynamic_entity_from_param(
             param_id,
             param,
-            "",  # Empty category since categories removed
             coordinator,
             api,
             basic_param_ids,
