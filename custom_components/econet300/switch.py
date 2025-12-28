@@ -111,6 +111,17 @@ class EconetDynamicSwitch(SwitchEntity):
 
     _attr_has_entity_name = True
 
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Switches without category are also disabled (they are config controls).
+        """
+        entity_category = getattr(self.entity_description, "entity_category", None)
+        # Switches are disabled by default unless explicitly not CONFIG
+        return entity_category is not None and entity_category != EntityCategory.CONFIG
+
     def __init__(
         self,
         entity_description: SwitchEntityDescription,
@@ -127,12 +138,6 @@ class EconetDynamicSwitch(SwitchEntity):
         self._param_id = param_id
         self._param = param
         self._attr_is_on = False
-
-        # Disable all dynamic switches by default (they are config controls)
-        entity_category = getattr(entity_description, "entity_category", None)
-        self._attr_entity_registry_enabled_default = (
-            entity_category is not None and entity_category != EntityCategory.CONFIG
-        )
 
         # Get enum values for on/off mapping
         enum_data = param.get("enum", {})

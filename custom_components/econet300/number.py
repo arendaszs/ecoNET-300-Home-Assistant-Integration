@@ -73,6 +73,15 @@ class EconetNumber(EconetEntity, NumberEntity):
 
     entity_description: EconetNumberEntityDescription
 
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Other entities (DIAGNOSTIC or no category) are enabled.
+        """
+        return self.entity_description.entity_category != EntityCategory.CONFIG
+
     def __init__(
         self,
         entity_description: EconetNumberEntityDescription,
@@ -82,10 +91,6 @@ class EconetNumber(EconetEntity, NumberEntity):
         """Initialize a new ecoNET number entity."""
         self.entity_description = entity_description
         self.api = api
-        # Disable CONFIG entities by default (must be set before super().__init__)
-        self._attr_entity_registry_enabled_default = (
-            entity_description.entity_category != EntityCategory.CONFIG
-        )
         # Initialize min/max from entity_description or use sensible defaults
         # Use 'is not None' to preserve 0.0 as valid min value
         self._attr_native_min_value = (
@@ -397,6 +402,15 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
 
     entity_description: EconetNumberEntityDescription
 
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Other entities (DIAGNOSTIC or no category) are enabled.
+        """
+        return self.entity_description.entity_category != EntityCategory.CONFIG
+
     def __init__(
         self,
         description: EconetNumberEntityDescription,
@@ -405,10 +419,6 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
         mixer_idx: int,
     ):
         """Initialize a new instance of the MixerDynamicNumber class."""
-        # Disable CONFIG entities by default (must be set before super().__init__)
-        self._attr_entity_registry_enabled_default = (
-            description.entity_category != EntityCategory.CONFIG
-        )
         # Initialize min/max from entity_description or use sensible defaults
         # Use 'is not None' to preserve 0.0 as valid min value
         self._attr_native_min_value = (
@@ -592,6 +602,15 @@ class MixerNumber(MixerEntity, NumberEntity):
 
     entity_description: EconetNumberEntityDescription
 
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Other entities (DIAGNOSTIC or no category) are enabled.
+        """
+        return self.entity_description.entity_category != EntityCategory.CONFIG
+
     def __init__(
         self,
         description: EconetNumberEntityDescription,
@@ -600,10 +619,6 @@ class MixerNumber(MixerEntity, NumberEntity):
         idx: int,
     ):
         """Initialize a new instance of the MixerNumber class."""
-        # Disable CONFIG entities by default (must be set before super().__init__)
-        self._attr_entity_registry_enabled_default = (
-            description.entity_category != EntityCategory.CONFIG
-        )
         # Initialize min/max from entity_description or use sensible defaults
         # Use 'is not None' to preserve 0.0 as valid min value
         self._attr_native_min_value = (
