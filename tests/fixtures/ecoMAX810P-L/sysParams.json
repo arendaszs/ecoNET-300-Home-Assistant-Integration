@@ -13,7 +13,7 @@
     },
     "encryption":"psk2",
     "schemaID":24,
-    "wlan0":"10.12.1.772",
+    "wlan0":"**REDACTED**",
     "remoteMenu":true,
     "regType":0,
     "schema":{
@@ -402,7 +402,7 @@
        }
     },
     "econetConfVer":null,
-    "password":"***************",
+    "password":"**REDACTED**",
     "prodLogo":2,
     "fuelConsumptionCalc":false,
     "regImgID":2,
@@ -413,7 +413,7 @@
     "history":[
        
     ],
-    "uid":"7VCPMB4ZJ8DHH208002Z0",
+    "uid":"**REDACTED**",
     "routerType":"mr3020-v3",
     "etNewConfTrans":false,
     "ecosrvAddr":"econet24.com",
@@ -448,8 +448,8 @@
        ]
     ],
     "key":"****",
-    "servicePassword":"b61265c6a561e90476ef78be3d2cea768306afa55a2e510c591008f8dc3e6f8a9520687e5fd3805e2da67cf5c58aa1603f960e027b0d5307fd7f98b673dd172f",
-    "ssid":"Groznas_I",
+    "servicePassword":"**REDACTED**",
+    "ssid":"**REDACTED**",
     "wifi":true,
     "panelVer":null,
     "alarms":[
