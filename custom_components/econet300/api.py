@@ -227,7 +227,7 @@ class EconetClient:
                             return None
                     else:
                         _LOGGER.debug("Fetched and fixed data successfully")
-                        return data
+                    return data
 
             except TimeoutError:
                 _LOGGER.warning("Timeout error, retry(%i/%i)", attempt, max_attempts)
@@ -389,11 +389,15 @@ class Econet300Api:
             _LOGGER.warning("Cannot set param with None index")
             return False
 
-        url = f"{self.host}/econet/rmNewParam?newParamIndex={param_index}&newParamValue={value}"
+        # Format value - use integer format for whole numbers to match API expectations
+        # API may silently ignore values like "56.0" for integer parameters (mult=1)
+        formatted_value: int | float = int(value) if value == int(value) else value
+
+        url = f"{self.host}/econet/rmNewParam?newParamIndex={param_index}&newParamValue={formatted_value}"
         _LOGGER.debug(
             "Setting parameter by index %s to value %s: %s",
             param_index,
-            value,
+            formatted_value,
             url,
         )
 
@@ -411,7 +415,7 @@ class Econet300Api:
             )
             return False
 
-        _LOGGER.debug("Successfully set param %s to %s", param_index, value)
+        _LOGGER.debug("Successfully set param %s to %s", param_index, formatted_value)
         return True
 
     async def _force_refresh_params_edits(self):

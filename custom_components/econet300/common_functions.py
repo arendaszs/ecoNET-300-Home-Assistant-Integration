@@ -10,9 +10,12 @@ For detailed documentation on the validation layer and entity type detection,
 see: docs/DYNAMIC_ENTITY_VALIDATION.md
 """
 
+import logging
 import re
 
 from .const import AVAILABLE_NUMBER_OF_MIXERS
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def camel_to_snake(key: str) -> str:
@@ -484,15 +487,22 @@ def detect_connected_components(reg_params: dict | None) -> dict[str, bool]:
     }
 
 
-def get_entity_component(name: str | None, key: str | None) -> str:
-    """Determine which component an entity belongs to based on name/key patterns.
+def get_entity_component(
+    name: str | None,
+    key: str | None,
+    description: str | None = None,
+    sequence_num: int | None = None,
+) -> str:
+    """Determine which component an entity belongs to based on name/key/description.
 
-    Analyzes parameter name and key to assign it to the appropriate
+    Analyzes parameter name, key, and description to assign it to the appropriate
     physical component device.
 
     Args:
         name: Parameter name (e.g., "HUW preset temperature")
         key: Parameter key (e.g., "huw_preset_temperature")
+        description: Parameter description for additional context
+        sequence_num: Sequence number for duplicate parameters (1-4 for mixers)
 
     Returns:
         Component identifier: "boiler", "huw", "mixer_1" through "mixer_4",
@@ -502,8 +512,8 @@ def get_entity_component(name: str | None, key: str | None) -> str:
     if not name and not key:
         return "boiler"
 
-    # Combine name and key for pattern matching
-    text = f"{name or ''} {key or ''}".lower()
+    # Combine name, key, and description for pattern matching
+    text = f"{name or ''} {key or ''} {description or ''}".lower()
 
     # Check for specific mixer (numbered patterns have highest priority)
     for i in range(1, 5):
@@ -526,8 +536,62 @@ def get_entity_component(name: str | None, key: str | None) -> str:
     if "solar" in text:
         return "solar"
 
+    # If description mentions "mixer" generically and we have a sequence number,
+    # use the sequence number to assign to the correct mixer
+    if sequence_num and 1 <= sequence_num <= 4:
+        if "mixer" in text:
+            return f"mixer_{sequence_num}"
+
     # Default to boiler
     return "boiler"
+
+
+def get_validated_entity_component(
+    name: str | None,
+    key: str | None,
+    description: str | None = None,
+    sequence_num: int | None = None,
+    coordinator_data: dict | None = None,
+) -> str:
+    """Determine and validate component assignment for an entity.
+
+    Determines which component an entity belongs to, and validates
+    that the component actually exists (e.g., mixer is connected).
+    Falls back to "boiler" if the target component doesn't exist.
+
+    This is the primary function to use for device assignment - it combines
+    pattern detection from get_entity_component() with hardware validation.
+
+    Args:
+        name: Parameter name (e.g., "HUW preset temperature")
+        key: Parameter key (e.g., "huw_preset_temperature")
+        description: Parameter description for additional context
+        sequence_num: Sequence number for duplicate parameters (1-4 for mixers)
+        coordinator_data: Coordinator data for validation (regParams, etc.)
+
+    Returns:
+        Component identifier: "boiler", "huw", "mixer_1" through "mixer_4",
+        "lambda", "buffer", or "solar"
+
+    """
+    # First, determine the ideal component based on patterns
+    component = get_entity_component(name, key, description, sequence_num)
+
+    # Validate mixer exists before assigning
+    if component.startswith("mixer_") and coordinator_data:
+        mixer_num = int(component.split("_")[1])
+        if not mixer_exists(coordinator_data, mixer_num):
+            _LOGGER.debug(
+                "Mixer %d doesn't exist, entity '%s' assigned to boiler instead",
+                mixer_num,
+                name or key,
+            )
+            return "boiler"
+
+    # Add validation for other components (lambda, buffer, solar, huw)
+    # when hardware detection is available
+
+    return component
 
 
 def get_duplicate_display_name(

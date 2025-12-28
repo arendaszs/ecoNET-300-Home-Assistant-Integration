@@ -21,7 +21,7 @@ from .common_functions import (
     camel_to_snake,
     get_duplicate_display_name,
     get_duplicate_entity_key,
-    get_entity_component,
+    get_validated_entity_component,
     mixer_exists,
 )
 from .const import (
@@ -314,6 +314,7 @@ class EconetDynamicSelect(SelectEntity):
         api: Econet300Api,
         param_id: str,
         param: dict,
+        sequence_num: int | None = None,
     ):
         """Initialize a new dynamic ecoNET select entity."""
         self.entity_description = entity_description
@@ -331,10 +332,13 @@ class EconetDynamicSelect(SelectEntity):
         # Set unique ID
         self._attr_unique_id = f"econet300_select_{param_id}"
 
-        # Determine which component this entity belongs to
+        # Determine which component this entity belongs to (with hardware validation)
         param_name = param.get("name", "")
         param_key = param.get("key", "")
-        self._component = get_entity_component(param_name, param_key)
+        description = param.get("description", "")
+        self._component = get_validated_entity_component(
+            param_name, param_key, description, sequence_num, coordinator.data
+        )
 
         # Set initial state
         self._update_state_from_param()
@@ -597,6 +601,7 @@ def create_dynamic_selects(
                 param_name, sequence_num, description
             )
         else:
+            sequence_num = None
             entity_key = base_key
             display_name = param_name
 
@@ -612,6 +617,7 @@ def create_dynamic_selects(
             api,
             param_id,
             param,
+            sequence_num,
         )
 
         entities.append(entity)
