@@ -161,6 +161,15 @@ MIXER_PUMP_BINARY_SENSOR_KEYS = {
     f"mixerPumpWorks{i}" for i in range(1, AVAILABLE_NUMBER_OF_MIXERS + 1)
 }
 
+# Keywords that indicate mixer-related parameters for duplicate entity filtering
+MIXER_RELATED_KEYWORDS: list[str] = [
+    "mixer",
+    "valve",
+    "heating circuit",
+    "actuator",
+    "circuit",
+]
+
 # =============================================================================
 # DEVICE-SPECIFIC SENSOR MAPPINGS
 # =============================================================================

@@ -44,6 +44,7 @@ from .const import (
     ENTITY_NUMBER_SENSOR_DEVICE_CLASS_MAP,
     ENTITY_STEP,
     ENTITY_UNIT_MAP,
+    MIXER_RELATED_KEYWORDS,
     MIXER_SET_AVAILABILITY_KEY,
     NUMBER_MAP,
     SENSOR_MIXER_KEY,
@@ -1516,7 +1517,10 @@ async def _create_dynamic_entities_from_merged_data(
             sequence_num = key_counts[param_key]
 
             # For mixer-related duplicates, validate mixer exists before creating
-            if description and "mixer" in description.lower():
+            # Check for keywords that indicate mixer-related parameters
+            desc_lower = description.lower() if description else ""
+            is_mixer_related = any(kw in desc_lower for kw in MIXER_RELATED_KEYWORDS)
+            if is_mixer_related:
                 if not mixer_exists(coordinator.data, sequence_num):
                     _LOGGER.debug(
                         "Skipping number %s (Mixer %d) - mixer not connected",

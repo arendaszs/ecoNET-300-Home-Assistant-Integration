@@ -22,7 +22,13 @@ from .common_functions import (
     get_validated_entity_component,
     mixer_exists,
 )
-from .const import BOILER_CONTROL, DOMAIN, SERVICE_API, SERVICE_COORDINATOR
+from .const import (
+    BOILER_CONTROL,
+    DOMAIN,
+    MIXER_RELATED_KEYWORDS,
+    SERVICE_API,
+    SERVICE_COORDINATOR,
+)
 from .entity import EconetEntity, get_device_info_for_component
 
 _LOGGER = logging.getLogger(__name__)
@@ -424,7 +430,10 @@ def create_dynamic_switches(
             sequence_num = key_counts[base_key]
 
             # For mixer-related duplicates, validate mixer exists before creating
-            if description and "mixer" in description.lower():
+            # Check for keywords that indicate mixer-related parameters
+            desc_lower = description.lower() if description else ""
+            is_mixer_related = any(kw in desc_lower for kw in MIXER_RELATED_KEYWORDS)
+            if is_mixer_related:
                 if not mixer_exists(coordinator.data, sequence_num):
                     _LOGGER.debug(
                         "Skipping switch %s (Mixer %d) - mixer not connected",

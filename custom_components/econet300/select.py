@@ -29,6 +29,7 @@ from .common_functions import (
 )
 from .const import (
     DOMAIN,
+    MIXER_RELATED_KEYWORDS,
     SELECT_KEY_GET_INDEX,
     SELECT_KEY_POST_INDEX,
     SELECT_KEY_VALUES,
@@ -618,7 +619,10 @@ def create_dynamic_selects(
             sequence_num = key_counts[base_key]
 
             # For mixer-related duplicates, validate mixer exists before creating
-            if description and "mixer" in description.lower():
+            # Check for keywords that indicate mixer-related parameters
+            desc_lower = description.lower() if description else ""
+            is_mixer_related = any(kw in desc_lower for kw in MIXER_RELATED_KEYWORDS)
+            if is_mixer_related:
                 if not mixer_exists(coordinator.data, sequence_num):
                     _LOGGER.debug(
                         "Skipping select %s (Mixer %d) - mixer not connected",
