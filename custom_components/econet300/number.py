@@ -329,14 +329,14 @@ class EconetNumber(EconetEntity, NumberEntity):
             _LOGGER.warning(
                 "Requested value: '%s' exceeds maximum allowed value: '%s'",
                 value,
-                self._attr_max_value,
+                self._attr_native_max_value,
             )
 
         if value < self._attr_native_min_value:
             _LOGGER.warning(
                 "Requested value: '%s' is below allowed value: '%s'",
                 value,
-                self._attr_min_value,
+                self._attr_native_min_value,
             )
             return
 
@@ -773,14 +773,14 @@ class MixerNumber(MixerEntity, NumberEntity):
             _LOGGER.warning(
                 "Requested mixer value: '%s' exceeds maximum allowed value: '%s'",
                 value,
-                self._attr_max_value,
+                self._attr_native_max_value,
             )
 
         if value < self._attr_native_min_value:
             _LOGGER.warning(
                 "Requested mixer value: '%s' is below allowed value: '%s'",
                 value,
-                self._attr_min_value,
+                self._attr_native_min_value,
             )
             return
 
