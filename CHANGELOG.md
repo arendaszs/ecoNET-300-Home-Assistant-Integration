@@ -1,5 +1,52 @@
 # Changelog
 
+## [v1.2.0a1] - 2025-12-28
+
+### 🚀 New Features
+
+- **Dynamic Entity System**: Complete rewrite of entity creation from `mergedData` API
+  - 165+ dynamic parameters from boiler's remote menu
+  - Automatic entity type detection (Number, Switch, Select, Sensor)
+  - Category-based entity grouping with smart defaults (CONFIG entities disabled by default)
+
+- **Mixer Device Support**: Entities correctly assigned to mixer devices (Mixer 1-4)
+  - Keyword-based detection for mixer-related entities (`MIXER_RELATED_KEYWORDS`)
+  - Hardware validation to prevent phantom mixer devices
+
+- **ecoSTER Panel Detection**: Smart filtering for ecoSTER-related entities
+  - Entities only created when ecoSTER panel is connected (`ecoster_exists()`)
+
+- **Parameter Locking**: Device-side parameter locks reflected in Home Assistant
+  - Lock icon (`mdi:lock`) displayed for locked parameters
+  - Lock reason shown in entity attributes
+
+### 🐛 Bug Fixes
+
+- **Number Entity Min/Max**: Fixed initialization to properly handle `0.0` as valid minimum value
+- **Heating Curve Values**: Fixed value setting - now correctly sends float values to API via `set_param_by_index()`
+- **Boiler On/Off Switch**: Fixed state reading from `regParams.mode` instead of incorrect path
+- **Entity Icons**: Fixed `icons.json` translations using `_attr_has_entity_name` attribute
+- **Switch Entity Init**: Fixed `async_write_ha_state()` called before entity added to Home Assistant
+- **Entity Registry Default**: Reverted property-based `entity_registry_enabled_default` to maintain compatibility
+
+### ⚙️ Technical Improvements
+
+- **API Enhancement**: New `set_param_by_index()` method for dynamic parameter editing
+- **Entity Registry**: CONFIG category entities disabled by default, DIAGNOSTIC/uncategorized enabled
+- **Code Quality**: Refactored mixer keywords to `MIXER_RELATED_KEYWORDS` constant in `const.py`
+- **Validation Layer**: Centralized parameter validation in `common_functions.py`
+  - `validate_parameter_data()`, `is_parameter_locked()`, `get_lock_reason()`
+  - `should_be_number_entity()`, `should_be_switch_entity()`, `should_be_select_entity()`
+- **Component Detection**: `get_validated_entity_component()` with hardware validation
+
+### 📚 Documentation
+
+- Added `docs/DYNAMIC_ENTITY_VALIDATION.md` for dynamic entity system
+- Updated API documentation with new endpoints
+- Enhanced cursor rules for dynamic entity changes
+
+---
+
 ## [v1.1.15] - 2025-01-13
 
 ### New Features
