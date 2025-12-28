@@ -10,12 +10,15 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .api import Econet300Api
 from .common import EconetDataCoordinator
 from .const import (
+    DEVICE_INFO_BUFFER_NAME,
     DEVICE_INFO_CONTROLLER_NAME,
     DEVICE_INFO_ECOSTER_NAME,
+    DEVICE_INFO_HUW_NAME,
     DEVICE_INFO_LAMBDA_NAME,
     DEVICE_INFO_MANUFACTURER,
     DEVICE_INFO_MIXER_NAME,
     DEVICE_INFO_MODEL,
+    DEVICE_INFO_SOLAR_NAME,
     DOMAIN,
 )
 
@@ -370,3 +373,108 @@ class EcoSterEntity(EconetEntity):
             sw_version=self.api.sw_rev,
             via_device=(DOMAIN, self.api.uid),
         )
+
+
+def get_device_info_for_component(
+    component: str, api: Econet300Api, mixer_idx: int | None = None
+) -> DeviceInfo:
+    """Return DeviceInfo for a specific component.
+
+    Creates device identifiers based on component type, allowing entities
+    to be grouped under their respective physical components in Home Assistant.
+
+    Args:
+        component: Component identifier ("boiler", "huw", "mixer_1", etc.)
+        api: Econet300Api instance for device information
+        mixer_idx: Optional mixer index (1-4) for mixer components
+
+    Returns:
+        DeviceInfo for the specified component
+
+    """
+    # Main boiler device (parent of all others)
+    if component == "boiler":
+        return DeviceInfo(
+            identifiers={(DOMAIN, api.uid)},
+            name=DEVICE_INFO_CONTROLLER_NAME,
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            model_id=api.model_id,
+            configuration_url=api.host,
+            sw_version=api.sw_rev,
+            hw_version=api.hw_ver,
+        )
+
+    # HUW Tank device
+    if component == "huw":
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{api.uid}-huw")},
+            name=DEVICE_INFO_HUW_NAME,
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            configuration_url=api.host,
+            sw_version=api.sw_rev,
+            via_device=(DOMAIN, api.uid),
+        )
+
+    # Mixer devices (1-4)
+    if component.startswith("mixer_"):
+        idx = mixer_idx or int(component.split("_")[1])
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{api.uid}-mixer-{idx}")},
+            name=f"{DEVICE_INFO_MIXER_NAME}{idx}",
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            model_id=api.model_id,
+            configuration_url=api.host,
+            sw_version=api.sw_rev,
+            via_device=(DOMAIN, api.uid),
+        )
+
+    # Lambda sensor device
+    if component == "lambda":
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{api.uid}lambda")},
+            name=DEVICE_INFO_LAMBDA_NAME,
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            configuration_url=api.host,
+            sw_version=api.sw_rev,
+            via_device=(DOMAIN, api.uid),
+        )
+
+    # Buffer device
+    if component == "buffer":
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{api.uid}-buffer")},
+            name=DEVICE_INFO_BUFFER_NAME,
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            configuration_url=api.host,
+            sw_version=api.sw_rev,
+            via_device=(DOMAIN, api.uid),
+        )
+
+    # Solar device
+    if component == "solar":
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{api.uid}-solar")},
+            name=DEVICE_INFO_SOLAR_NAME,
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            configuration_url=api.host,
+            sw_version=api.sw_rev,
+            via_device=(DOMAIN, api.uid),
+        )
+
+    # Default to main boiler device
+    return DeviceInfo(
+        identifiers={(DOMAIN, api.uid)},
+        name=DEVICE_INFO_CONTROLLER_NAME,
+        manufacturer=DEVICE_INFO_MANUFACTURER,
+        model=DEVICE_INFO_MODEL,
+        model_id=api.model_id,
+        configuration_url=api.host,
+        sw_version=api.sw_rev,
+        hw_version=api.hw_ver,
+    )

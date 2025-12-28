@@ -458,3 +458,97 @@ def get_lock_reason(param: dict) -> str | None:
 
     """
     return param.get("lock_reason")
+
+
+def detect_connected_components(reg_params: dict | None) -> dict[str, bool]:
+    """Detect which physical components are connected based on regParams data.
+
+    Checks temperature sensors and status values to determine if each
+    component is physically connected to the boiler system.
+
+    Args:
+        reg_params: regParams data from coordinator containing sensor readings
+
+    Returns:
+        Dictionary mapping component names to connection status
+
+    """
+    if not reg_params:
+        return {
+            "boiler": True,
+            "huw": False,
+            "mixer_1": False,
+            "mixer_2": False,
+            "mixer_3": False,
+            "mixer_4": False,
+            "lambda": False,
+            "buffer": False,
+            "solar": False,
+        }
+
+    def is_connected(key: str) -> bool:
+        """Check if a sensor value indicates component is connected."""
+        val = reg_params.get(key)
+        return (
+            val is not None
+            and val != -1
+            and (not isinstance(val, (int, float)) or val > 0)
+        )
+
+    return {
+        "boiler": True,  # Boiler is always present
+        "huw": is_connected("tempCWU"),
+        "mixer_1": is_connected("mixerTemp1"),
+        "mixer_2": is_connected("mixerTemp2"),
+        "mixer_3": is_connected("mixerTemp3"),
+        "mixer_4": is_connected("mixerTemp4"),
+        "lambda": reg_params.get("lambdaStatus") is not None,
+        "buffer": is_connected("tempUpperBuffer") or is_connected("tempLowerBuffer"),
+        "solar": is_connected("tempSolarCollector"),
+    }
+
+
+def get_entity_component(name: str | None, key: str | None) -> str:
+    """Determine which component an entity belongs to based on name/key patterns.
+
+    Analyzes parameter name and key to assign it to the appropriate
+    physical component device.
+
+    Args:
+        name: Parameter name (e.g., "HUW preset temperature")
+        key: Parameter key (e.g., "huw_preset_temperature")
+
+    Returns:
+        Component identifier: "boiler", "huw", "mixer_1" through "mixer_4",
+        "lambda", "buffer", or "solar"
+
+    """
+    if not name and not key:
+        return "boiler"
+
+    # Combine name and key for pattern matching
+    text = f"{name or ''} {key or ''}".lower()
+
+    # Check for specific mixer (numbered patterns have highest priority)
+    for i in range(1, 5):
+        if f"mixer{i}" in text or f"mixer {i}" in text or f"mixer_{i}" in text:
+            return f"mixer_{i}"
+
+    # Check for HUW/CWU (hot utility water / hot tap water)
+    if "huw" in text or "cwu" in text:
+        return "huw"
+
+    # Check for Lambda sensor
+    if "lambda" in text:
+        return "lambda"
+
+    # Check for Buffer
+    if "buffer" in text:
+        return "buffer"
+
+    # Check for Solar
+    if "solar" in text:
+        return "solar"
+
+    # Default to boiler
+    return "boiler"

@@ -12,11 +12,12 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
-from .common_functions import camel_to_snake
+from .common_functions import camel_to_snake, get_entity_component
 from .const import (
     DOMAIN,
     ENTITY_CATEGORY,
@@ -30,7 +31,13 @@ from .const import (
     SERVICE_COORDINATOR,
     STATE_CLASS_MAP,
 )
-from .entity import EconetEntity, EcoSterEntity, LambdaEntity, MixerEntity
+from .entity import (
+    EconetEntity,
+    EcoSterEntity,
+    LambdaEntity,
+    MixerEntity,
+    get_device_info_for_component,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,6 +47,7 @@ class EconetSensorEntityDescription(SensorEntityDescription):
     """Describes ecoNET sensor entity."""
 
     process_val: Callable[[Any], Any] = lambda x: x  # noqa: E731
+    component: str | None = None  # Component for device grouping (huw, mixer_1, etc.)
 
 
 class EconetSensor(EconetEntity, SensorEntity):
@@ -58,6 +66,15 @@ class EconetSensor(EconetEntity, SensorEntity):
         self.api = api
         self._attr_native_value = None
         super().__init__(coordinator, api)
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device info based on entity component."""
+        component = getattr(self.entity_description, "component", None)
+        if component:
+            return get_device_info_for_component(component, self.api)
+        # Fall back to parent class device_info (main boiler device)
+        return super().device_info
 
     def _sync_state(self, value) -> None:
         """Synchronize the state of the sensor entity."""
@@ -213,6 +230,10 @@ class InformationDynamicSensor(EconetEntity, SensorEntity):
 def create_sensor_entity_description(key: str) -> EconetSensorEntityDescription:
     """Create ecoNET300 sensor entity based on supplied key."""
     _LOGGER.debug("Creating sensor entity description for key: %s", key)
+
+    # Determine component for device grouping based on key patterns
+    component = get_entity_component(key, key)
+
     entity_description = EconetSensorEntityDescription(
         key=key,
         device_class=ENTITY_SENSOR_DEVICE_CLASS_MAP.get(key, None),
@@ -222,8 +243,13 @@ def create_sensor_entity_description(key: str) -> EconetSensorEntityDescription:
         state_class=STATE_CLASS_MAP.get(key, SensorStateClass.MEASUREMENT),
         suggested_display_precision=ENTITY_PRECISION.get(key, 0),
         process_val=ENTITY_VALUE_PROCESSOR.get(key, lambda x: x),  # noqa: E731
+        component=component,
     )
-    _LOGGER.debug("Created sensor entity description: %s", entity_description)
+    _LOGGER.debug(
+        "Created sensor entity description: %s (component=%s)",
+        entity_description,
+        component,
+    )
     return entity_description
 
 

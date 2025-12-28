@@ -25,6 +25,7 @@ from .common import Econet300Api, EconetDataCoordinator, skip_params_edits
 from .common_functions import (
     camel_to_snake,
     extract_device_group_from_name,
+    get_entity_component,
     mixer_exists,
     requires_service_password,
     validate_parameter_data,
@@ -48,7 +49,7 @@ from .const import (
     SERVICE_COORDINATOR,
     UNIT_NAME_TO_HA_UNIT,
 )
-from .entity import EconetEntity, MixerEntity
+from .entity import EconetEntity, MixerEntity, get_device_info_for_component
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,6 +62,7 @@ class EconetNumberEntityDescription(NumberEntityDescription):
     param_id: str | None = (
         None  # Original parameter ID for dynamic entities (lookup in mergedData)
     )
+    component: str | None = None  # Component for device grouping (huw, mixer_1, etc.)
 
 
 class EconetNumber(EconetEntity, NumberEntity):
@@ -264,6 +266,15 @@ class EconetNumber(EconetEntity, NumberEntity):
             return param_data.get("description")
 
         return None
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device info based on entity component."""
+        component = getattr(self.entity_description, "component", None)
+        if component:
+            return get_device_info_for_component(component, self.api)
+        # Fall back to parent class device_info (main boiler device)
+        return super().device_info
 
     @property
     def icon(self) -> str | None:
@@ -1036,14 +1047,19 @@ def create_dynamic_number_entity_description(
     else:
         entity_key = f"basic_{param_key}"
 
+    # Determine component for device grouping
+    param_name = param.get("name", "")
+    component = get_entity_component(param_name, param_key)
+
     _LOGGER.debug(
-        "Creating entity description for param_id=%s, name=%s, key=%s, translation_key=%s, entity_key=%s, type=%s",
+        "Creating entity description for param_id=%s, name=%s, key=%s, translation_key=%s, entity_key=%s, type=%s, component=%s",
         param_id,
         param.get("name", "No name"),
         param_key,
         translation_key,
         entity_key,
         param_type,
+        component,
     )
 
     return EconetNumberEntityDescription(
@@ -1058,6 +1074,7 @@ def create_dynamic_number_entity_description(
         native_step=step,
         entity_category=EntityCategory.CONFIG,  # All dynamic entities in Configuration
         param_id=param_id,  # Store original param_id for mergedData lookup
+        component=component,  # Component for device grouping
     )
 
 

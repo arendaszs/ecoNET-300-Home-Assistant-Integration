@@ -14,16 +14,9 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .common import Econet300Api, EconetDataCoordinator
-from .common_functions import camel_to_snake, mixer_exists
-from .const import (
-    BOILER_CONTROL,
-    DEVICE_INFO_MANUFACTURER,
-    DEVICE_INFO_MODEL,
-    DOMAIN,
-    SERVICE_API,
-    SERVICE_COORDINATOR,
-)
-from .entity import EconetEntity
+from .common_functions import camel_to_snake, get_entity_component, mixer_exists
+from .const import BOILER_CONTROL, DOMAIN, SERVICE_API, SERVICE_COORDINATOR
+from .entity import EconetEntity, get_device_info_for_component
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -129,6 +122,11 @@ class EconetDynamicSwitch(SwitchEntity):
         # Set unique ID
         self._attr_unique_id = f"econet300_switch_{param_id}"
 
+        # Determine which component this entity belongs to
+        param_name = param.get("name", "")
+        param_key = param.get("key", "")
+        self._component = get_entity_component(param_name, param_key)
+
         # Set initial state
         self._update_state_from_param()
 
@@ -166,13 +164,8 @@ class EconetDynamicSwitch(SwitchEntity):
 
     @property
     def device_info(self) -> DeviceInfo:
-        """Return device info."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, self.api.uid)},
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            name=self.api.uid,
-        )
+        """Return device info based on entity component."""
+        return get_device_info_for_component(self._component, self.api)
 
     @property
     def available(self) -> bool:
