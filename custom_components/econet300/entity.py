@@ -200,9 +200,12 @@ class EconetEntity(CoordinatorEntity):
             _LOGGER.debug(
                 "async_added_to_hass: mergedData was None, defaulting to empty dict"
             )
-        _LOGGER.debug("async_sysParams: %s", sys_params)
-        _LOGGER.debug("async_regParams: %s", reg_params)
-        _LOGGER.debug("async_paramsEdits: %s", params_edits)
+        _LOGGER.debug(
+            "async_added_to_hass: sysParams=%d, regParams=%d, paramsEdits=%d params",
+            len(sys_params) if sys_params else 0,
+            len(reg_params) if reg_params else 0,
+            len(params_edits) if params_edits else 0,
+        )
 
         # Check the available keys in all sources
         sys_keys = sys_params.keys() if sys_params is not None else []

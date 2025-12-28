@@ -82,6 +82,18 @@ class EconetNumber(EconetEntity, NumberEntity):
         """Initialize a new ecoNET number entity."""
         self.entity_description = entity_description
         self.api = api
+        # Initialize min/max from entity_description or use sensible defaults
+        # Use 'is not None' to preserve 0.0 as valid min value
+        self._attr_native_min_value = (
+            entity_description.native_min_value
+            if entity_description.native_min_value is not None
+            else 0.0
+        )
+        self._attr_native_max_value = (
+            entity_description.native_max_value
+            if entity_description.native_max_value is not None
+            else 100.0
+        )
         super().__init__(coordinator, api)
 
     def _sync_state(self, value):
@@ -364,6 +376,18 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
         mixer_idx: int,
     ):
         """Initialize a new instance of the MixerDynamicNumber class."""
+        # Initialize min/max from entity_description or use sensible defaults
+        # Use 'is not None' to preserve 0.0 as valid min value
+        self._attr_native_min_value = (
+            description.native_min_value
+            if description.native_min_value is not None
+            else 0.0
+        )
+        self._attr_native_max_value = (
+            description.native_max_value
+            if description.native_max_value is not None
+            else 100.0
+        )
         super().__init__(description, coordinator, api, mixer_idx)
 
     def _sync_state(self, value):
@@ -546,6 +570,18 @@ class MixerNumber(MixerEntity, NumberEntity):
         idx: int,
     ):
         """Initialize a new instance of the MixerNumber class."""
+        # Initialize min/max from entity_description or use sensible defaults
+        # Use 'is not None' to preserve 0.0 as valid min value
+        self._attr_native_min_value = (
+            description.native_min_value
+            if description.native_min_value is not None
+            else 0.0
+        )
+        self._attr_native_max_value = (
+            description.native_max_value
+            if description.native_max_value is not None
+            else 100.0
+        )
         super().__init__(description, coordinator, api, idx)
 
     def _sync_state(self, value):
@@ -1055,8 +1091,11 @@ def create_dynamic_number_entity_description(
     min_value = float(param.get("minv", 0))
     max_value = float(param.get("maxv", 100))
 
-    # Determine step based on unit and range
-    if unit_name in {"%", "°C"} or unit_name in ["sek.", "min.", "h."]:
+    # Use mult from API as step if available, otherwise use heuristics
+    mult = param.get("mult")
+    if mult is not None and mult > 0:
+        step = float(mult)
+    elif unit_name in {"%", "°C"} or unit_name in ["sek.", "min.", "h."]:
         step = 1.0
     elif max_value - min_value > 100:
         step = 5.0

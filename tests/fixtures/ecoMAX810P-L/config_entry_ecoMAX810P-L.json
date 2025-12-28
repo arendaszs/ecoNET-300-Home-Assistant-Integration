@@ -173,7 +173,7 @@
             "modulePanelSoftVer": "8.11.42",
             "ecosrvSoftVer": "3.2.3879",
             "moduleASoftVer": "8.30.176.R1",
-            "eth0": "0.0.0.0",
+            "eth0": "**REDACTED**",
             "tilesET": null,
             "etPasswords": {},
             "encryption": "psk2",
@@ -569,7 +569,7 @@
             "prodLogo": 2,
             "fuelConsumptionCalc": false,
             "regImgID": 2,
-            "settingsVer": 51054,
+            "settingsVer": 51318,
             "signal": "-50",
             "logFl": 0,
             "etConfDesc": null,
@@ -606,7 +606,7 @@
                 31
               ]
             ],
-            "key": "****",
+            "key": "**REDACTED**",
             "servicePassword": "**REDACTED**",
             "ssid": "**REDACTED**",
             "wifi": true,
@@ -1220,16 +1220,16 @@
           "regParams": {
             "pumpSolar": false,
             "lambdaLevel": 0,
-            "tempExternalSensor": -0.2724647521972656,
+            "tempExternalSensor": -1.0680770874023438,
             "thermostat": 1,
-            "mixerSetTemp3": 28,
+            "mixerSetTemp3": 29,
             "pumpCOWorks": true,
             "fan2Exhaust": false,
             "feederWorks": false,
             "feeder": false,
             "mixerTemp4": null,
             "mixerPumpWorks4": true,
-            "lambdaSet": 255,
+            "lambdaSet": 130,
             "mixerPumpWorks1": true,
             "mixerPumpWorks2": true,
             "mixerPumpWorks3": true,
@@ -1237,8 +1237,8 @@
             "statusCWU": 128,
             "blowFan2": false,
             "transmission": 9,
-            "tempCO": 37.91929626464844,
-            "fuelLevel": 93,
+            "tempCO": 45.38496398925781,
+            "fuelLevel": 100,
             "pumpCO": true,
             "contactGZCActive": false,
             "mixerTemp3": null,
@@ -1253,38 +1253,38 @@
             "pumpFireplaceWorks": false,
             "feederOuterWorks": false,
             "feederOuter": false,
-            "mixerTemp1": 33.67283630371094,
-            "mixerSetTemp4": 28,
+            "mixerTemp1": 36.10415267944336,
+            "mixerSetTemp4": 29,
             "pumpCWUWorks": false,
             "feeder2AdditionalWorks": false,
             "pumpSolarWorks": false,
-            "mixerSetTemp1": 35,
+            "mixerSetTemp1": 36,
             "pumpCWU": true,
             "blowFan2Active": false,
-            "fan": false,
+            "fan": true,
             "mixerSetTemp2": 30,
             "lighter": false,
             "alarmOutput": true,
-            "tempCWU": 71.54428100585938,
+            "tempCWU": 70.98300170898438,
             "boilerPowerKW": null,
             "lambdaStatus": 1,
             "tempCWUSet": null,
             "contactGZC": false,
             "pumpCirculationWorks": false,
-            "boilerPower": 0,
+            "boilerPower": 30,
             "fuelStream": null,
             "lighterWorks": false,
-            "tempFlueGas": 27.99439239501953,
+            "tempFlueGas": 58.28162384033203,
             "fan2ExhaustWorks": false,
-            "mode": 2,
-            "tempFeeder": 23.49395751953125,
+            "mode": 3,
+            "tempFeeder": 23.839256286621094,
             "alarmOutputWorks": true,
-            "fanWorks": false,
-            "fanPower": 0.0,
+            "fanWorks": true,
+            "fanPower": 35.0,
             "feeder2Additional": false
           },
           "regParamsData": {
-            "1536": false,
+            "1536": true,
             "1": false,
             "1538": false,
             "3": false,
@@ -1310,9 +1310,9 @@
             "23": 0,
             "24": 0,
             "1540": false,
-            "26": 23.49395751953125,
+            "26": 23.839256286621094,
             "27": null,
-            "28": -0.2724647521972656,
+            "28": -1.067169189453125,
             "29": 0.0,
             "30": null,
             "5": true,
@@ -1322,14 +1322,14 @@
             "35": 0,
             "36": 0,
             "6": true,
-            "1024": 37.91929626464844,
+            "1024": 45.387107849121094,
             "39": 0,
             "42": 0,
             "43": 0,
             "44": 0,
             "45": 0,
             "48": 0,
-            "8": 2830,
+            "8": 2811,
             "50": 0,
             "51": 128,
             "52": 0,
@@ -1341,25 +1341,25 @@
             "58": 10,
             "59": 8,
             "60": 0,
-            "10": 1715,
+            "10": 1962,
             "62": 0,
             "63": 0,
             "64": 10,
             "65": 10,
             "66": 0,
             "11": 207,
-            "1025": 71.54428100585938,
+            "1025": 70.98300170898438,
             "69": false,
             "70": false,
             "71": false,
             "72": true,
-            "12": 2259,
+            "12": 2217,
             "74": false,
             "75": true,
             "76": true,
             "77": false,
             "78": true,
-            "13": 679,
+            "13": 964,
             "80": true,
             "81": true,
             "82": true,
@@ -1376,8 +1376,8 @@
             "93": false,
             "94": false,
             "95": false,
-            "96": 128,
-            "16": 1582,
+            "96": 0,
+            "16": 1664,
             "98": false,
             "99": false,
             "2049": 0,
@@ -1418,7 +1418,7 @@
             "136": 3,
             "137": 2,
             "138": 7,
-            "139": 64,
+            "139": 43,
             "140": 3,
             "141": 0,
             "142": 0,
@@ -1434,9 +1434,9 @@
             "152": 130,
             "153": 0.0,
             "154": 0.0,
-            "155": 5826,
+            "155": 5827,
             "156": 5083,
-            "157": 4804,
+            "157": 4805,
             "1028": null,
             "159": 9699,
             "160": 127,
@@ -1444,7 +1444,7 @@
             "162": "0.0.0.0",
             "163": "0.0.0.0",
             "164": 0,
-            "165": "**REDACTED**",
+            "165": "10.10.1.77",
             "166": "255.255.255.0",
             "167": "10.10.1.1",
             "168": 1,
@@ -1452,35 +1452,35 @@
             "170": 80,
             "171": 1,
             "172": 9,
-            "173": "**REDACTED**",
+            "173": "Groznas_I",
             "91": false,
             "115": false,
             "31": null,
             "1029": null,
             "7": 0,
-            "1030": 27.99439239501953,
+            "1030": 58.342567443847656,
             "37": 0,
             "38": 0,
-            "1031": 33.67283630371094,
+            "1031": 36.10415267944336,
             "1280": 47,
             "1281": 20,
             "1794": 30,
-            "1795": 60,
+            "1795": 35,
             "1798": true,
-            "1287": 35,
+            "1287": 36,
             "1288": 30,
-            "1289": 28,
-            "1290": 28,
+            "1289": 29,
+            "1290": 29,
             "131": 0,
-            "9": 1226,
+            "9": 1238,
             "1032": null,
             "49": 0,
-            "1792": 1,
+            "1792": 3,
             "55": 0,
             "1034": null,
             "143": 0,
             "2048": 0,
-            "97": 93,
+            "97": 100,
             "61": 0,
             "151": 1,
             "67": 0,
@@ -4058,7 +4058,7 @@
           },
           "mergedData": {
             "version": "1.0-names-descs-structure-units-indexed-enums-locks-cleaned",
-            "timestamp": "2025-12-28T16:48:39.318773",
+            "timestamp": "2025-12-28T18:28:06.631890",
             "device": {
               "uid": "**REDACTED**",
               "controllerId": "ecoMAX810P-L TOUCH",
@@ -4080,7 +4080,7 @@
                 "pass_index": 0,
                 "data_id": "1536",
                 "unit_name": "%",
-                "key": "100percent_blow_in_output",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4100,7 +4100,7 @@
                 "pass_index": 0,
                 "data_id": "1",
                 "unit_name": "sek.",
-                "key": "100percent_feeder_operation",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4120,7 +4120,7 @@
                 "pass_index": 0,
                 "data_id": "1794",
                 "unit_name": "sek.",
-                "key": "100percent_feeder_interval",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4140,7 +4140,7 @@
                 "pass_index": 0,
                 "data_id": "3",
                 "unit_name": "%",
-                "key": "50percent_blow_in_output",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4160,7 +4160,7 @@
                 "pass_index": 0,
                 "data_id": "1540",
                 "unit_name": "sek.",
-                "key": "50percent_feeder_operation",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4180,7 +4180,7 @@
                 "pass_index": 0,
                 "data_id": "1541",
                 "unit_name": "sek.",
-                "key": "50percent_feeder_interval",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4200,7 +4200,7 @@
                 "pass_index": 0,
                 "data_id": "1542",
                 "unit_name": "%",
-                "key": "30percent_blow_in_output",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4220,7 +4220,7 @@
                 "pass_index": 0,
                 "data_id": "1287",
                 "unit_name": "sek.",
-                "key": "30percent_feeder_operation",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4240,7 +4240,7 @@
                 "pass_index": 0,
                 "data_id": "1544",
                 "unit_name": "sek.",
-                "key": "30percent_feeder_interval",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4259,7 +4259,7 @@
                 "number": 9,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "50percent_h2_hysteresis",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4278,7 +4278,7 @@
                 "number": 10,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "30percent_h1_hysteresis",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4297,7 +4297,7 @@
                 "number": 11,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "boiler_hysteresis",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4316,7 +4316,7 @@
                 "number": 12,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "fl_airfl_correction",
+                "key": "**REDACTED**",
                 "locked": true,
                 "lock_index": 4,
                 "lock_reason": "Function unavailable."
@@ -4335,7 +4335,7 @@
                 "number": 13,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "minimum_boiler_output_fl",
+                "key": "**REDACTED**",
                 "locked": true,
                 "lock_index": 4,
                 "lock_reason": "Function unavailable."
@@ -4354,7 +4354,7 @@
                 "number": 14,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "maximum_boiler_output_fl",
+                "key": "**REDACTED**",
                 "locked": true,
                 "lock_index": 4,
                 "lock_reason": "Function unavailable."
@@ -4373,7 +4373,7 @@
                 "number": 15,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "parametr_a_fuzzylogic",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 8,
                   "values": [
@@ -4402,7 +4402,7 @@
                 "number": 16,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "parametr_b_fuzzylogic",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4421,7 +4421,7 @@
                 "number": 17,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "parametr_c_fuzzylogic",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4440,7 +4440,7 @@
                 "number": 18,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "regulation_mode_",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 8,
                   "values": [
@@ -4470,7 +4470,7 @@
                 "number": 19,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "airflow_power_correction_100percent",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4489,7 +4489,7 @@
                 "number": 20,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "100percent_feeder_work_correction",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4508,7 +4508,7 @@
                 "number": 21,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "50percent_airflow_power_correction",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4527,7 +4527,7 @@
                 "number": 22,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "50percent_feeder_work_correction",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4546,7 +4546,7 @@
                 "number": 23,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "airflow_power_correction_30percent",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4565,7 +4565,7 @@
                 "number": 24,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "30percent_feeder_work_correction",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4584,7 +4584,7 @@
                 "number": 25,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "firing_up_airflow",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4604,7 +4604,7 @@
                 "pass_index": 0,
                 "data_id": "26",
                 "unit_name": "min.",
-                "key": "ignition_test_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4623,7 +4623,7 @@
                 "number": 27,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "ignition_test_time_2",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4643,7 +4643,7 @@
                 "pass_index": 0,
                 "data_id": "28",
                 "unit_name": "sek.",
-                "key": "feeding_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4662,7 +4662,7 @@
                 "number": 29,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "firing_up_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4681,7 +4681,7 @@
                 "number": 30,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "extempdelta",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4700,7 +4700,7 @@
                 "number": 31,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "extempdelta_2",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4719,7 +4719,7 @@
                 "number": 32,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "ex_temp_at_the_end_of_firing_up",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4738,7 +4738,7 @@
                 "number": 33,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "test_dose",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4757,7 +4757,7 @@
                 "number": 34,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "supervision_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4776,7 +4776,7 @@
                 "number": 35,
                 "pass_index": 0,
                 "unit_name": "sek.",
-                "key": "feed_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4795,7 +4795,7 @@
                 "number": 36,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "feed_interval",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4814,7 +4814,7 @@
                 "number": 37,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "minimum_airflow_output",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4833,7 +4833,7 @@
                 "number": 38,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "parameter_a_lambda",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4852,7 +4852,7 @@
                 "number": 39,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "parameter_b_lambda",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4871,7 +4871,7 @@
                 "number": 40,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "parameter_c_lambda",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4890,7 +4890,7 @@
                 "number": 41,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "100percent_oxygen",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4909,7 +4909,7 @@
                 "number": 42,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "50percent_oxygen",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4928,7 +4928,7 @@
                 "number": 43,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "30percent_oxygen",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4947,7 +4947,7 @@
                 "number": 44,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "airflow_correction_range",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -4966,7 +4966,7 @@
                 "number": 45,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "fl_oxygen_correction",
+                "key": "**REDACTED**",
                 "locked": true,
                 "lock_index": 4,
                 "lock_reason": "Function unavailable."
@@ -4985,7 +4985,7 @@
                 "number": 46,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "preset_boiler_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5004,7 +5004,7 @@
                 "number": 47,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "min_boiler_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5023,7 +5023,7 @@
                 "number": 48,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "max_boiler_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5042,7 +5042,7 @@
                 "number": 49,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "huw_preset_temperature",
+                "key": "**REDACTED**",
                 "locked": true,
                 "lock_index": 3,
                 "lock_reason": "HUW mode off."
@@ -5061,7 +5061,7 @@
                 "number": 50,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "minimum_huw_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5080,7 +5080,7 @@
                 "number": 51,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "maximum_huw_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5099,7 +5099,7 @@
                 "number": 52,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "huw_pump_mode",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 9,
                   "values": [
@@ -5129,7 +5129,7 @@
                 "number": 53,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "huw_cont_hysteresis",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5148,7 +5148,7 @@
                 "number": 54,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "huw_disinfection",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 10,
                   "values": [
@@ -5177,7 +5177,7 @@
                 "number": 55,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "summer_mode",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 11,
                   "values": [
@@ -5209,7 +5209,7 @@
                 "number": 56,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "summer_mode_act_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5228,7 +5228,7 @@
                 "number": 57,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "summer_mode_deact_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5247,7 +5247,7 @@
                 "number": 58,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "ch_pump_activation_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5266,7 +5266,7 @@
                 "number": 59,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "ch_pump_standstill_when_loading_huw",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5285,7 +5285,7 @@
                 "number": 60,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "boiler_inc_by_huw,_mixer",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5304,7 +5304,7 @@
                 "number": 61,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "extending_huw_pump_operation_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5323,7 +5323,7 @@
                 "number": 62,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "exchanger",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 12,
                   "values": [
@@ -5352,7 +5352,7 @@
                 "number": 63,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "preset_mixer1_temperature",
+                "key": "**REDACTED**",
                 "locked": true,
                 "lock_index": 2,
                 "lock_reason": "Weather control enabled."
@@ -5371,7 +5371,7 @@
                 "number": 64,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "preset_mixer2_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5390,7 +5390,7 @@
                 "number": 65,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "preset_mixer3_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5409,7 +5409,7 @@
                 "number": 66,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "preset_mixer4_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5428,7 +5428,7 @@
                 "number": 67,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "min_mixer1_temp",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5447,7 +5447,7 @@
                 "number": 68,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "min_mixer2_temp",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5466,7 +5466,7 @@
                 "number": 69,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "min_mixer3_temp",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5485,7 +5485,7 @@
                 "number": 70,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "min_mixer4_temp",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5504,7 +5504,7 @@
                 "number": 71,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "max_mixer1_temp",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5523,7 +5523,7 @@
                 "number": 72,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "max_mixer2_temp",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5542,7 +5542,7 @@
                 "number": 73,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "max_mixer3_temp",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5561,7 +5561,7 @@
                 "number": 74,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "max_mixer4_temp",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5580,7 +5580,7 @@
                 "number": 75,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "mixer1_room_therm",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5599,7 +5599,7 @@
                 "number": 76,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "mixer2_room_therm",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5618,7 +5618,7 @@
                 "number": 77,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "mixer3_room_therm",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5637,7 +5637,7 @@
                 "number": 78,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "mixer4_room_therm",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5656,7 +5656,7 @@
                 "number": 79,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "mixer1_weather_control",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 13,
                   "values": [
@@ -5685,7 +5685,7 @@
                 "number": 80,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "mixer2_weather_control",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 13,
                   "values": [
@@ -5714,7 +5714,7 @@
                 "number": 81,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "mixer3_weather_control",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 13,
                   "values": [
@@ -5743,7 +5743,7 @@
                 "number": 82,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "mixer4_weather_control",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 13,
                   "values": [
@@ -5772,7 +5772,7 @@
                 "number": 83,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "heating_curve_mixer_1",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5791,7 +5791,7 @@
                 "number": 84,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "heating_curve_mixer_2",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5810,7 +5810,7 @@
                 "number": 85,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "heating_curve_mixer_3",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5829,7 +5829,7 @@
                 "number": 86,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "heating_curve_mixer_4",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5848,7 +5848,7 @@
                 "number": 87,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "mixer1_support",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 14,
                   "values": [
@@ -5879,7 +5879,7 @@
                 "number": 88,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "mixer2_support",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 14,
                   "values": [
@@ -5910,7 +5910,7 @@
                 "number": 89,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "mixer3_support",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 14,
                   "values": [
@@ -5941,7 +5941,7 @@
                 "number": 90,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "mixer4_support",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 14,
                   "values": [
@@ -5972,7 +5972,7 @@
                 "number": 91,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "proportional_range",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -5991,7 +5991,7 @@
                 "number": 92,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "proportional_range",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6010,7 +6010,7 @@
                 "number": 93,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "proportional_range",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6029,7 +6029,7 @@
                 "number": 94,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "proportional_range",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6048,7 +6048,7 @@
                 "number": 95,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "integration_time_constant",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6067,7 +6067,7 @@
                 "number": 96,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "integration_time_constant",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6086,7 +6086,7 @@
                 "number": 97,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "integration_time_constant",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6105,7 +6105,7 @@
                 "number": 98,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "integration_time_constant",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6124,7 +6124,7 @@
                 "number": 99,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "off_by_thermostat",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 15,
                   "values": [
@@ -6153,7 +6153,7 @@
                 "number": 100,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "off_by_thermostat",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 15,
                   "values": [
@@ -6182,7 +6182,7 @@
                 "number": 101,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "off_by_thermostat",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 15,
                   "values": [
@@ -6211,7 +6211,7 @@
                 "number": 102,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "off_by_thermostat",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 15,
                   "values": [
@@ -6240,7 +6240,7 @@
                 "number": 103,
                 "pass_index": 0,
                 "unit_name": "sek.",
-                "key": "valve_full_opening_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6259,7 +6259,7 @@
                 "number": 104,
                 "pass_index": 0,
                 "unit_name": "sek.",
-                "key": "valve_full_opening_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6278,7 +6278,7 @@
                 "number": 105,
                 "pass_index": 0,
                 "unit_name": "sek.",
-                "key": "valve_full_opening_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6297,7 +6297,7 @@
                 "number": 106,
                 "pass_index": 0,
                 "unit_name": "sek.",
-                "key": "valve_full_opening_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6316,7 +6316,7 @@
                 "number": 107,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "mixer1_input_dead_zone",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6335,7 +6335,7 @@
                 "number": 108,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "mixer2_input_dead_zone",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6354,7 +6354,7 @@
                 "number": 109,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "mixer3_input_dead_zone",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6373,7 +6373,7 @@
                 "number": 110,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "mixer4_input_dead_zone",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6392,7 +6392,7 @@
                 "number": 111,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "weather_control_the_boiler",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 13,
                   "values": [
@@ -6421,7 +6421,7 @@
                 "number": 112,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "boiler_heating_curve",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6441,7 +6441,7 @@
                 "pass_index": 0,
                 "data_id": "113",
                 "unit_name": "\u00b0C",
-                "key": "boiler_cooling_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6461,7 +6461,7 @@
                 "pass_index": 0,
                 "data_id": "114",
                 "unit_name": "",
-                "key": "thermostat_select",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 16,
                   "values": [
@@ -6522,7 +6522,7 @@
                 "number": 115,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "thermostat_select",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 16,
                   "values": [
@@ -6583,7 +6583,7 @@
                 "number": 116,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "thermostat_select",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 16,
                   "values": [
@@ -6645,7 +6645,7 @@
                 "pass_index": 0,
                 "data_id": "117",
                 "unit_name": "",
-                "key": "thermostat_select",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 16,
                   "values": [
@@ -6707,7 +6707,7 @@
                 "pass_index": 0,
                 "data_id": "118",
                 "unit_name": "",
-                "key": "thermostat_select",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 16,
                   "values": [
@@ -6768,7 +6768,7 @@
                 "number": 119,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "circulating_pump_standstill_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6787,7 +6787,7 @@
                 "number": 120,
                 "pass_index": 0,
                 "unit_name": "sek.",
-                "key": "circulating_pump_operation_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6806,7 +6806,7 @@
                 "number": 121,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "curve_shift",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6825,7 +6825,7 @@
                 "number": 122,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "curve_translation",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6844,7 +6844,7 @@
                 "number": 123,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "curve_translation",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6863,7 +6863,7 @@
                 "number": 124,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "curve_translation",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6882,7 +6882,7 @@
                 "number": 125,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "curve_translation",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -6901,7 +6901,7 @@
                 "number": 126,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "room__temp_factor",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 16,
                   "values": [
@@ -6962,7 +6962,7 @@
                 "number": 127,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "room__temp_factor",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 16,
                   "values": [
@@ -7023,7 +7023,7 @@
                 "number": 128,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "room__temp_factor",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 16,
                   "values": [
@@ -7084,7 +7084,7 @@
                 "number": 129,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "room__temp_factor",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 16,
                   "values": [
@@ -7145,7 +7145,7 @@
                 "number": 130,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "room__temp_factor",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 16,
                   "values": [
@@ -7206,7 +7206,7 @@
                 "number": 131,
                 "pass_index": 0,
                 "unit_name": "sek.",
-                "key": "poker_cycle_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7225,7 +7225,7 @@
                 "number": 132,
                 "pass_index": 0,
                 "unit_name": "h.",
-                "key": "burner_cleaning",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7244,7 +7244,7 @@
                 "number": 133,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "stabilization_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7263,7 +7263,7 @@
                 "number": 134,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "burning_off_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7282,7 +7282,7 @@
                 "number": 135,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "air_flush_intensity",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7301,7 +7301,7 @@
                 "number": 136,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "buffer_support",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 17,
                   "values": [
@@ -7330,7 +7330,7 @@
                 "number": 137,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "loading_start_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7349,7 +7349,7 @@
                 "number": 138,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "loading_end_temperature",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7369,7 +7369,7 @@
                 "pass_index": 0,
                 "data_id": "139",
                 "unit_name": "%",
-                "key": "alarm_level",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7388,7 +7388,7 @@
                 "number": 140,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "no_fuel_detection_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7407,7 +7407,7 @@
                 "number": 141,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "on/off",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 19,
                   "values": [
@@ -7436,7 +7436,7 @@
                 "number": 142,
                 "pass_index": 0,
                 "unit_name": "sek.",
-                "key": "feeder_operat_time_2",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7456,7 +7456,7 @@
                 "pass_index": 0,
                 "data_id": "143",
                 "unit_name": "sek.",
-                "key": "feeder_interval_2",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7475,7 +7475,7 @@
                 "number": 144,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "reserve_boiler",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7494,7 +7494,7 @@
                 "number": 145,
                 "pass_index": 0,
                 "unit_name": "sek.",
-                "key": "airflow_operextend",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7513,7 +7513,7 @@
                 "number": 146,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "maxburner_temp",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7532,7 +7532,7 @@
                 "number": 147,
                 "pass_index": 0,
                 "unit_name": "\u00b0C",
-                "key": "extempwno_fuel",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7551,7 +7551,7 @@
                 "number": 148,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "hysteresis_function",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 20,
                   "values": [
@@ -7581,7 +7581,7 @@
                 "number": 149,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "boiler_lock_from_thermostate",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 21,
                   "values": [
@@ -7610,7 +7610,7 @@
                 "number": 150,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "thermostat_lock",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 22,
                   "values": [
@@ -7640,7 +7640,7 @@
                 "pass_index": 0,
                 "data_id": "151",
                 "unit_name": "",
-                "key": "boiler_pump_lock",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 23,
                   "values": [
@@ -7669,7 +7669,7 @@
                 "number": 152,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "work_on_time",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 24,
                   "values": [
@@ -7698,7 +7698,7 @@
                 "number": 153,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "operation_with_lambda_sensor",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 26,
                   "values": [
@@ -7727,7 +7727,7 @@
                 "number": 154,
                 "pass_index": 0,
                 "unit_name": "%",
-                "key": "feeder_lock",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7747,7 +7747,7 @@
                 "pass_index": 0,
                 "data_id": "155",
                 "unit_name": "%",
-                "key": "fuel_detection_oxygen",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7767,7 +7767,7 @@
                 "pass_index": 0,
                 "data_id": "156",
                 "unit_name": "min.",
-                "key": "fuel_detection_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7787,7 +7787,7 @@
                 "pass_index": 0,
                 "data_id": "157",
                 "unit_name": "r/min",
-                "key": "fan_rotation_detection",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7807,7 +7807,7 @@
                 "pass_index": 0,
                 "data_id": "158",
                 "unit_name": "",
-                "key": "feeder_sensor_mode",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 27,
                   "values": [
@@ -7837,7 +7837,7 @@
                 "pass_index": 0,
                 "data_id": "159",
                 "unit_name": "",
-                "key": "output_h1",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 28,
                   "values": [
@@ -7868,7 +7868,7 @@
                 "pass_index": 0,
                 "data_id": "160",
                 "unit_name": "",
-                "key": "output_h2_and_h3",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 28,
                   "values": [
@@ -7898,7 +7898,7 @@
                 "number": 161,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "preset_power",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 30,
                   "values": [
@@ -7928,7 +7928,7 @@
                 "number": 162,
                 "pass_index": 0,
                 "unit_name": "min.",
-                "key": "work_time",
+                "key": "**REDACTED**",
                 "locked": false,
                 "lock_index": null,
                 "lock_reason": null
@@ -7947,7 +7947,7 @@
                 "number": 163,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "show_advanced_setup",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 29,
                   "values": [
@@ -7976,7 +7976,7 @@
                 "number": 164,
                 "pass_index": 0,
                 "unit_name": "",
-                "key": "alarms",
+                "key": "**REDACTED**",
                 "enum": {
                   "id": 28,
                   "values": [
@@ -8407,7 +8407,7 @@
           "prodLogo": 2,
           "fuelConsumptionCalc": false,
           "regImgID": 2,
-          "settingsVer": 51054,
+          "settingsVer": 51318,
           "signal": "-50",
           "logFl": 0,
           "etConfDesc": null,
@@ -9058,16 +9058,16 @@
         "reg_params": {
           "pumpSolar": false,
           "lambdaLevel": 0,
-          "tempExternalSensor": -0.2747154235839844,
+          "tempExternalSensor": -1.0684547424316406,
           "thermostat": 1,
-          "mixerSetTemp3": 28,
+          "mixerSetTemp3": 29,
           "pumpCOWorks": true,
           "fan2Exhaust": false,
           "feederWorks": false,
           "feeder": false,
           "mixerTemp4": null,
           "mixerPumpWorks4": true,
-          "lambdaSet": 255,
+          "lambdaSet": 130,
           "mixerPumpWorks1": true,
           "mixerPumpWorks2": true,
           "mixerPumpWorks3": true,
@@ -9075,8 +9075,8 @@
           "statusCWU": 128,
           "blowFan2": false,
           "transmission": 9,
-          "tempCO": 37.57268524169922,
-          "fuelLevel": 93,
+          "tempCO": 45.417694091796875,
+          "fuelLevel": 100,
           "pumpCO": true,
           "contactGZCActive": false,
           "mixerTemp3": null,
@@ -9091,38 +9091,38 @@
           "pumpFireplaceWorks": false,
           "feederOuterWorks": false,
           "feederOuter": false,
-          "mixerTemp1": 33.642822265625,
-          "mixerSetTemp4": 28,
+          "mixerTemp1": 36.10415267944336,
+          "mixerSetTemp4": 29,
           "pumpCWUWorks": false,
           "feeder2AdditionalWorks": false,
           "pumpSolarWorks": false,
-          "mixerSetTemp1": 35,
+          "mixerSetTemp1": 36,
           "pumpCWU": true,
           "blowFan2Active": false,
-          "fan": false,
+          "fan": true,
           "mixerSetTemp2": 30,
           "lighter": false,
           "alarmOutput": true,
-          "tempCWU": 71.60476684570312,
+          "tempCWU": 70.97825622558594,
           "boilerPowerKW": null,
           "lambdaStatus": 1,
           "tempCWUSet": null,
           "contactGZC": false,
           "pumpCirculationWorks": false,
-          "boilerPower": 0,
+          "boilerPower": 30,
           "fuelStream": null,
           "lighterWorks": false,
-          "tempFlueGas": 27.914337158203125,
+          "tempFlueGas": 58.272804260253906,
           "fan2ExhaustWorks": false,
-          "mode": 2,
-          "tempFeeder": 23.476024627685547,
+          "mode": 3,
+          "tempFeeder": 23.839256286621094,
           "alarmOutputWorks": true,
-          "fanWorks": false,
-          "fanPower": 0.0,
+          "fanWorks": true,
+          "fanPower": 35.0,
           "feeder2Additional": false
         },
         "reg_params_data": {
-          "1536": false,
+          "1536": true,
           "1": false,
           "1538": false,
           "3": false,
@@ -9148,9 +9148,9 @@
           "23": 0,
           "24": 0,
           "1540": false,
-          "26": 23.476032257080078,
+          "26": 23.839256286621094,
           "27": null,
-          "28": -0.27398681640625,
+          "28": -1.0684547424316406,
           "29": 0.0,
           "30": null,
           "5": true,
@@ -9160,14 +9160,14 @@
           "35": 0,
           "36": 0,
           "6": true,
-          "1024": 37.60211944580078,
+          "1024": 45.417694091796875,
           "39": 0,
           "42": 0,
           "43": 0,
           "44": 0,
           "45": 0,
           "48": 0,
-          "8": 2832,
+          "8": 2811,
           "50": 0,
           "51": 128,
           "52": 0,
@@ -9179,25 +9179,25 @@
           "58": 10,
           "59": 8,
           "60": 0,
-          "10": 1704,
+          "10": 1964,
           "62": 0,
           "63": 0,
           "64": 10,
           "65": 10,
           "66": 0,
           "11": 207,
-          "1025": 71.58929443359375,
+          "1025": 70.97825622558594,
           "69": false,
           "70": false,
           "71": false,
           "72": true,
-          "12": 2257,
+          "12": 2218,
           "74": false,
           "75": true,
           "76": true,
           "77": false,
           "78": true,
-          "13": 680,
+          "13": 961,
           "80": true,
           "81": true,
           "82": true,
@@ -9214,8 +9214,8 @@
           "93": false,
           "94": false,
           "95": false,
-          "96": 128,
-          "16": 1581,
+          "96": 0,
+          "16": 1664,
           "98": false,
           "99": false,
           "2049": 0,
@@ -9256,7 +9256,7 @@
           "136": 3,
           "137": 2,
           "138": 7,
-          "139": 64,
+          "139": 43,
           "140": 3,
           "141": 0,
           "142": 0,
@@ -9272,9 +9272,9 @@
           "152": 130,
           "153": 0.0,
           "154": 0.0,
-          "155": 5826,
+          "155": 5827,
           "156": 5083,
-          "157": 4804,
+          "157": 4805,
           "1028": null,
           "159": 9699,
           "160": 127,
@@ -9282,7 +9282,7 @@
           "162": "0.0.0.0",
           "163": "0.0.0.0",
           "164": 0,
-          "165": "**REDACTED**",
+          "165": "10.10.1.77",
           "166": "255.255.255.0",
           "167": "10.10.1.1",
           "168": 1,
@@ -9290,35 +9290,35 @@
           "170": 80,
           "171": 1,
           "172": 9,
-          "173": "**REDACTED**",
+          "173": "Groznas_I",
           "91": false,
           "115": false,
           "31": null,
           "1029": null,
           "7": 0,
-          "1030": 27.94402313232422,
+          "1030": 58.272804260253906,
           "37": 0,
           "38": 0,
-          "1031": 33.642822265625,
+          "1031": 36.10415267944336,
           "1280": 47,
           "1281": 20,
           "1794": 30,
-          "1795": 60,
+          "1795": 35,
           "1798": true,
-          "1287": 35,
+          "1287": 36,
           "1288": 30,
-          "1289": 28,
-          "1290": 28,
+          "1289": 29,
+          "1290": 29,
           "131": 0,
-          "9": 1226,
+          "9": 1239,
           "1032": null,
           "49": 0,
-          "1792": 1,
+          "1792": 3,
           "55": 0,
           "1034": null,
           "143": 0,
           "2048": 0,
-          "97": 93,
+          "97": 100,
           "61": 0,
           "151": 1,
           "67": 0,

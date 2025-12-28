@@ -133,7 +133,17 @@ class EconetClient:
                         return None
 
                     data = await resp.json()
-                    _LOGGER.debug("Fetched data: %s", data)
+                    # Log summary only to avoid flooding logs with large JSON
+                    if isinstance(data, dict):
+                        data_keys = list(data.keys())
+                        data_size = len(data.get("data", [])) if "data" in data else 0
+                        _LOGGER.debug(
+                            "Fetched data: keys=%s, data_items=%d",
+                            data_keys,
+                            data_size,
+                        )
+                    else:
+                        _LOGGER.debug("Fetched data: type=%s", type(data).__name__)
                     return data
 
             except TimeoutError:
@@ -370,7 +380,10 @@ class Econet300Api:
             )
             if fresh_data:
                 self._cache.set(API_EDITABLE_PARAMS_LIMITS_DATA, fresh_data)
-                _LOGGER.debug("Successfully refreshed paramsEdits data: %s", fresh_data)
+                _LOGGER.debug(
+                    "Successfully refreshed paramsEdits data: %d params",
+                    len(fresh_data) if isinstance(fresh_data, dict) else 0,
+                )
             else:
                 _LOGGER.info("Failed to refresh paramsEdits data")
         except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
@@ -442,7 +455,10 @@ class Econet300Api:
             )
             return {}
         else:
-            _LOGGER.debug("Fetched regParamsData: %s", regParamsData)
+            _LOGGER.debug(
+                "Fetched regParamsData: %d params",
+                len(regParamsData) if isinstance(regParamsData, dict) else 0,
+            )
             return regParamsData
 
     async def fetch_param_edit_data(self):
@@ -467,23 +483,28 @@ class Econet300Api:
 
     async def fetch_reg_params(self) -> dict[str, Any] | None:
         """Fetch and return the regParams data from ip/econet/regParams endpoint."""
-        _LOGGER.info("Calling fetch_reg_params method")
+        _LOGGER.debug("Calling fetch_reg_params method")
         regParams = await self._fetch_api_data_by_key(
             API_REG_PARAMS_URI, API_REG_PARAMS_PARAM_DATA
         )
-        _LOGGER.debug("Fetched regParams data: %s", regParams)
-        _LOGGER.debug("Type of regParams: %s", type(regParams))
+        _LOGGER.debug(
+            "Fetched regParams: type=%s, count=%d",
+            type(regParams).__name__,
+            len(regParams) if isinstance(regParams, dict) else 0,
+        )
         return regParams
 
     async def fetch_sys_params(self) -> dict[str, Any] | None:
         """Fetch and return the regParam data from ip/econet/sysParams endpoint."""
         _LOGGER.debug(
-            "fetch_sys_params called: Fetching parameters for registry '%s' from host '%s'",
+            "fetch_sys_params called: Fetching parameters from host '%s'",
             self.host,
-            API_SYS_PARAMS_URI,
         )
         sysParams = await self._fetch_api_data_by_key(API_SYS_PARAMS_URI)
-        _LOGGER.debug("Fetched sysParams data: %s", sysParams)
+        _LOGGER.debug(
+            "Fetched sysParams: %d params",
+            len(sysParams) if isinstance(sysParams, dict) else 0,
+        )
         return sysParams
 
     async def _fetch_api_data_by_key(self, endpoint: str, data_key: str | None = None):
