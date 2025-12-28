@@ -5,18 +5,22 @@ Uses Home Assistant icon translation system via icons.json.
 """
 
 import logging
+import re
 from typing import Any
 
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
-from .common_functions import camel_to_snake
+from .common_functions import camel_to_snake, mixer_exists
 from .const import (
+    DEVICE_INFO_MANUFACTURER,
+    DEVICE_INFO_MODEL,
     DOMAIN,
     SELECT_KEY_GET_INDEX,
     SELECT_KEY_POST_INDEX,
@@ -291,7 +295,300 @@ class EconetSelect(EconetEntity, SelectEntity):
         raise HeaterModeSelectError(message)
 
 
-# Function removed - category support eliminated
+class EconetDynamicSelect(SelectEntity):
+    """Represents a dynamic ecoNET select entity from mergedData."""
+
+    _attr_has_entity_name = True
+
+    def __init__(
+        self,
+        entity_description: SelectEntityDescription,
+        coordinator: EconetDataCoordinator,
+        api: Econet300Api,
+        param_id: str,
+        param: dict,
+    ):
+        """Initialize a new dynamic ecoNET select entity."""
+        self.entity_description = entity_description
+        self.coordinator = coordinator
+        self.api = api
+        self._param_id = param_id
+        self._param = param
+        self._attr_current_option = None
+
+        # Get enum values
+        enum_data = param.get("enum", {})
+        self._enum_values = enum_data.get("values", [])
+        self._first_index = enum_data.get("first", 0)
+
+        # Set unique ID
+        self._attr_unique_id = f"econet300_select_{param_id}"
+
+        # Set initial state
+        self._update_state_from_param()
+
+    @property
+    def options(self) -> list[str]:
+        """Return the available options."""
+        return [v for v in self._enum_values if v]
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device info."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.api.uid)},
+            manufacturer=DEVICE_INFO_MANUFACTURER,
+            model=DEVICE_INFO_MODEL,
+            name=self.api.uid,
+        )
+
+    @property
+    def available(self) -> bool:
+        """Return if entity is available."""
+        return self.coordinator.last_update_success
+
+    @property
+    def icon(self) -> str | None:
+        """Return icon for entity."""
+        if self._is_parameter_locked():
+            return "mdi:lock"
+        return None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra state attributes."""
+        attrs: dict[str, Any] = {
+            "param_id": self._param_id,
+            "options": self._enum_values,
+        }
+        if self._is_parameter_locked():
+            attrs["locked"] = True
+            lock_reason = self._get_lock_reason()
+            if lock_reason:
+                attrs["lock_reason"] = lock_reason
+        return attrs
+
+    def _update_state_from_param(self) -> None:
+        """Update state from parameter value."""
+        if self.coordinator.data is None:
+            return
+
+        merged_data = self.coordinator.data.get("mergedData")
+        if not merged_data:
+            return
+
+        parameters = merged_data.get("parameters", {})
+        param_data = parameters.get(self._param_id)
+        if param_data:
+            value = param_data.get("value")
+            if value is not None:
+                # Convert numeric value to option string
+                index = int(value) - self._first_index
+                if 0 <= index < len(self._enum_values):
+                    self._attr_current_option = self._enum_values[index]
+
+    def _is_parameter_locked(self) -> bool:
+        """Check if the parameter is locked."""
+        if self.coordinator.data is None:
+            return False
+
+        merged_data = self.coordinator.data.get("mergedData")
+        if not merged_data:
+            return False
+
+        parameters = merged_data.get("parameters", {})
+        param_data = parameters.get(self._param_id)
+        if param_data:
+            return param_data.get("locked", False)
+        return False
+
+    def _get_lock_reason(self) -> str | None:
+        """Get the lock reason for this parameter."""
+        if self.coordinator.data is None:
+            return None
+
+        merged_data = self.coordinator.data.get("mergedData")
+        if not merged_data:
+            return None
+
+        parameters = merged_data.get("parameters", {})
+        param_data = parameters.get(self._param_id)
+        if param_data:
+            return param_data.get("lock_reason")
+        return None
+
+    async def async_added_to_hass(self) -> None:
+        """Handle entity added to Home Assistant."""
+        self._update_state_from_param()
+        self.async_on_remove(
+            self.coordinator.async_add_listener(self._handle_coordinator_update)
+        )
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from coordinator."""
+        self._update_state_from_param()
+        self.async_write_ha_state()
+
+    async def async_select_option(self, option: str) -> None:
+        """Change the selected option."""
+        if self._is_parameter_locked():
+            lock_reason = self._get_lock_reason() or "Parameter is locked"
+            _LOGGER.warning(
+                "Cannot change locked select %s: %s",
+                self.entity_description.key,
+                lock_reason,
+            )
+            self._raise_select_error(f"Select is locked: {lock_reason}")
+
+        try:
+            # Convert option to numeric value
+            if option in self._enum_values:
+                value = self._enum_values.index(option) + self._first_index
+            else:
+                self._raise_select_error(f"Invalid option: {option}")
+
+            success = await self.api.set_param(self._param_id, value)
+            if success:
+                self._attr_current_option = option
+                self.async_write_ha_state()
+                _LOGGER.info(
+                    "Select %s changed to %s",
+                    self.entity_description.key,
+                    option,
+                )
+            else:
+                self._raise_select_error(
+                    f"Failed to set {self.entity_description.name}"
+                )
+        except HomeAssistantError:
+            raise
+        except Exception as e:
+            _LOGGER.error(
+                "Failed to change select %s: %s", self.entity_description.key, e
+            )
+            raise HomeAssistantError(f"Failed to change select: {e}") from e
+
+    @staticmethod
+    def _raise_select_error(message: str) -> None:
+        """Raise a HomeAssistantError with the given message."""
+        raise HomeAssistantError(message)
+
+
+def should_be_select_entity(param: dict) -> bool:
+    """Check if a parameter should be a select entity.
+
+    Select entities are parameters with 3+ enum values,
+    or 2 values that are NOT On/Off type.
+    """
+    if "enum" not in param:
+        return False
+
+    enum_data = param.get("enum", {})
+    values = enum_data.get("values", [])
+
+    # Filter out empty values
+    non_empty_values = [v for v in values if v]
+
+    # Must have at least 2 options
+    if len(non_empty_values) < 2:
+        return False
+
+    # If 3+ options, it's definitely a select
+    if len(non_empty_values) >= 3:
+        return True
+
+    # If exactly 2 options, check if NOT On/Off type (those are switches)
+    if len(non_empty_values) == 2:
+        values_upper = [v.upper() for v in non_empty_values]
+        on_off_patterns = [
+            {"OFF", "ON"},
+            {"0", "1"},
+            {"FALSE", "TRUE"},
+            {"NO", "YES"},
+            {"DISABLED", "ENABLED"},
+        ]
+
+        for pattern in on_off_patterns:
+            if set(values_upper) == pattern:
+                return False  # It's a switch, not a select
+
+        # Check for empty + something pattern (calibration toggle = switch)
+        if values[0] == "" and values[1]:
+            return False
+
+        # 2 options that are not On/Off = select
+        return True
+
+    return False
+
+
+def create_dynamic_selects(
+    coordinator: EconetDataCoordinator,
+    api: Econet300Api,
+) -> list[SelectEntity]:
+    """Create dynamic select entities from mergedData."""
+    entities: list[SelectEntity] = []
+
+    if coordinator.data is None:
+        _LOGGER.debug("No coordinator data for dynamic selects")
+        return entities
+
+    merged_data = coordinator.data.get("mergedData")
+    if not merged_data:
+        _LOGGER.debug("No mergedData for dynamic selects")
+        return entities
+
+    parameters = merged_data.get("parameters", {})
+    _LOGGER.debug("Creating dynamic selects from %d parameters", len(parameters))
+
+    for param_id, param in parameters.items():
+        if not should_be_select_entity(param):
+            continue
+
+        # Check for mixer-related entities and skip non-existent mixers
+        param_name = param.get("name", f"Parameter {param_id}")
+        param_key = param.get("key", f"param_{param_id}")
+
+        # Check if mixer-related and if mixer exists
+        if "mixer" in param_name.lower() or "mixer" in param_key.lower():
+            mixer_match = re.search(r"mixer\s*(\d+)", param_name.lower())
+            if mixer_match:
+                mixer_num = int(mixer_match.group(1))
+                if not mixer_exists(coordinator.data, mixer_num):
+                    _LOGGER.debug(
+                        "Skipping select %s - mixer %d not connected",
+                        param_name,
+                        mixer_num,
+                    )
+                    continue
+
+        # Create entity key
+        entity_key = param.get("key") or camel_to_snake(param_name)
+
+        entity_description = SelectEntityDescription(
+            key=entity_key,
+            name=param_name,
+            translation_key=entity_key,
+        )
+
+        entity = EconetDynamicSelect(
+            entity_description,
+            coordinator,
+            api,
+            param_id,
+            param,
+        )
+
+        entities.append(entity)
+        _LOGGER.debug(
+            "Created dynamic select: %s (param_id=%s, values=%s)",
+            param_name,
+            param_id,
+            param.get("enum", {}).get("values", []),
+        )
+
+    return entities
 
 
 def get_select_option_name(select_key: str, numeric_value: int) -> str | None:
@@ -377,7 +674,10 @@ async def async_setup_entry(
 
     _LOGGER.info("Created %d static select entities", len(entities))
 
-    # Dynamic select entities removed - category support eliminated
+    # Create dynamic select entities from mergedData
+    dynamic_selects = create_dynamic_selects(coordinator, api)
+    entities.extend(dynamic_selects)
+    _LOGGER.info("Created %d dynamic select entities", len(dynamic_selects))
 
     _LOGGER.info("Adding %d total select entities", len(entities))
     async_add_entities(entities)

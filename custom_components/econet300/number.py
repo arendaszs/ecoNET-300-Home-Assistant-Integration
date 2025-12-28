@@ -25,8 +25,6 @@ from .common import Econet300Api, EconetDataCoordinator, skip_params_edits
 from .common_functions import (
     camel_to_snake,
     extract_device_group_from_name,
-    get_lock_reason,
-    is_parameter_locked,
     mixer_exists,
     requires_service_password,
     validate_parameter_data,
@@ -958,7 +956,7 @@ def create_dynamic_number_entity_description(
         native_min_value=min_value,
         native_max_value=max_value,
         native_step=step,
-        entity_category=EntityCategory.CONFIG,
+        entity_category=EntityCategory.CONFIG,  # All dynamic entities in Configuration
         param_id=param_id,  # Store original param_id for mergedData lookup
     )
 
@@ -1171,16 +1169,6 @@ def _create_dynamic_entity_from_param(
         _LOGGER.debug(
             "Skipping parameter %s - already created as basic NUMBER_MAP entity",
             param_id,
-        )
-        return None
-
-    # Skip locked parameters - they should be read-only sensors instead
-    if is_parameter_locked(param):
-        lock_reason = get_lock_reason(param) or "Parameter is locked"
-        _LOGGER.debug(
-            "Skipping locked parameter %s for number entity (reason: %s) - should be sensor",
-            param_id,
-            lock_reason,
         )
         return None
 
