@@ -29,6 +29,7 @@ class EconetEntity(CoordinatorEntity):
     """Represents EconetEntity."""
 
     api: Econet300Api
+    _attr_has_entity_name = True  # Required for icon translations from icons.json
     # Note: entity_description type is defined by child classes (NumberEntity, SensorEntity, etc.)
     # to avoid MRO conflicts when multiple inheritance is used
 
@@ -36,11 +37,6 @@ class EconetEntity(CoordinatorEntity):
         """Initialize the EconetEntity."""
         super().__init__(coordinator)
         self.api = api
-
-    @property
-    def has_entity_name(self):
-        """Return if the name of the entity is describing only the entity itself."""
-        return True
 
     @property
     def unique_id(self) -> str | None:
