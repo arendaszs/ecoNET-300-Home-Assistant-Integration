@@ -535,6 +535,9 @@ class MixerNumber(MixerEntity, NumberEntity):
 
     entity_description: EconetNumberEntityDescription
 
+    # CONFIG entities are disabled by default - users can enable the ones they need
+    _attr_entity_registry_enabled_default = False
+
     def __init__(
         self,
         description: EconetNumberEntityDescription,
