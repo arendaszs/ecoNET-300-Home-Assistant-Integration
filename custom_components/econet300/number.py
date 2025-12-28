@@ -189,14 +189,16 @@ class EconetNumber(EconetEntity, NumberEntity):
         if not merged_parameters:
             return False
 
-        # Try to find parameter by key (string or int)
-        entity_key = self.entity_description.key
+        # Try param_id first (for dynamic entities), then entity key
+        param_id = getattr(self.entity_description, "param_id", None)
         param_data = None
 
-        if entity_key in merged_parameters:
-            param_data = merged_parameters[entity_key]
-        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
-            param_data = merged_parameters[int(entity_key)]
+        if param_id and param_id in merged_parameters:
+            param_data = merged_parameters[param_id]
+        elif param_id and str(param_id).isdigit():
+            param_data = merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
 
         if param_data:
             return param_data.get("locked", False)
@@ -221,13 +223,16 @@ class EconetNumber(EconetEntity, NumberEntity):
         if not merged_parameters:
             return None
 
-        entity_key = self.entity_description.key
+        # Try param_id first (for dynamic entities), then entity key
+        param_id = getattr(self.entity_description, "param_id", None)
         param_data = None
 
-        if entity_key in merged_parameters:
-            param_data = merged_parameters[entity_key]
-        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
-            param_data = merged_parameters[int(entity_key)]
+        if param_id and param_id in merged_parameters:
+            param_data = merged_parameters[param_id]
+        elif param_id and str(param_id).isdigit():
+            param_data = merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
 
         if param_data:
             return param_data.get("lock_reason")
@@ -397,14 +402,16 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
         if not merged_parameters:
             return False
 
-        # Try to find parameter by key (string or int)
-        entity_key = self.entity_description.key
+        # Try param_id first (for dynamic entities), then entity key
+        param_id = getattr(self.entity_description, "param_id", None)
         param_data = None
 
-        if entity_key in merged_parameters:
-            param_data = merged_parameters[entity_key]
-        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
-            param_data = merged_parameters[int(entity_key)]
+        if param_id and param_id in merged_parameters:
+            param_data = merged_parameters[param_id]
+        elif param_id and str(param_id).isdigit():
+            param_data = merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
 
         if param_data:
             return param_data.get("locked", False)
@@ -429,13 +436,16 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
         if not merged_parameters:
             return None
 
-        entity_key = self.entity_description.key
+        # Try param_id first (for dynamic entities), then entity key
+        param_id = getattr(self.entity_description, "param_id", None)
         param_data = None
 
-        if entity_key in merged_parameters:
-            param_data = merged_parameters[entity_key]
-        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
-            param_data = merged_parameters[int(entity_key)]
+        if param_id and param_id in merged_parameters:
+            param_data = merged_parameters[param_id]
+        elif param_id and str(param_id).isdigit():
+            param_data = merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
 
         if param_data:
             return param_data.get("lock_reason")
@@ -639,14 +649,16 @@ class MixerNumber(MixerEntity, NumberEntity):
         if not merged_parameters:
             return False
 
-        # Try to find parameter by key (string or int)
-        entity_key = self.entity_description.key
+        # Try param_id first (for dynamic entities), then entity key
+        param_id = getattr(self.entity_description, "param_id", None)
         param_data = None
 
-        if entity_key in merged_parameters:
-            param_data = merged_parameters[entity_key]
-        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
-            param_data = merged_parameters[int(entity_key)]
+        if param_id and param_id in merged_parameters:
+            param_data = merged_parameters[param_id]
+        elif param_id and str(param_id).isdigit():
+            param_data = merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
 
         if param_data:
             return param_data.get("locked", False)
@@ -671,13 +683,16 @@ class MixerNumber(MixerEntity, NumberEntity):
         if not merged_parameters:
             return None
 
-        entity_key = self.entity_description.key
+        # Try param_id first (for dynamic entities), then entity key
+        param_id = getattr(self.entity_description, "param_id", None)
         param_data = None
 
-        if entity_key in merged_parameters:
-            param_data = merged_parameters[entity_key]
-        elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
-            param_data = merged_parameters[int(entity_key)]
+        if param_id and param_id in merged_parameters:
+            param_data = merged_parameters[param_id]
+        elif param_id and str(param_id).isdigit():
+            param_data = merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
 
         if param_data:
             return param_data.get("lock_reason")
