@@ -60,6 +60,9 @@ class EconetNumberEntityDescription(NumberEntityDescription):
     """Describes ecoNET number entity."""
 
     entity_category: EntityCategory | None = EntityCategory.CONFIG
+    param_id: str | None = (
+        None  # Original parameter ID for dynamic entities (lookup in mergedData)
+    )
 
 
 class EconetNumber(EconetEntity, NumberEntity):
@@ -956,6 +959,7 @@ def create_dynamic_number_entity_description(
         native_max_value=max_value,
         native_step=step,
         entity_category=EntityCategory.CONFIG,
+        param_id=param_id,  # Store original param_id for mergedData lookup
     )
 
 
@@ -1428,12 +1432,14 @@ async def async_setup_entry(
     basic_entities = await _create_basic_entities(api, coordinator)
     entities.extend(basic_entities)
 
-    # Try to get merged parameter data for dynamic entity creation
-    try:
-        merged_data = await api.fetch_merged_rm_data_with_names_descs_and_structure()
-    except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
-        _LOGGER.warning("Failed to fetch merged parameter data: %s", e)
-        merged_data = None
+    # Get merged parameter data from coordinator (already fetched during update)
+    merged_data = None
+    if coordinator.data is not None:
+        merged_data = coordinator.data.get("mergedData")
+        _LOGGER.debug(
+            "Using coordinator cached mergedData: %s parameters",
+            len(merged_data.get("parameters", {})) if merged_data else 0,
+        )
 
     if merged_data and "parameters" in merged_data:
         # Create dynamic entities from merged data

@@ -90,42 +90,42 @@ class EconetEntity(CoordinatorEntity):
             merged_data = {}
             _LOGGER.debug("mergedData was None, defaulting to empty dict")
 
-        # Check if this is a dynamic entity (parameter ID as key)
-        is_dynamic_entity = (
-            isinstance(self.entity_description.key, int)
-            or str(self.entity_description.key).isdigit()
-        )
+        # Check if this is a dynamic entity - has param_id in description
+        param_id = getattr(self.entity_description, "param_id", None)
+        is_dynamic_entity = param_id is not None
         merged_parameters = merged_data.get("parameters", {}) if merged_data else {}
 
         _LOGGER.debug(
-            "Looking for key '%s' in data sources - sysParams: %s, regParams: %s, paramsEdits: %s, mergedData: %s, is_dynamic: %s",
+            "Looking for key '%s' (param_id=%s) in data sources - sysParams: %s, regParams: %s, paramsEdits: %s, is_dynamic: %s",
             self.entity_description.key,
+            param_id,
             self.entity_description.key in sys_params,
             self.entity_description.key in reg_params,
             self.entity_description.key in params_edits,
-            self.entity_description.key in merged_parameters,
             is_dynamic_entity,
         )
 
         value = None
-        if is_dynamic_entity:
-            # For dynamic entities, try both string and integer keys
-            entity_key = self.entity_description.key
+        if is_dynamic_entity and param_id:
+            # For dynamic entities, use param_id to look up in mergedData
             param_data = None
 
-            # Try key as-is first
-            if entity_key in merged_parameters:
-                param_data = merged_parameters[entity_key]
-            # Try string version of key (handles int key with string dict)
-            elif str(entity_key) in merged_parameters:
-                param_data = merged_parameters[str(entity_key)]
-            # Try integer version if key is a digit string (handles string key with int dict)
-            elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
-                param_data = merged_parameters[int(entity_key)]
+            # Try param_id as-is first (string)
+            if param_id in merged_parameters:
+                param_data = merged_parameters[param_id]
+            # Try string version of param_id
+            elif str(param_id) in merged_parameters:
+                param_data = merged_parameters[str(param_id)]
 
             if param_data:
                 value = param_data.get("value")
-                _LOGGER.debug("Found dynamic entity value in mergedData: %s", value)
+                _LOGGER.debug(
+                    "Found dynamic entity value in mergedData[%s]: %s", param_id, value
+                )
+            else:
+                _LOGGER.debug(
+                    "Dynamic entity param_id %s not found in mergedData", param_id
+                )
         elif self.entity_description.key in sys_params:
             value = sys_params[self.entity_description.key]
             _LOGGER.debug("Found in sysParams: %s", value)
@@ -215,31 +215,34 @@ class EconetEntity(CoordinatorEntity):
         expected_key = self.entity_description.key
         _LOGGER.debug("Expected key: %s", expected_key)
 
-        # Check if this is a dynamic entity (parameter ID as key)
-        is_dynamic_entity = isinstance(expected_key, int) or str(expected_key).isdigit()
+        # Check if this is a dynamic entity - has param_id in description
+        param_id = getattr(self.entity_description, "param_id", None)
+        is_dynamic_entity = param_id is not None
         merged_parameters = merged_data.get("parameters", {}) if merged_data else {}
 
         # Retrieve the value from appropriate data source
         value = None
-        if is_dynamic_entity:
-            # For dynamic entities, try both string and integer keys
-            entity_key = self.entity_description.key
+        if is_dynamic_entity and param_id:
+            # For dynamic entities, use param_id to look up in mergedData
             param_data = None
 
-            # Try key as-is first
-            if entity_key in merged_parameters:
-                param_data = merged_parameters[entity_key]
-            # Try string version of key (handles int key with string dict)
-            elif str(entity_key) in merged_parameters:
-                param_data = merged_parameters[str(entity_key)]
-            # Try integer version if key is a digit string (handles string key with int dict)
-            elif str(entity_key).isdigit() and int(entity_key) in merged_parameters:
-                param_data = merged_parameters[int(entity_key)]
+            # Try param_id as-is first (string)
+            if param_id in merged_parameters:
+                param_data = merged_parameters[param_id]
+            # Try string version of param_id
+            elif str(param_id) in merged_parameters:
+                param_data = merged_parameters[str(param_id)]
 
             if param_data:
                 value = param_data.get("value")
                 _LOGGER.debug(
-                    "Found dynamic entity initial value in mergedData: %s", value
+                    "Found dynamic entity initial value in mergedData[%s]: %s",
+                    param_id,
+                    value,
+                )
+            else:
+                _LOGGER.debug(
+                    "Dynamic entity param_id %s not found in mergedData", param_id
                 )
         else:
             # For legacy entities, use standard logic

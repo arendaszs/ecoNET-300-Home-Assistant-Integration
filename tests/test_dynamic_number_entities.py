@@ -41,10 +41,15 @@ class TestDynamicNumberEntities:
         return api
 
     @pytest.fixture
-    def mock_coordinator(self):
-        """Create a mock coordinator."""
+    def mock_coordinator(self, mock_merged_data):
+        """Create a mock coordinator with merged data."""
         coordinator = MagicMock(spec=EconetDataCoordinator)
-        coordinator.data = {"sysParams": {"controllerId": "ecoMAX810P-L"}}
+        coordinator.data = {
+            "sysParams": {"controllerId": "ecoMAX810P-L"},
+            "regParams": {},
+            "paramsEdits": {},
+            "mergedData": mock_merged_data,
+        }
         return coordinator
 
     def test_should_be_number_entity(self):
@@ -160,9 +165,7 @@ class TestDynamicNumberEntities:
         assert len(entities) >= 25  # At least 25 number entities should be created
 
     @pytest.mark.asyncio
-    async def test_fallback_to_legacy_method(
-        self, hass, mock_config_entry, mock_coordinator
-    ):
+    async def test_fallback_to_legacy_method(self, hass, mock_config_entry):
         """Test fallback to legacy method when merged data is unavailable."""
 
         # Create API that returns None for merged data
@@ -171,12 +174,21 @@ class TestDynamicNumberEntities:
             return_value=None
         )
 
+        # Create coordinator WITHOUT mergedData to trigger fallback
+        mock_coordinator_no_merged = MagicMock(spec=EconetDataCoordinator)
+        mock_coordinator_no_merged.data = {
+            "sysParams": {"controllerId": "ecoMAX810P-L"},
+            "regParams": {},
+            "paramsEdits": {},
+            "mergedData": None,  # No merged data triggers legacy fallback
+        }
+
         # Mock the hass.data structure
         hass.data = {
             "econet300": {
                 mock_config_entry.entry_id: {
                     "api": mock_api,
-                    "coordinator": mock_coordinator,
+                    "coordinator": mock_coordinator_no_merged,
                 }
             }
         }
