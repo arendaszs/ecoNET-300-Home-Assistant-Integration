@@ -422,6 +422,17 @@ def create_dynamic_switches(
         if key_totals.get(base_key, 1) > 1:
             key_counts[base_key] = key_counts.get(base_key, 0) + 1
             sequence_num = key_counts[base_key]
+
+            # For mixer-related duplicates, validate mixer exists before creating
+            if description and "mixer" in description.lower():
+                if not mixer_exists(coordinator.data, sequence_num):
+                    _LOGGER.debug(
+                        "Skipping switch %s (Mixer %d) - mixer not connected",
+                        param_name,
+                        sequence_num,
+                    )
+                    continue
+
             entity_key = get_duplicate_entity_key(base_key, sequence_num, description)
             display_name = get_duplicate_display_name(
                 param_name, sequence_num, description
