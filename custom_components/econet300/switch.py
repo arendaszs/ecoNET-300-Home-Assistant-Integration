@@ -503,13 +503,11 @@ async def async_setup_entry(
     entities.append(boiler_switch)
     _LOGGER.info("Created 1 static switch entity (boiler control)")
 
-    # Set initial state from coordinator data (without calling async_write_ha_state
-    # since entity is not yet added to HA - the state will be synced on first update)
+    # Update the boiler switch state based on current data (mode is in regParams)
     reg_params = coordinator.data.get("regParams", {}) if coordinator.data else {}
     if isinstance(reg_params, dict) and "mode" in reg_params:
         mode_value = reg_params["mode"]
-        # Set state directly without triggering HA state write
-        boiler_switch._attr_is_on = mode_value != 0  # noqa: SLF001
+        boiler_switch.update_state_from_mode(mode_value)
 
     # Create dynamic switch entities from mergedData
     dynamic_switches = create_dynamic_switches(coordinator, api)

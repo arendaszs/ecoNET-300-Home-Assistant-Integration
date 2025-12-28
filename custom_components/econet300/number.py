@@ -1145,7 +1145,7 @@ def create_dynamic_number_entity_description(
     translation_key = param_key
 
     # Generate entity key - use override if provided (for duplicates)
-    entity_key = entity_key_override or param_key
+    entity_key = entity_key_override or f"basic_{param_key}"
 
     # Use display_name override if provided (for duplicates)
     name = display_name or param.get("name", f"Parameter {param_id}")
@@ -1518,9 +1518,7 @@ async def _create_dynamic_entities_from_merged_data(
             display_name = get_duplicate_display_name(
                 param_name, sequence_num, description
             )
-            entity_key_override = get_duplicate_entity_key(
-                param_key, sequence_num, description
-            )
+            entity_key_override = f"basic_{get_duplicate_entity_key(param_key, sequence_num, description)}"
         else:
             sequence_num = None
 
