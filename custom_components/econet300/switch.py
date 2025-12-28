@@ -8,6 +8,7 @@ from typing import Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -50,8 +51,9 @@ class EconetSwitch(EconetEntity, SwitchEntity):
 
     def _sync_state(self, value: Any) -> None:
         """Synchronize the state of the switch entity."""
-        # Use mode parameter: 0 = OFF, anything else = ON
-        mode_value = self.coordinator.data.get("mode", 0)
+        # Use mode parameter from regParams: 0 = OFF, anything else = ON
+        reg_params = self.coordinator.data.get("regParams", {})
+        mode_value = reg_params.get("mode", 0) if isinstance(reg_params, dict) else 0
         self._attr_is_on = mode_value != 0
         self.async_write_ha_state()
 
@@ -103,8 +105,16 @@ class EconetDynamicSwitch(SwitchEntity):
 
     _attr_has_entity_name = True
 
-    # CONFIG entities are disabled by default - users can enable the ones they need
-    _attr_entity_registry_enabled_default = False
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Switches without category are also disabled (they are config controls).
+        """
+        entity_category = getattr(self.entity_description, "entity_category", None)
+        # Switches are disabled by default unless explicitly not CONFIG
+        return entity_category is not None and entity_category != EntityCategory.CONFIG
 
     def __init__(
         self,
@@ -478,9 +488,10 @@ async def async_setup_entry(
     entities.append(boiler_switch)
     _LOGGER.info("Created 1 static switch entity (boiler control)")
 
-    # Update the boiler switch state based on current data
-    if coordinator.data and "mode" in coordinator.data:
-        mode_value = coordinator.data["mode"]
+    # Update the boiler switch state based on current data (mode is in regParams)
+    reg_params = coordinator.data.get("regParams", {}) if coordinator.data else {}
+    if isinstance(reg_params, dict) and "mode" in reg_params:
+        mode_value = reg_params["mode"]
         boiler_switch.update_state_from_mode(mode_value)
 
     # Create dynamic switch entities from mergedData
