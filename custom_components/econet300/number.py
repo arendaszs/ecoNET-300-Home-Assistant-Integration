@@ -1255,10 +1255,14 @@ def _create_dynamic_entity_from_param(
         return None
 
     # Skip basic parameters (already created from NUMBER_MAP)
-    if param_id in basic_param_ids:
+    # Compare using data_id which maps to regParams keys (e.g., "1280", "1281")
+    # Note: param_id is an array index ("0", "1", etc.), not a regParams key
+    param_data_id = param.get("data_id")
+    if param_data_id and param_data_id in basic_param_ids:
         _LOGGER.debug(
-            "Skipping parameter %s - already created as basic NUMBER_MAP entity",
+            "Skipping parameter %s (data_id=%s) - already created as basic NUMBER_MAP entity",
             param_id,
+            param_data_id,
         )
         return None
 
@@ -1377,7 +1381,9 @@ async def _create_dynamic_entities_from_merged_data(
     for param_id, param in merged_data["parameters"].items():
         if not should_be_number_entity(param):
             continue
-        if param_id in basic_param_ids:
+        # Skip if data_id matches a NUMBER_MAP key (regParams ID)
+        param_data_id = param.get("data_id")
+        if param_data_id and param_data_id in basic_param_ids:
             continue
         param_key = param.get("key", f"parameter_{param_id}")
         key_totals[param_key] = key_totals.get(param_key, 0) + 1
