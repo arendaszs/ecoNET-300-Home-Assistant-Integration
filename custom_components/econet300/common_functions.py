@@ -300,15 +300,20 @@ def should_be_switch_entity(param: dict) -> bool:
     # Use min/max to determine actual number of options (more reliable)
     minv = param.get("minv")
     maxv = param.get("maxv")
+    num_options = None
+
     if minv is not None and maxv is not None:
         try:
             num_options = int(maxv) - int(minv) + 1
-            # Must have exactly 2 options
-            if num_options != 2:
-                return False
         except (ValueError, TypeError):
-            pass
-    # Fallback: require exactly 2 enum values when min/max unavailable
+            num_options = None
+
+    # Use calculated num_options if available
+    if num_options is not None:
+        # Must have exactly 2 options
+        if num_options != 2:
+            return False
+    # Fallback: require exactly 2 enum values when min/max unavailable or invalid
     # This prevents 3+ option enums (e.g., ["off", "on", "auto"]) from being
     # misclassified as switches just because their first 2 values match a binary pattern
     elif len(enum_values) != 2:
