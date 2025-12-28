@@ -156,17 +156,6 @@ class InformationDynamicSensor(EconetEntity, SensorEntity):
 
     entity_description: EconetSensorEntityDescription
 
-    @property
-    def entity_registry_enabled_default(self) -> bool:
-        """Return if entity should be enabled by default.
-
-        CONFIG category entities are disabled by default.
-        Other entities (DIAGNOSTIC or no category) are enabled.
-        Sensors are typically read-only data, so they're enabled by default.
-        """
-        entity_category = getattr(self.entity_description, "entity_category", None)
-        return entity_category != EntityCategory.CONFIG
-
     def __init__(
         self,
         entity_description: EconetSensorEntityDescription,
@@ -187,6 +176,14 @@ class InformationDynamicSensor(EconetEntity, SensorEntity):
         self.api = api
         self._param_number = param_number
         self._attr_native_value = None
+
+        # Sensors are typically read-only data, so enable by default
+        # Only disable if explicitly marked as CONFIG category
+        entity_category = getattr(entity_description, "entity_category", None)
+        self._attr_entity_registry_enabled_default = (
+            entity_category != EntityCategory.CONFIG
+        )
+
         super().__init__(coordinator, api)
 
     def _sync_state(self, value) -> None:
