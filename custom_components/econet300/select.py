@@ -361,6 +361,10 @@ class EconetDynamicSelect(SelectEntity):
             "param_id": self._param_id,
             "options": self._enum_values,
         }
+        # Add description from API to help users understand the parameter
+        description = self._param.get("description")
+        if description:
+            attrs["description"] = description
         if self._is_parameter_locked():
             attrs["locked"] = True
             lock_reason = self._get_lock_reason()

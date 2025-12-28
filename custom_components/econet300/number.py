@@ -231,6 +231,40 @@ class EconetNumber(EconetEntity, NumberEntity):
 
         return None
 
+    def _get_description(self) -> str | None:
+        """Get the description for the parameter from mergedData.
+
+        Returns:
+            Description string if available, None otherwise
+
+        """
+        if self.coordinator.data is None:
+            return None
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return None
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return None
+
+        # Try param_id first (for dynamic entities), then entity key
+        param_id = getattr(self.entity_description, "param_id", None)
+        param_data = None
+
+        if param_id and param_id in merged_parameters:
+            param_data = merged_parameters[param_id]
+        elif param_id and str(param_id).isdigit():
+            param_data = merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
+
+        if param_data:
+            return param_data.get("description")
+
+        return None
+
     @property
     def icon(self) -> str | None:
         """Return icon for entity."""
@@ -242,6 +276,10 @@ class EconetNumber(EconetEntity, NumberEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return extra state attributes including lock information."""
         attrs: dict[str, Any] = {}
+        # Add description from API to help users understand the parameter
+        description = self._get_description()
+        if description:
+            attrs["description"] = description
         if self._is_parameter_locked():
             attrs["locked"] = True
             lock_reason = self._get_lock_reason()
@@ -389,6 +427,34 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
 
         return None
 
+    def _get_description(self) -> str | None:
+        """Get the description for the parameter from mergedData."""
+        if self.coordinator.data is None:
+            return None
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return None
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return None
+
+        param_id = getattr(self.entity_description, "param_id", None)
+        param_data = None
+
+        if param_id and param_id in merged_parameters:
+            param_data = merged_parameters[param_id]
+        elif param_id and str(param_id).isdigit():
+            param_data = merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
+
+        if param_data:
+            return param_data.get("description")
+
+        return None
+
     @property
     def icon(self) -> str | None:
         """Return icon for entity."""
@@ -400,6 +466,9 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return extra state attributes including lock information."""
         attrs: dict[str, Any] = {}
+        description = self._get_description()
+        if description:
+            attrs["description"] = description
         if self._is_parameter_locked():
             attrs["locked"] = True
             lock_reason = self._get_lock_reason()
@@ -600,6 +669,34 @@ class MixerNumber(MixerEntity, NumberEntity):
 
         return None
 
+    def _get_description(self) -> str | None:
+        """Get the description for the parameter from mergedData."""
+        if self.coordinator.data is None:
+            return None
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return None
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return None
+
+        param_id = getattr(self.entity_description, "param_id", None)
+        param_data = None
+
+        if param_id and param_id in merged_parameters:
+            param_data = merged_parameters[param_id]
+        elif param_id and str(param_id).isdigit():
+            param_data = merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
+
+        if param_data:
+            return param_data.get("description")
+
+        return None
+
     @property
     def icon(self) -> str | None:
         """Return icon for entity."""
@@ -611,6 +708,9 @@ class MixerNumber(MixerEntity, NumberEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return extra state attributes including lock information."""
         attrs: dict[str, Any] = {}
+        description = self._get_description()
+        if description:
+            attrs["description"] = description
         if self._is_parameter_locked():
             attrs["locked"] = True
             lock_reason = self._get_lock_reason()
