@@ -344,6 +344,45 @@ def mixer_exists(coordinator_data: dict | None, mixer_num: int) -> bool:
     return reg_params.get(mixer_temp_key) is not None
 
 
+def ecoster_exists(coordinator_data: dict | None) -> bool:
+    """Check if ecoSTER panel is connected by verifying moduleEcoSTERSoftVer.
+
+    If moduleEcoSTERSoftVer is None, no ecoSTER panel is connected
+    and ecoSTER-related entities should not be created.
+
+    Args:
+        coordinator_data: Coordinator data dict containing sysParams
+
+    Returns:
+        True if ecoSTER is connected, False otherwise
+
+    """
+    if not coordinator_data:
+        return False
+
+    sys_params = coordinator_data.get("sysParams", {})
+    if not sys_params:
+        return False
+
+    return sys_params.get("moduleEcoSTERSoftVer") is not None
+
+
+def is_ecoster_related(param: dict) -> bool:
+    """Check if a parameter is related to ecoSTER panel.
+
+    Checks if the parameter description mentions ecoSTER.
+
+    Args:
+        param: Parameter dictionary from mergedData
+
+    Returns:
+        True if parameter is ecoSTER-related, False otherwise
+
+    """
+    description = param.get("description", "")
+    return "ecoster" in description.lower()
+
+
 def validate_parameter_data(param: dict) -> tuple[bool, str]:
     """Validate parameter from mergedData before entity creation.
 

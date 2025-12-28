@@ -24,9 +24,11 @@ from .api import Limits
 from .common import Econet300Api, EconetDataCoordinator, skip_params_edits
 from .common_functions import (
     camel_to_snake,
+    ecoster_exists,
     get_duplicate_display_name,
     get_duplicate_entity_key,
     get_validated_entity_component,
+    is_ecoster_related,
     mixer_exists,
     validate_parameter_data,
 )
@@ -1362,6 +1364,15 @@ def _create_dynamic_entity_from_param(
 
     if not should_be_number_entity(param):
         return None
+
+    # Check if ecoSTER-related and if ecoSTER panel is connected
+    if is_ecoster_related(param):
+        if not ecoster_exists(coordinator.data):
+            _LOGGER.debug(
+                "Skipping number %s - ecoSTER panel not connected",
+                param.get("name", param_id),
+            )
+            return None
 
     param_name = display_name or param.get("name", f"Parameter {param_id}")
 

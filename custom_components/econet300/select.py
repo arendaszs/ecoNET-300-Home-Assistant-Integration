@@ -20,9 +20,11 @@ from .api import Econet300Api
 from .common import EconetDataCoordinator
 from .common_functions import (
     camel_to_snake,
+    ecoster_exists,
     get_duplicate_display_name,
     get_duplicate_entity_key,
     get_validated_entity_component,
+    is_ecoster_related,
     mixer_exists,
 )
 from .const import (
@@ -596,6 +598,15 @@ def create_dynamic_selects(
                         mixer_num,
                     )
                     continue
+
+        # Check if ecoSTER-related and if ecoSTER panel is connected
+        if is_ecoster_related(param):
+            if not ecoster_exists(coordinator.data):
+                _LOGGER.debug(
+                    "Skipping select %s - ecoSTER panel not connected",
+                    param_name,
+                )
+                continue
 
         # Create entity key - handle duplicates with meaningful suffixes
         base_key = param.get("key") or camel_to_snake(param_name)
