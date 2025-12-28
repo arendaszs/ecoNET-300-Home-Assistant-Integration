@@ -195,9 +195,9 @@ class EconetClient:
                     # Get raw text and fix quote escaping
                     raw_text = await resp.text()
 
-                    # Fix double-double-quotes ("") to proper JSON escaping (\")
+                    # Fix double-double-quotes ("") to normal quotes
                     # Pattern: look for "" that are inside strings (not at string boundaries)
-                    fixed_text = re.sub(r'""([^"]+)""', r"\"\\1\"", raw_text)
+                    fixed_text = re.sub(r'""([^"]+)""', r'"\1"', raw_text)
 
                     # Also fix curly/smart quotes to straight quotes
                     fixed_text = fixed_text.replace('"', '"').replace('"', '"')
