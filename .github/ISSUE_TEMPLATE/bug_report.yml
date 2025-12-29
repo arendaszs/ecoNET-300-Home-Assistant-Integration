@@ -16,21 +16,21 @@ body:
       description: Describe what's not working as expected
       placeholder: "Example: The temperature sensor shows wrong values after restart"
 
-  - type: checkboxes
-    id: connected_devices
+  - type: dropdown
+    id: connected_device
     attributes:
       label: Which ecoNET device do you have? 🔌
-      description: Select your device (check all that apply)
+      description: Select your device model
       options:
-        - label: ecoMAX360
-        - label: ecoMAX810P-L
-        - label: ecoMAX850R2-X
-        - label: ecoMAX860P2-N
-        - label: ecoMAX860P3-V
-        - label: ecoSOL 300
-        - label: ecoSOL 500
-        - label: SControl MK1
-        - label: Other (please specify)
+        - "ecoMAX360"
+        - "ecoMAX810P-L"
+        - "ecoMAX850R2-X"
+        - "ecoMAX860P2-N"
+        - "ecoMAX860P3-V"
+        - "ecoSOL 300"
+        - "ecoSOL 500"
+        - "SControl MK1"
+        - "Other (please specify)"
 
   - type: input
     id: device_model_other
@@ -50,12 +50,17 @@ body:
         - "Medium - Annoying but usable"
         - "Low - Minor issue"
 
-  - type: textarea
-    id: steps_to_reproduce
+  - type: markdown
     attributes:
-      label: How to reproduce? 📋
-      description: Step-by-step instructions to see the bug
-      placeholder: "1. Restart Home Assistant\n2. Check the sensor\n3. See wrong value"
+      value: |
+        ### Diagnostics (recommended)
+        Please attach **ecoNET300 diagnostics** from Home Assistant (these are automatically redacted):
+
+        **Settings → Devices & Services → ecoNET300 → ⋮ → Download diagnostics**
+
+        Docs: https://www.home-assistant.io/integrations/diagnostics/
+
+        (You can drag & drop the downloaded file into this issue.)
 
   - type: textarea
     id: screenshots

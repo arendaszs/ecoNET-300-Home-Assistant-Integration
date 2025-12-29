@@ -100,6 +100,16 @@ body:
         - **📖 Complete Guide**: [Developer Tools Guide](https://github.com/jontofront/ecoNET-300-Home-Assistant-Integration/blob/master/docs/DEVELOPER_TOOLS_GUIDE.md) - Step-by-step instructions with examples
         - **💻 Test Script**: Use the [test script](https://github.com/jontofront/ecoNET-300-Home-Assistant-Integration/blob/master/scripts/test_api_endpoints.py) to get all available parameters automatically
 
+  - type: markdown
+    attributes:
+      value: |
+        ### Diagnostics (optional but very helpful)
+        If possible, attach **ecoNET300 diagnostics** from Home Assistant:
+
+        **Settings → Devices & Services → ecoNET300 → ⋮ → Download diagnostics**
+
+        Docs: https://www.home-assistant.io/integrations/diagnostics/
+
   - type: dropdown
     id: data_type
     attributes:
