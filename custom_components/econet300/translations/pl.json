@@ -7,6 +7,15 @@
           "username": "Nazwa użytkownika",
           "password": "Hasło"
         }
+      },
+      "reconfigure": {
+        "title": "Rekonfiguracja ecoNET300",
+        "description": "Zaktualizuj ustawienia połączenia dla urządzenia ecoNET300. Przydatne, gdy adres IP urządzenia uległ zmianie.",
+        "data": {
+          "host": "Host",
+          "username": "Nazwa użytkownika",
+          "password": "Hasło"
+        }
       }
     },
     "error": {
@@ -15,7 +24,8 @@
       "unknown": "Niespodziewany błąd"
     },
     "abort": {
-      "already_configured": "Urządzenie zostało już skonfigutowane"
+      "already_configured": "Urządzenie zostało już skonfigutowane",
+      "reconfigure_failed": "Rekonfiguracja nie powiodła się. Spróbuj ponownie."
     }
   },
   "entity": {
