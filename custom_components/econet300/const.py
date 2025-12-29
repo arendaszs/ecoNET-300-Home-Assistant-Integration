@@ -571,6 +571,7 @@ ENTITY_UNIT_MAP = {
     "protocolType": None,
     "controllerID": None,
     "ecosrvSoftVer": None,
+    "moduleEcoSTERSoftVer": None,
 }
 
 # =============================================================================
