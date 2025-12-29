@@ -7,6 +7,15 @@
           "username": "Uživatelské jméno",
           "password": "Heslo"
         }
+      },
+      "reconfigure": {
+        "title": "Překonfigurovat ecoNET300",
+        "description": "Aktualizujte nastavení připojení pro vaše zařízení ecoNET300. To je užitečné, pokud se změnila IP adresa vašeho zařízení.",
+        "data": {
+          "host": "Host",
+          "username": "Uživatelské jméno",
+          "password": "Heslo"
+        }
       }
     },
     "error": {
@@ -15,7 +24,8 @@
       "unknown": "Neočekávaná chyba"
     },
     "abort": {
-      "already_configured": "Zařízení je již nakonfigurováno"
+      "already_configured": "Zařízení je již nakonfigurováno",
+      "reconfigure_failed": "Rekonfigurace se nezdařila. Zkuste to prosím znovu."
     }
   },
   "entity": {

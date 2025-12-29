@@ -122,14 +122,19 @@ class EconetEntity(CoordinatorEntity):
         _LOGGER.debug("Added to HASS: %s", self.entity_description)
         _LOGGER.debug("Coordinator: %s", self.coordinator)
 
-        # Check if the coordinator has a 'data' attributes
+        # IMPORTANT: Always call super first to register with coordinator for updates
+        # This ensures the entity receives _handle_coordinator_update callbacks
+        # Fix for #187: sensors not refreshing automatically
+        await super().async_added_to_hass()
+
+        # Check if the coordinator has a 'data' attribute
         if "data" not in dir(self.coordinator):
             _LOGGER.error("Coordinator object does not have a 'data' attribute")
             return
 
-        # Safety check: ensure coordinator data exists
+        # Safety check: ensure coordinator data exists for initial sync
         if self.coordinator.data is None:
-            _LOGGER.info("Coordinator data is None, skipping setup")
+            _LOGGER.info("Coordinator data is None, skipping initial sync")
             return
 
         # Retrieve sysParams and regParams paramsEdits data
@@ -169,7 +174,7 @@ class EconetEntity(CoordinatorEntity):
         expected_key = self.entity_description.key
         _LOGGER.debug("Expected key: %s", expected_key)
 
-        # Retrieve the value from sysParams or regParams  or paramsEdits
+        # Retrieve the value from sysParams or regParams or paramsEdits
         value = (
             sys_params.get(expected_key)
             if sys_params.get(expected_key) is not None
@@ -182,20 +187,16 @@ class EconetEntity(CoordinatorEntity):
 
         if value is not None:
             _LOGGER.debug("Found key '%s' with value: %s", expected_key, value)
+            # Call _sync_state to update entity state with initial value
+            self._sync_state(value)
         else:
             _LOGGER.info(
-                "Data key: %s was expected to exist but it doesn't. Available sysParams keys: %s, regParams keys: %s, paramsEdits keys: %s",
+                "Data key: %s not found during initial sync. Available sysParams keys: %s, regParams keys: %s, paramsEdits keys: %s",
                 expected_key,
                 sys_keys,
                 reg_keys,
                 edit_keys,
             )
-            return
-
-        # Synchronize with HASS
-        await super().async_added_to_hass()
-        # Call _sync_state to update entity state
-        self._sync_state(value)
 
     def _sync_state(self, value) -> None:
         """Update entity state with the provided value.

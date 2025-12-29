@@ -1,5 +1,42 @@
 # Changelog
 
+## [v1.1.16] - 2025-12-29
+
+### 🚀 New Features
+
+- **Reconfigure Flow**: You can now update your ecoNET300 connection settings (IP address, username, password) without removing the integration!
+  - **How to use**: Settings → Devices & Services → ecoNET300 → ⋮ → Reconfigure
+  - **Use case**: After power outages, if your device gets a new IP address, just reconfigure — no data loss!
+  - **Translations**: Available in English, Polish, Czech, French, and Ukrainian
+  - **Files Modified**: `config_flow.py`, `strings.json`, all translation files
+
+### 🐛 Bug Fixes
+
+- **#187 - Sensors Not Refreshing**: Fixed critical bug where mixer and other sensors stopped updating automatically
+
+  - **Problem**: If initial data was missing, entities never registered with the coordinator for updates
+  - **Solution**: Moved `super().async_added_to_hass()` to run first, ensuring entities always register for updates
+  - **Impact**: All sensors (especially mixers) now refresh automatically every 30 seconds
+  - **Files Modified**: `entity.py`
+
+- **#189 - Firmware Version ValueError**: Fixed error when ecoSTER/ecoSRV firmware versions caused crashes
+  - **Problem**: `moduleEcoSTERSoftVer` and `ecosrvSoftVer` values like `'1.25.90'` were incorrectly treated as numeric
+  - **Solution**: Added these keys to `ENTITY_PRECISION` with `None` value to mark them as non-numeric
+  - **Impact**: No more `ValueError: could not convert string to float` errors in logs
+  - **Files Modified**: `const.py`
+
+### 📋 Issue Form Improvements
+
+- **Bug Report Form**: Simplified device selection (dropdown instead of checkboxes), removed "How to reproduce?", added diagnostics upload instructions with [HA docs link](https://www.home-assistant.io/integrations/diagnostics/)
+- **Feature Request Form**: Replaced long "New Sensor" form with a generic, simplified "Feature Request" form that works for any feature type
+
+### 🔧 Technical Changes
+
+- **Home Assistant Version**: Updated minimum requirement to `>=2025.2.2`
+- **Config Flow**: Updated docstrings from "Example Integration" to "ecoNET300 Integration"
+
+---
+
 ## [v1.1.15] - 2025-01-13
 
 ### New Features

@@ -1,5 +1,5 @@
 colorlog==6.7.0
-homeassistant>=2025.1.4
+homeassistant>=2025.2.2
 ruff==0.12.2
 codespell==2.3.0
 autotyping>=24.3.0

@@ -36,13 +36,13 @@ The **ecoNET300 Home Assistant Integration** allows local control and monitoring
 
 The integration supports **6 languages** with comprehensive translations:
 
-| Language | Code | Status | Coverage |
-|----------|------|--------|----------|
-| 🇬🇧 English | `en` | ✅ Complete | Base language |
-| 🇵🇱 Polish | `pl` | ✅ Complete | Full translation |
-| 🇨🇿 Czech | `cs` | ✅ Complete | 348 parameters |
-| 🇫🇷 French | `fr` | ✅ Complete | 876 parameters |
-| 🇺🇦 Ukrainian | `uk` | ✅ Complete | 855 parameters |
+| Language     | Code | Status      | Coverage         |
+| ------------ | ---- | ----------- | ---------------- |
+| 🇬🇧 English   | `en` | ✅ Complete | Base language    |
+| 🇵🇱 Polish    | `pl` | ✅ Complete | Full translation |
+| 🇨🇿 Czech     | `cs` | ✅ Complete | 348 parameters   |
+| 🇫🇷 French    | `fr` | ✅ Complete | 876 parameters   |
+| 🇺🇦 Ukrainian | `uk` | ✅ Complete | 855 parameters   |
 
 ### 🏠 Supported Devices
 
@@ -408,8 +408,9 @@ ecoNET-300-Home-Assistant-Integration/
 
 For detailed version information and changelog, see [CHANGELOG.md](CHANGELOG.md).
 
-### Latest Features
+### Latest Features (v1.1.16)
 
+- **🔄 Reconfigure Flow**: Update IP/credentials without removing integration (Settings → Devices & Services → ecoNET300 → ⋮ → Reconfigure)
 - **Diagnostics Support**: Comprehensive diagnostics for troubleshooting issues
 - **Boiler Control**: Turn boiler ON/OFF directly from Home Assistant
 - **Temperature Setpoints**: Full control over heating and hot water temperatures
@@ -464,4 +465,4 @@ If you encounter any issues or have questions:
 
 ---
 
-_This README was last updated on 2025-07-18 after completing the comprehensive API discovery process._
+_This README was last updated on 2025-12-29 for version 1.1.16._
