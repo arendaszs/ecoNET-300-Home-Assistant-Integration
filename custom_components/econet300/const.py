@@ -685,6 +685,8 @@ ENTITY_PRECISION = {
     "moduleCSoftVer": None,
     "moduleLambdaSoftVer": None,
     "modulePanelSoftVer": None,
+    "moduleEcoSTERSoftVer": None,
+    "ecosrvSoftVer": None,
     # ecoMAX360i
     "PS": None,
     "TempBuforDown": 1,
