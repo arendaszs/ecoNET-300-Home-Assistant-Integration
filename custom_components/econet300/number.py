@@ -169,13 +169,24 @@ class EconetNumber(EconetEntity, NumberEntity):
 
     async def async_set_limits_values(self):
         """Async Sync number limits."""
+        # Dynamic entities (with param_id) already have limits from mergedData
+        # Skip API lookup for these entities to avoid log spam
+        param_id = getattr(self.entity_description, "param_id", None)
+        if param_id:
+            _LOGGER.debug(
+                "Skipping API limits lookup for dynamic entity %s (param_id=%s) - limits already set from mergedData",
+                self.entity_description.key,
+                param_id,
+            )
+            return
+
         _LOGGER.debug("Getting limits for entity key: %s", self.entity_description.key)
         number_limits = await self.api.get_param_limits(self.entity_description.key)
         _LOGGER.debug("Number limits retrieved: %s", number_limits)
 
         if not number_limits:
-            _LOGGER.warning(
-                "Cannot get limits for dynamic entity: %s, numeric limits is None",
+            _LOGGER.debug(
+                "No API limits available for entity: %s",
                 self.entity_description.key,
             )
             return
@@ -697,12 +708,22 @@ class MixerNumber(MixerEntity, NumberEntity):
 
     async def async_set_limits_values(self):
         """Async Sync number limits."""
+        # Dynamic mixer entities (with param_id) already have limits from mergedData
+        param_id = getattr(self.entity_description, "param_id", None)
+        if param_id:
+            _LOGGER.debug(
+                "Skipping API limits lookup for dynamic mixer entity %s (param_id=%s)",
+                self.entity_description.key,
+                param_id,
+            )
+            return
+
         number_limits = await self.api.get_param_limits(self.entity_description.key)
         _LOGGER.debug("Number limits retrieved: %s", number_limits)
 
         if not number_limits:
-            _LOGGER.info(
-                "Cannot add mixer number entity: %s, numeric limits for this entity is None",
+            _LOGGER.debug(
+                "No API limits available for mixer entity: %s",
                 self.entity_description.key,
             )
             return
