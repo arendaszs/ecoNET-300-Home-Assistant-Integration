@@ -159,14 +159,21 @@ class EconetEntity(CoordinatorEntity):
         _LOGGER.debug("Added to HASS: %s", self.entity_description)
         _LOGGER.debug("Coordinator: %s", self.coordinator)
 
-        # Check if the coordinator has a 'data' attributes
+        # Check if the coordinator has a 'data' attribute
         if "data" not in dir(self.coordinator):
             _LOGGER.error("Coordinator object does not have a 'data' attribute")
+            # Still register for updates - data may become available later
+            await super().async_added_to_hass()
             return
 
         # Safety check: ensure coordinator data exists
         if self.coordinator.data is None:
-            _LOGGER.info("Coordinator data is None, skipping setup")
+            _LOGGER.info(
+                "Coordinator data is None for %s, will update on next refresh",
+                self.entity_description.key,
+            )
+            # Still register for updates - data may become available later
+            await super().async_added_to_hass()
             return
 
         # Retrieve sysParams and regParams paramsEdits data
@@ -258,22 +265,23 @@ class EconetEntity(CoordinatorEntity):
                 )
             )
 
+        # ALWAYS call super() to register for coordinator updates
+        # This ensures the entity receives future updates even if initial value is missing
+        await super().async_added_to_hass()
+
         if value is not None:
             _LOGGER.debug("Found initial value for entity %s: %s", expected_key, value)
+            # Call _sync_state to update entity state with initial value
+            self._sync_state(value)
         else:
             _LOGGER.debug(
-                "No initial value found for entity %s. Available sysParams keys: %s, regParams keys: %s, paramsEdits keys: %s",
+                "No initial value found for entity %s. Entity will update on next coordinator refresh. "
+                "Available sysParams keys: %s, regParams keys: %s, paramsEdits keys: %s",
                 expected_key,
                 sys_keys,
                 reg_keys,
                 edit_keys,
             )
-            return
-
-        # Synchronize with HASS
-        await super().async_added_to_hass()
-        # Call _sync_state to update entity state
-        self._sync_state(value)
 
     def _sync_state(self, value) -> None:
         """Update entity state with the provided value.
