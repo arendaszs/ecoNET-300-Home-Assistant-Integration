@@ -127,8 +127,10 @@ class EconetOptionsFlowHandler(OptionsFlow):
                     self.config_entry,
                     data=new_data,
                 )
-                # Reload the integration to apply new credentials
-                await self.hass.config_entries.async_reload(self.config_entry.entry_id)
+                # Schedule reload as background task to avoid blocking the flow
+                self.hass.async_create_task(
+                    self.hass.config_entries.async_reload(self.config_entry.entry_id)
+                )
                 return self.async_create_entry(title="", data={})
 
         # Show form with current values as defaults
