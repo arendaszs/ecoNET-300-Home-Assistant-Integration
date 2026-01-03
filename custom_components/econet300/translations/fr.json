@@ -246,13 +246,13 @@
           "operation": "Fonctionnement",
           "work": "Marche normale",
           "supervision": "Surveillance",
-          "halted": "Arrêt",
-          "stop": "Stop",
+          "paused": "En pause",
+          "stop": "Arrêté",
           "burning_off": "Extinction",
           "manual": "Manuel",
-          "alarm": "Alarme",
-          "unsealing": "Déscellement",
-          "chimney": "Cheminée",
+          "problem": "Alarme",
+          "unsealing": "Descellement",
+          "chimney": "Ramoneur",
           "stabilization": "Stabilisation",
           "no_transmission": "Pas de transmission",
           "unknown": "Inconnu"
@@ -399,7 +399,24 @@
         "name": "Température de retour"
       },
       "transmission": {
-        "name": "Transmission"
+        "name": "Transmission",
+        "state": {
+          "off": "Arrêté",
+          "fire_up": "Allumage",
+          "operation": "Fonctionnement",
+          "work": "Marche normale",
+          "supervision": "Surveillance",
+          "paused": "En pause",
+          "stop": "Arrêté",
+          "burning_off": "Extinction",
+          "manual": "Manuel",
+          "problem": "Alarme",
+          "unsealing": "Descellement",
+          "chimney": "Ramoneur",
+          "stabilization": "Stabilisation",
+          "no_transmission": "Pas de transmission",
+          "unknown": "Inconnu"
+        }
       },
       "ecoster_temp1": {
         "name": "Température ambiante 1"

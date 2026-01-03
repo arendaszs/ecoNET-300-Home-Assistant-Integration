@@ -398,20 +398,21 @@
       "mode": {
         "name": "Tryb pracy",
         "state": {
-          "off": "Off",
-          "fire_up": "Fire up",
-          "work": "Work",
-          "supervision": "Supervision",
-          "halted": "Halted",
-          "stop": "Stop",
-          "burning_off": "Burning off",
-          "manual": "Manual",
-          "alarm": "Alarm",
-          "unsealing": "Unsealing",
-          "chimney": "Chimney",
-          "stabilization": "Stabilization",
-          "no_transmission": "No transmission",
-          "unknown": "Unknown"
+          "off": "Wyłączony",
+          "fire_up": "Rozpalanie",
+          "operation": "Praca",
+          "work": "Praca",
+          "supervision": "Nadzór",
+          "paused": "Wstrzymany",
+          "stop": "Zatrzymany",
+          "burning_off": "Wygaszanie",
+          "manual": "Ręczny",
+          "problem": "Alarm",
+          "unsealing": "Rozszczelnienie",
+          "chimney": "Kominiarz",
+          "stabilization": "Stabilizacja",
+          "no_transmission": "Brak transmisji",
+          "unknown": "Nieznany"
         }
       },
       "valve_mixer1": {
@@ -466,7 +467,24 @@
         "name": "Temperatura powrotu"
       },
       "transmission": {
-        "name": "Transmisja"
+        "name": "Transmisja",
+        "state": {
+          "off": "Wyłączony",
+          "fire_up": "Rozpalanie",
+          "operation": "Praca",
+          "work": "Praca",
+          "supervision": "Nadzór",
+          "paused": "Wstrzymany",
+          "stop": "Zatrzymany",
+          "burning_off": "Wygaszanie",
+          "manual": "Ręczny",
+          "problem": "Alarm",
+          "unsealing": "Rozszczelnienie",
+          "chimney": "Kominiarz",
+          "stabilization": "Stabilizacja",
+          "no_transmission": "Brak transmisji",
+          "unknown": "Nieznany"
+        }
       },
       "ecoster_temp1": {
         "name": "Temperatura pokojowa 1"

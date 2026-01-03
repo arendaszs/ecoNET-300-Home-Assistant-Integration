@@ -816,6 +816,7 @@ ENTITY_VALUE_PROCESSOR = {
     "statusCWU": lambda x: SENSOR_STATUS_CWU_MAPPING.get(x, STATE_UNKNOWN),
     "statusCO": lambda x: SENSOR_STATUS_CO_MAPPING.get(x, STATE_UNKNOWN),
     "thermostat": lambda x: SENSOR_THERMOSTAT_MAPPING.get(x, STATE_UNKNOWN),
+    "transmission": lambda x: OPERATION_MODE_NAMES.get(x, STATE_UNKNOWN),
 }
 
 # =============================================================================
@@ -862,19 +863,9 @@ ENTITY_STEP = {
 }
 
 # Sensor value mappings for both display and icon support
-SENSOR_MODE_MAPPING: dict[int, str] = {
-    0: "off",
-    1: "manual",
-    2: "auto",
-    3: "work",
-    4: "test",
-    5: "pause",
-    6: "error",
-    7: "standby",
-    8: "emergency",
-    9: "maintenance",
-    10: "calibration",
-}
+# Note: mode and transmission use the same OPERATION_MODE_NAMES mapping
+# to ensure consistent state display across both sensors
+SENSOR_MODE_MAPPING: dict[int, str] = OPERATION_MODE_NAMES
 
 SENSOR_LAMBDA_STATUS_MAPPING: dict[int, str] = {
     0: "stop",

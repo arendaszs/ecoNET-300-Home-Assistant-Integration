@@ -255,13 +255,13 @@
           "operation": "Provoz",
           "work": "Práce",
           "supervision": "Dohled",
-          "halted": "Zastaveno",
-          "stop": "Stop",
+          "paused": "Pozastaveno",
+          "stop": "Zastaveno",
           "burning_off": "Dohasínání",
           "manual": "Manuální",
-          "alarm": "Alarm",
-          "unsealing": "Odepěťování",
-          "chimney": "Komín",
+          "problem": "Alarm",
+          "unsealing": "Odvzdušnění",
+          "chimney": "Kominík",
           "stabilization": "Stabilizace",
           "no_transmission": "Bez přenosu",
           "unknown": "Neznámý"
@@ -408,7 +408,24 @@
         "name": "Návratová teplota"
       },
       "transmission": {
-        "name": "Přenos"
+        "name": "Přenos",
+        "state": {
+          "off": "Vypnuto",
+          "fire_up": "Rozpalování",
+          "operation": "Provoz",
+          "work": "Práce",
+          "supervision": "Dohled",
+          "paused": "Pozastaveno",
+          "stop": "Zastaveno",
+          "burning_off": "Dohasínání",
+          "manual": "Manuální",
+          "problem": "Alarm",
+          "unsealing": "Odvzdušnění",
+          "chimney": "Kominík",
+          "stabilization": "Stabilizace",
+          "no_transmission": "Bez přenosu",
+          "unknown": "Neznámý"
+        }
       },
       "ecoster_temp1": {
         "name": "Pokojová teplota 1"

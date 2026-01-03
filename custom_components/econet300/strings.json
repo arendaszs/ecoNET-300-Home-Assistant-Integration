@@ -377,13 +377,13 @@
           "operation": "Operation",
           "work": "Work",
           "supervision": "Supervision",
-          "halted": "Halted",
-          "stop": "Stop",
-          "burning_off": "Burning off",
+          "paused": "Paused",
+          "stop": "Stopped",
+          "burning_off": "Burning OFF",
           "manual": "Manual",
-          "alarm": "Alarm",
+          "problem": "Alarm",
           "unsealing": "Unsealing",
-          "chimney": "Chimney",
+          "chimney": "Chimney-sweep",
           "stabilization": "Stabilization",
           "no_transmission": "No transmission",
           "unknown": "Unknown"
@@ -530,7 +530,24 @@
         "name": "Return temperature"
       },
       "transmission": {
-        "name": "Transmission"
+        "name": "Transmission",
+        "state": {
+          "off": "[%key:common::state::off%]",
+          "fire_up": "Fire up",
+          "operation": "Operation",
+          "work": "Work",
+          "supervision": "Supervision",
+          "paused": "Paused",
+          "stop": "Stopped",
+          "burning_off": "Burning OFF",
+          "manual": "Manual",
+          "problem": "Alarm",
+          "unsealing": "Unsealing",
+          "chimney": "Chimney-sweep",
+          "stabilization": "Stabilization",
+          "no_transmission": "No transmission",
+          "unknown": "Unknown"
+        }
       },
       "ecoster_temp1": {
         "name": "Room temperature 1"

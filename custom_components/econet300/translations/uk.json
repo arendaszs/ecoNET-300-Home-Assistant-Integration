@@ -246,13 +246,13 @@
           "operation": "Робота",
           "work": "Працює",
           "supervision": "Нагляд",
-          "halted": "Зупинено",
-          "stop": "Стоп",
+          "paused": "Призупинено",
+          "stop": "Зупинено",
           "burning_off": "Затухання",
           "manual": "Ручний",
-          "alarm": "Тривога",
+          "problem": "Тривога",
           "unsealing": "Розгерметизація",
-          "chimney": "Димар",
+          "chimney": "Сажотрус",
           "stabilization": "Стабілізація",
           "no_transmission": "Без передачі",
           "unknown": "Невідомо"
@@ -399,7 +399,24 @@
         "name": "Температура повернення"
       },
       "transmission": {
-        "name": "Передача"
+        "name": "Передача",
+        "state": {
+          "off": "Вимкнено",
+          "fire_up": "Розпалювання",
+          "operation": "Робота",
+          "work": "Робота",
+          "supervision": "Нагляд",
+          "paused": "Призупинено",
+          "stop": "Зупинено",
+          "burning_off": "Затухання",
+          "manual": "Ручний",
+          "problem": "Тривога",
+          "unsealing": "Розгерметизація",
+          "chimney": "Сажотрус",
+          "stabilization": "Стабілізація",
+          "no_transmission": "Без передачі",
+          "unknown": "Невідомо"
+        }
       },
       "ecoster_temp1": {
         "name": "Кімнатна температура 1"
