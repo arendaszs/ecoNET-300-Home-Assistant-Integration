@@ -1,4 +1,33 @@
 {
+  "exceptions": {
+    "parameter_locked": {
+      "message": "Impossible de modifier la valeur : {lock_reason}"
+    },
+    "boiler_control_failed": {
+      "message": "Échec du contrôle de la chaudière : {error}"
+    },
+    "switch_turn_on_failed": {
+      "message": "Échec de l'activation de l'interrupteur : {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Échec de la désactivation de l'interrupteur : {error}"
+    },
+    "heater_mode_change_failed": {
+      "message": "Échec du changement de mode de chauffage en {mode}"
+    },
+    "select_change_failed": {
+      "message": "Échec du changement d'option : {error}"
+    },
+    "number_set_failed": {
+      "message": "Échec de la définition de la valeur : {error}"
+    },
+    "api_communication_error": {
+      "message": "Erreur de communication avec l'appareil : {error}"
+    },
+    "device_unavailable": {
+      "message": "Appareil indisponible : {error}"
+    }
+  },
   "config": {
     "step": {
       "user": {

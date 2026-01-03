@@ -1,4 +1,33 @@
 {
+  "exceptions": {
+    "parameter_locked": {
+      "message": "Неможливо змінити значення: {lock_reason}"
+    },
+    "boiler_control_failed": {
+      "message": "Не вдалося керувати котлом: {error}"
+    },
+    "switch_turn_on_failed": {
+      "message": "Не вдалося увімкнути перемикач: {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Не вдалося вимкнути перемикач: {error}"
+    },
+    "heater_mode_change_failed": {
+      "message": "Не вдалося змінити режим опалення на {mode}"
+    },
+    "select_change_failed": {
+      "message": "Не вдалося змінити опцію: {error}"
+    },
+    "number_set_failed": {
+      "message": "Не вдалося встановити значення: {error}"
+    },
+    "api_communication_error": {
+      "message": "Помилка зв'язку з пристроєм: {error}"
+    },
+    "device_unavailable": {
+      "message": "Пристрій недоступний: {error}"
+    }
+  },
   "config": {
     "step": {
       "user": {

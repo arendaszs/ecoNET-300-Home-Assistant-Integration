@@ -1,4 +1,33 @@
 {
+  "exceptions": {
+    "parameter_locked": {
+      "message": "Cannot change value: {lock_reason}"
+    },
+    "boiler_control_failed": {
+      "message": "Failed to control boiler: {error}"
+    },
+    "switch_turn_on_failed": {
+      "message": "Failed to turn on switch: {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Failed to turn off switch: {error}"
+    },
+    "heater_mode_change_failed": {
+      "message": "Failed to change heater mode to {mode}"
+    },
+    "select_change_failed": {
+      "message": "Failed to change select option: {error}"
+    },
+    "number_set_failed": {
+      "message": "Failed to set value: {error}"
+    },
+    "api_communication_error": {
+      "message": "Error communicating with device: {error}"
+    },
+    "device_unavailable": {
+      "message": "Device is unavailable: {error}"
+    }
+  },
   "config": {
     "step": {
       "user": {

@@ -44,6 +44,14 @@ _LOGGER = logging.getLogger(__name__)
 class HeaterModeSelectError(HomeAssistantError):
     """Raised when heater mode selection fails."""
 
+    def __init__(self, mode: str) -> None:
+        """Initialize the error."""
+        super().__init__(
+            translation_domain=DOMAIN,
+            translation_key="heater_mode_change_failed",
+            translation_placeholders={"mode": mode},
+        )
+
 
 class EconetSelect(EconetEntity, SelectEntity):
     """Represents an ecoNET select entity."""
@@ -293,14 +301,12 @@ class EconetSelect(EconetEntity, SelectEntity):
 
         except Exception as e:
             _LOGGER.error("Failed to change heater mode to %s: %s", option, e)
-            raise HeaterModeSelectError(
-                f"Failed to change heater mode to {option}"
-            ) from e
+            raise HeaterModeSelectError(option) from e
 
     @staticmethod
-    def _raise_heater_mode_error(message: str) -> None:
-        """Raise a HeaterModeSelectError with the given message."""
-        raise HeaterModeSelectError(message)
+    def _raise_heater_mode_error(mode: str) -> None:
+        """Raise a HeaterModeSelectError with the given mode."""
+        raise HeaterModeSelectError(mode)
 
 
 class EconetDynamicSelect(SelectEntity):
@@ -494,12 +500,20 @@ class EconetDynamicSelect(SelectEntity):
             _LOGGER.error(
                 "Failed to change select %s: %s", self.entity_description.key, e
             )
-            raise HomeAssistantError(f"Failed to change select: {e}") from e
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="select_change_failed",
+                translation_placeholders={"error": str(e)},
+            ) from e
 
     @staticmethod
-    def _raise_select_error(message: str) -> None:
-        """Raise a HomeAssistantError with the given message."""
-        raise HomeAssistantError(message)
+    def _raise_select_error(error: str) -> None:
+        """Raise a HomeAssistantError with a translated message."""
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="select_change_failed",
+            translation_placeholders={"error": error},
+        )
 
 
 def should_be_select_entity(param: dict) -> bool:

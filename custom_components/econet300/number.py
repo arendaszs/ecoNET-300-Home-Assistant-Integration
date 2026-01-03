@@ -351,7 +351,11 @@ class EconetNumber(EconetEntity, NumberEntity):
                 self.entity_description.name,
                 lock_reason,
             )
-            raise HomeAssistantError(f"Cannot change value: {lock_reason}")
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="parameter_locked",
+                translation_placeholders={"lock_reason": lock_reason},
+            )
 
         # Skip processing if the value is unchanged.
         if value == self._attr_native_value:
@@ -594,7 +598,11 @@ class MixerDynamicNumber(MixerEntity, NumberEntity):
                 self.entity_description.name,
                 lock_reason,
             )
-            raise HomeAssistantError(f"Cannot change value: {lock_reason}")
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="parameter_locked",
+                translation_placeholders={"lock_reason": lock_reason},
+            )
 
         # Skip processing if the value is unchanged.
         if value == self._attr_native_value:
@@ -872,7 +880,11 @@ class MixerNumber(MixerEntity, NumberEntity):
                 self.entity_description.name,
                 lock_reason,
             )
-            raise HomeAssistantError(f"Cannot change value: {lock_reason}")
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="parameter_locked",
+                translation_placeholders={"lock_reason": lock_reason},
+            )
 
         # Skip processing if the value is unchanged.
         if value == self._attr_native_value:

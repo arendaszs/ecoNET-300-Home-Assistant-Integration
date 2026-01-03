@@ -37,6 +37,14 @@ _LOGGER = logging.getLogger(__name__)
 class BoilerControlError(HomeAssistantError):
     """Raised when boiler control fails."""
 
+    def __init__(self, error: str) -> None:
+        """Initialize the error."""
+        super().__init__(
+            translation_domain=DOMAIN,
+            translation_key="boiler_control_failed",
+            translation_placeholders={"error": error},
+        )
+
 
 class EconetSwitch(EconetEntity, SwitchEntity):
     """Represents an ecoNET switch entity."""
@@ -69,8 +77,8 @@ class EconetSwitch(EconetEntity, SwitchEntity):
         self.async_write_ha_state()
 
     @staticmethod
-    def _raise_boiler_control_error(message: str) -> None:
-        raise BoilerControlError(message)
+    def _raise_boiler_control_error(error: str) -> None:
+        raise BoilerControlError(error)
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the switch on."""
@@ -297,7 +305,11 @@ class EconetDynamicSwitch(SwitchEntity):
             _LOGGER.error(
                 "Failed to turn on switch %s: %s", self.entity_description.key, e
             )
-            raise HomeAssistantError(f"Failed to turn on switch: {e}") from e
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="switch_turn_on_failed",
+                translation_placeholders={"error": str(e)},
+            ) from e
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the switch off."""
@@ -326,12 +338,20 @@ class EconetDynamicSwitch(SwitchEntity):
             _LOGGER.error(
                 "Failed to turn off switch %s: %s", self.entity_description.key, e
             )
-            raise HomeAssistantError(f"Failed to turn off switch: {e}") from e
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="switch_turn_off_failed",
+                translation_placeholders={"error": str(e)},
+            ) from e
 
     @staticmethod
-    def _raise_switch_error(message: str) -> None:
-        """Raise a HomeAssistantError with the given message."""
-        raise HomeAssistantError(message)
+    def _raise_switch_error(error: str) -> None:
+        """Raise a HomeAssistantError with a translated message."""
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="switch_turn_on_failed",
+            translation_placeholders={"error": error},
+        )
 
 
 def should_be_switch_entity(param: dict) -> bool:

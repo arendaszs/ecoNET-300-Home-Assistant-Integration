@@ -1,4 +1,33 @@
 {
+  "exceptions": {
+    "parameter_locked": {
+      "message": "Nelze změnit hodnotu: {lock_reason}"
+    },
+    "boiler_control_failed": {
+      "message": "Nepodařilo se ovládat kotel: {error}"
+    },
+    "switch_turn_on_failed": {
+      "message": "Nepodařilo se zapnout přepínač: {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Nepodařilo se vypnout přepínač: {error}"
+    },
+    "heater_mode_change_failed": {
+      "message": "Nepodařilo se změnit režim topení na {mode}"
+    },
+    "select_change_failed": {
+      "message": "Nepodařilo se změnit možnost: {error}"
+    },
+    "number_set_failed": {
+      "message": "Nepodařilo se nastavit hodnotu: {error}"
+    },
+    "api_communication_error": {
+      "message": "Chyba komunikace se zařízením: {error}"
+    },
+    "device_unavailable": {
+      "message": "Zařízení není dostupné: {error}"
+    }
+  },
   "config": {
     "step": {
       "user": {

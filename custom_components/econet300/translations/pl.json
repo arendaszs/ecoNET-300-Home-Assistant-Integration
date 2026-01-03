@@ -1,4 +1,33 @@
 {
+  "exceptions": {
+    "parameter_locked": {
+      "message": "Nie można zmienić wartości: {lock_reason}"
+    },
+    "boiler_control_failed": {
+      "message": "Nie udało się sterować kotłem: {error}"
+    },
+    "switch_turn_on_failed": {
+      "message": "Nie udało się włączyć przełącznika: {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Nie udało się wyłączyć przełącznika: {error}"
+    },
+    "heater_mode_change_failed": {
+      "message": "Nie udało się zmienić trybu grzania na {mode}"
+    },
+    "select_change_failed": {
+      "message": "Nie udało się zmienić opcji: {error}"
+    },
+    "number_set_failed": {
+      "message": "Nie udało się ustawić wartości: {error}"
+    },
+    "api_communication_error": {
+      "message": "Błąd komunikacji z urządzeniem: {error}"
+    },
+    "device_unavailable": {
+      "message": "Urządzenie niedostępne: {error}"
+    }
+  },
   "config": {
     "step": {
       "user": {
