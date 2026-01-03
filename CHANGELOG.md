@@ -1,6 +1,6 @@
 # Changelog
 
-## [v1.2.0a1] - 2025-12-28
+## [v1.2.0a2] - 2025-01-03
 
 ### 🚀 New Features
 
@@ -20,6 +20,11 @@
   - Lock icon (`mdi:lock`) displayed for locked parameters
   - Lock reason shown in entity attributes
 
+- **Transmission State Mappings**: Added complete transmission state support
+  - 14 boiler operation modes with proper state mappings
+  - Multi-language translations (EN, PL, FR) for all modes
+  - Icons and state translations in `icons.json`
+
 ### 🐛 Bug Fixes
 
 - **Number Entity Min/Max**: Fixed initialization to properly handle `0.0` as valid minimum value
@@ -28,6 +33,8 @@
 - **Entity Icons**: Fixed `icons.json` translations using `_attr_has_entity_name` attribute
 - **Switch Entity Init**: Fixed `async_write_ha_state()` called before entity added to Home Assistant
 - **Entity Registry Default**: Reverted property-based `entity_registry_enabled_default` to maintain compatibility
+- **moduleEcoSTERSoftVer**: Fixed incorrect treatment as numeric sensor (#189)
+- **Dynamic Entity Limits**: Skip API limits lookup for entities with pre-set limits from mergedData (reduces log spam)
 
 ### ⚙️ Technical Improvements
 
@@ -38,11 +45,16 @@
   - `validate_parameter_data()`, `is_parameter_locked()`, `get_lock_reason()`
   - `should_be_number_entity()`, `should_be_switch_entity()`, `should_be_select_entity()`
 - **Component Detection**: `get_validated_entity_component()` with hardware validation
+- **Entity Setup**: Enhanced setup process to ensure registration for updates even when coordinator data unavailable
 
 ### 📚 Documentation
 
 - Added `docs/DYNAMIC_ENTITY_VALIDATION.md` for dynamic entity system
-- Updated API documentation with new endpoints
+- **Boiler Operation Mode Reference**: Complete mapping table with 14 operation modes
+  - Value mappings, HA states, cloud translation keys
+  - English and Polish translations
+  - Extended mode keys reference
+- Updated API documentation with 80+ discovered endpoints
 - Enhanced cursor rules for dynamic entity changes
 
 ---
