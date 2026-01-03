@@ -47,6 +47,24 @@
       "already_configured": "L'appareil est déjà configuré"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options ecoNET300",
+        "description": "Mettre à jour les paramètres de connexion ecoNET300",
+        "data": {
+          "host": "Hôte",
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Échec de la connexion",
+      "invalid_auth": "Authentification invalide",
+      "unknown": "Erreur inattendue"
+    }
+  },
   "entity": {
     "switch": {
       "boiler_control": {

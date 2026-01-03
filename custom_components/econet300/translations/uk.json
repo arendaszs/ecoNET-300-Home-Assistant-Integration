@@ -47,6 +47,24 @@
       "already_configured": "Пристрій вже налаштований"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Налаштування ecoNET300",
+        "description": "Оновіть налаштування підключення ecoNET300",
+        "data": {
+          "host": "Хост",
+          "username": "Ім'я користувача",
+          "password": "Пароль"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Не вдалося підключитися",
+      "invalid_auth": "Недійсна автентифікація",
+      "unknown": "Неочікувана помилка"
+    }
+  },
   "entity": {
     "switch": {
       "boiler_control": {

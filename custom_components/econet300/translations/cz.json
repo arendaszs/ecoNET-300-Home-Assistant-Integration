@@ -47,6 +47,24 @@
       "already_configured": "Zařízení je již nakonfigurováno"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Možnosti ecoNET300",
+        "description": "Aktualizujte nastavení připojení ecoNET300",
+        "data": {
+          "host": "Host",
+          "username": "Uživatelské jméno",
+          "password": "Heslo"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nepodařilo se připojit",
+      "invalid_auth": "Neplatné ověření",
+      "unknown": "Neočekávaná chyba"
+    }
+  },
   "entity": {
     "switch": {
       "boiler_control": {

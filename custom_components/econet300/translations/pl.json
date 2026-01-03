@@ -47,6 +47,24 @@
       "already_configured": "Urządzenie zostało już skonfigutowane"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opcje ecoNET300",
+        "description": "Zaktualizuj ustawienia połączenia ecoNET300",
+        "data": {
+          "host": "Host",
+          "username": "Nazwa użytkownika",
+          "password": "Hasło"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Błąd połączenia",
+      "invalid_auth": "Błąd autoryzacji",
+      "unknown": "Niespodziewany błąd"
+    }
+  },
   "entity": {
     "switch": {
       "boiler_control": {
