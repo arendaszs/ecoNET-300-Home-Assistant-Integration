@@ -17,18 +17,22 @@
 ### 🚀 New Features
 
 - **Dynamic Entity System**: Complete rewrite of entity creation from `mergedData` API
+
   - 165+ dynamic parameters from boiler's remote menu
   - Automatic entity type detection (Number, Switch, Select, Sensor)
   - Category-based entity grouping with smart defaults (CONFIG entities disabled by default)
 
 - **Mixer Device Support**: Entities correctly assigned to mixer devices (Mixer 1-4)
+
   - Keyword-based detection for mixer-related entities (`MIXER_RELATED_KEYWORDS`)
   - Hardware validation to prevent phantom mixer devices
 
 - **ecoSTER Panel Detection**: Smart filtering for ecoSTER-related entities
+
   - Entities only created when ecoSTER panel is connected (`ecoster_exists()`)
 
 - **Parameter Locking**: Device-side parameter locks reflected in Home Assistant
+
   - Lock icon (`mdi:lock`) displayed for locked parameters
   - Lock reason shown in entity attributes
 
