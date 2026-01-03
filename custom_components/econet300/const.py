@@ -759,6 +759,7 @@ ENTITY_PRECISION = {
     "thermostat": None,
     "lambdaStatus": None,
     "mode": None,
+    "transmission": None,
     "softVer": None,
     "controllerID": None,
     "moduleASoftVer": None,
