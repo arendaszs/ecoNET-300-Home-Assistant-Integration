@@ -68,7 +68,10 @@ class TestSwitchExceptionHandling:
         with pytest.raises(BoilerControlError) as exc_info:
             await mock_switch.async_turn_off()
 
-        assert "Error turning boiler OFF: Connection failed" in str(exc_info.value)
+        # BoilerControlError now uses translation keys
+        assert exc_info.value.translation_key == "boiler_control_failed"
+        placeholders = exc_info.value.translation_placeholders or {}
+        assert "Connection failed" in placeholders.get("error", "")
         # State should not have changed
         assert mock_switch._attr_is_on is True  # noqa: SLF001
 
@@ -87,7 +90,8 @@ class TestSwitchExceptionHandling:
         with pytest.raises(BoilerControlError) as exc_info:
             await mock_switch.async_turn_off()
 
-        assert "Error turning boiler OFF: Request timeout" in str(exc_info.value)
+        # BoilerControlError now uses translation keys
+        assert exc_info.value.translation_key == "boiler_control_failed"
         # State should not have changed
         assert mock_switch._attr_is_on is True  # noqa: SLF001
 
@@ -106,7 +110,8 @@ class TestSwitchExceptionHandling:
         with pytest.raises(BoilerControlError) as exc_info:
             await mock_switch.async_turn_off()
 
-        assert "API failure" in str(exc_info.value)
+        # BoilerControlError uses translation keys, check it's re-raised properly
+        assert exc_info.value.translation_key == "boiler_control_failed"
         # State should not have changed
         assert mock_switch._attr_is_on is True  # noqa: SLF001
 
@@ -149,6 +154,9 @@ class TestSwitchExceptionHandling:
         with pytest.raises(BoilerControlError) as exc_info:
             await mock_switch.async_turn_off()
 
-        assert "Failed to turn boiler OFF" in str(exc_info.value)
+        # BoilerControlError now uses translation keys
+        assert exc_info.value.translation_key == "boiler_control_failed"
+        placeholders = exc_info.value.translation_placeholders or {}
+        assert "Failed to turn boiler OFF" in placeholders.get("error", "")
         # State should not have changed
         assert mock_switch._attr_is_on is True  # noqa: SLF001
