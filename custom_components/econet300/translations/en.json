@@ -35,7 +35,7 @@
         "step": {
           "confirm": {
             "title": "Update connection settings",
-            "description": "Update your ecoNET300 connection settings to restore connectivity.",
+            "description": "Unable to connect to your ecoNET300 device at **{host}** after {failures} consecutive attempts.\n\nUpdate your connection settings to restore connectivity.",
             "data": {
               "host": "Host",
               "username": "Username",
@@ -43,8 +43,7 @@
             }
           }
         }
-      },
-      "description": "Unable to connect to your ecoNET300 device at **{host}** after {failures} consecutive attempts.\n\nThis could be caused by:\n- Device is offline or powered off\n- Network connectivity issues\n- Incorrect IP address or hostname\n- Device firmware issues\n\nClick **Fix** to update your connection settings."
+      }
     }
   },
   "config": {
