@@ -5,17 +5,28 @@ from __future__ import annotations
 import asyncio
 from datetime import timedelta
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import aiohttp
 from aiohttp import ClientError
 from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.helpers.issue_registry import (
+    IssueSeverity,
+    async_create_issue,
+    async_delete_issue,
+)
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import ApiError, AuthError, Econet300Api
 from .const import DOMAIN, ECOSOL_CONTROLLER_IDS
 
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+
 _LOGGER = logging.getLogger(__name__)
+
+# Number of consecutive failures before creating a repair issue
+CONSECUTIVE_FAILURES_THRESHOLD = 5
 
 
 def skip_params_edits(sys_params: dict[str, Any] | None) -> bool:
@@ -48,7 +59,11 @@ class EconetDataCoordinator(DataUpdateCoordinator):
     """Econet data coordinator to handle data updates."""
 
     def __init__(
-        self, hass, api: Econet300Api, options: dict[str, Any] | None = None
+        self,
+        hass,
+        api: Econet300Api,
+        config_entry: ConfigEntry,
+        options: dict[str, Any] | None = None,
     ) -> None:
         """Initialize my coordinator."""
         super().__init__(
@@ -59,7 +74,9 @@ class EconetDataCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=30),
         )
         self._api = api
+        self._config_entry = config_entry
         self._options = options or {}
+        self._consecutive_failures = 0
 
     def has_sys_data(self, key: str) -> bool:
         """Check if data key is present in sysParams."""
@@ -141,16 +158,54 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                         "Coordinator merged data keys (first 5): %s", param_keys
                     )
 
+                # Success - reset failure counter and remove any repair issue
+                self._on_successful_update()
+
                 return result
         except AuthError as err:
             _LOGGER.error("Authentication error: %s", err)
             raise ConfigEntryAuthFailed from err
         except ApiError as err:
             _LOGGER.error("API error: %s", err)
+            self._on_failed_update()
             raise UpdateFailed(f"Error communicating with API: {err}") from err
         except (asyncio.TimeoutError, ClientError) as err:
             _LOGGER.warning("Connection failed (device offline?): %s", err)
+            self._on_failed_update()
             raise UpdateFailed(f"Connection failed: {err}") from err
+
+    def _on_successful_update(self) -> None:
+        """Handle successful data update - reset failure counter and remove repair issue."""
+        if self._consecutive_failures > 0:
+            _LOGGER.debug(
+                "Connection restored after %d failures", self._consecutive_failures
+            )
+            self._consecutive_failures = 0
+            # Remove the repair issue if it exists
+            async_delete_issue(
+                self.hass, DOMAIN, f"connection_failed_{self._config_entry.entry_id}"
+            )
+
+    def _on_failed_update(self) -> None:
+        """Handle failed data update - increment counter and create repair issue if threshold reached."""
+        self._consecutive_failures += 1
+        _LOGGER.debug("Consecutive connection failures: %d", self._consecutive_failures)
+
+        if self._consecutive_failures >= CONSECUTIVE_FAILURES_THRESHOLD:
+            host = self._config_entry.data.get("host", "unknown")
+            async_create_issue(
+                self.hass,
+                DOMAIN,
+                f"connection_failed_{self._config_entry.entry_id}",
+                is_fixable=True,
+                is_persistent=True,
+                severity=IssueSeverity.ERROR,
+                translation_key="connection_failed",
+                translation_placeholders={
+                    "host": host,
+                    "failures": str(self._consecutive_failures),
+                },
+            )
 
     async def _fetch_rm_endpoint_data(self) -> dict[str, Any]:
         """Fetch data from RM... endpoints for enhanced functionality.

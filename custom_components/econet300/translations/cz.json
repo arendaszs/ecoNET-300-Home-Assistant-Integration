@@ -28,6 +28,33 @@
       "message": "Zařízení není dostupné: {error}"
     }
   },
+  "issues": {
+    "connection_failed": {
+      "title": "Připojení k zařízení ecoNET300 selhalo",
+      "description": "Nelze se připojit k vašemu zařízení ecoNET300 na adrese **{host}** po {failures} po sobě jdoucích pokusech.\n\nTo může být způsobeno:\n- Zařízení je offline nebo vypnuté\n- Problémy s připojením k síti\n- Nesprávná IP adresa nebo název hostitele\n- Problémy s firmwarem zařízení\n\nKlikněte na **Opravit** pro aktualizaci nastavení připojení."
+    }
+  },
+  "repairs": {
+    "connection_failed": {
+      "title": "Opravit připojení ecoNET300",
+      "step": {
+        "confirm": {
+          "title": "Aktualizovat nastavení připojení",
+          "description": "Aktualizujte nastavení připojení ecoNET300 pro obnovení konektivity.",
+          "data": {
+            "host": "Host",
+            "username": "Uživatelské jméno",
+            "password": "Heslo"
+          }
+        }
+      },
+      "error": {
+        "cannot_connect": "Nepodařilo se připojit",
+        "invalid_auth": "Neplatné ověření",
+        "unknown": "Neočekávaná chyba"
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
