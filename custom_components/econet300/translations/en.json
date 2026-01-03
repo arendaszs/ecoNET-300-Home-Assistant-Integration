@@ -31,28 +31,20 @@
   "issues": {
     "connection_failed": {
       "title": "Connection to ecoNET300 device failed",
-      "description": "Unable to connect to your ecoNET300 device at **{host}** after {failures} consecutive attempts.\n\nThis could be caused by:\n- Device is offline or powered off\n- Network connectivity issues\n- Incorrect IP address or hostname\n- Device firmware issues\n\nClick **Fix** to update your connection settings."
-    }
-  },
-  "repairs": {
-    "connection_failed": {
-      "title": "Fix ecoNET300 connection",
-      "step": {
-        "confirm": {
-          "title": "Update connection settings",
-          "description": "Update your ecoNET300 connection settings to restore connectivity.",
-          "data": {
-            "host": "Host",
-            "username": "Username",
-            "password": "Password"
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Update connection settings",
+            "description": "Update your ecoNET300 connection settings to restore connectivity.",
+            "data": {
+              "host": "Host",
+              "username": "Username",
+              "password": "Password"
+            }
           }
         }
       },
-      "error": {
-        "cannot_connect": "Failed to connect",
-        "invalid_auth": "Invalid authentication",
-        "unknown": "Unexpected error"
-      }
+      "description": "Unable to connect to your ecoNET300 device at **{host}** after {failures} consecutive attempts.\n\nThis could be caused by:\n- Device is offline or powered off\n- Network connectivity issues\n- Incorrect IP address or hostname\n- Device firmware issues\n\nClick **Fix** to update your connection settings."
     }
   },
   "config": {

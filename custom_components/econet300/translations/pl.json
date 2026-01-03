@@ -31,28 +31,20 @@
   "issues": {
     "connection_failed": {
       "title": "Połączenie z urządzeniem ecoNET300 nie powiodło się",
-      "description": "Nie można połączyć się z urządzeniem ecoNET300 pod adresem **{host}** po {failures} kolejnych próbach.\n\nMożliwe przyczyny:\n- Urządzenie jest wyłączone lub offline\n- Problemy z połączeniem sieciowym\n- Niepoprawny adres IP lub nazwa hosta\n- Problemy z oprogramowaniem urządzenia\n\nKliknij **Napraw**, aby zaktualizować ustawienia połączenia."
-    }
-  },
-  "repairs": {
-    "connection_failed": {
-      "title": "Napraw połączenie ecoNET300",
-      "step": {
-        "confirm": {
-          "title": "Zaktualizuj ustawienia połączenia",
-          "description": "Zaktualizuj ustawienia połączenia ecoNET300, aby przywrócić łączność.",
-          "data": {
-            "host": "Host",
-            "username": "Nazwa użytkownika",
-            "password": "Hasło"
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Zaktualizuj ustawienia połączenia",
+            "description": "Zaktualizuj ustawienia połączenia ecoNET300, aby przywrócić łączność.",
+            "data": {
+              "host": "Host",
+              "username": "Nazwa użytkownika",
+              "password": "Hasło"
+            }
           }
         }
       },
-      "error": {
-        "cannot_connect": "Błąd połączenia",
-        "invalid_auth": "Błąd autoryzacji",
-        "unknown": "Niespodziewany błąd"
-      }
+      "description": "Nie można połączyć się z urządzeniem ecoNET300 pod adresem **{host}** po {failures} kolejnych próbach.\n\nMożliwe przyczyny:\n- Urządzenie jest wyłączone lub offline\n- Problemy z połączeniem sieciowym\n- Niepoprawny adres IP lub nazwa hosta\n- Problemy z oprogramowaniem urządzenia\n\nKliknij **Napraw**, aby zaktualizować ustawienia połączenia."
     }
   },
   "config": {

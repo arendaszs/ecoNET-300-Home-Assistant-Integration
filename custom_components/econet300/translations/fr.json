@@ -31,28 +31,20 @@
   "issues": {
     "connection_failed": {
       "title": "La connexion à l'appareil ecoNET300 a échoué",
-      "description": "Impossible de se connecter à votre appareil ecoNET300 à l'adresse **{host}** après {failures} tentatives consécutives.\n\nCela pourrait être causé par :\n- Appareil hors ligne ou éteint\n- Problèmes de connectivité réseau\n- Adresse IP ou nom d'hôte incorrect\n- Problèmes de firmware de l'appareil\n\nCliquez sur **Réparer** pour mettre à jour vos paramètres de connexion."
-    }
-  },
-  "repairs": {
-    "connection_failed": {
-      "title": "Réparer la connexion ecoNET300",
-      "step": {
-        "confirm": {
-          "title": "Mettre à jour les paramètres de connexion",
-          "description": "Mettez à jour vos paramètres de connexion ecoNET300 pour rétablir la connectivité.",
-          "data": {
-            "host": "Hôte",
-            "username": "Nom d'utilisateur",
-            "password": "Mot de passe"
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Mettre à jour les paramètres de connexion",
+            "description": "Mettez à jour vos paramètres de connexion ecoNET300 pour rétablir la connectivité.",
+            "data": {
+              "host": "Hôte",
+              "username": "Nom d'utilisateur",
+              "password": "Mot de passe"
+            }
           }
         }
       },
-      "error": {
-        "cannot_connect": "Échec de la connexion",
-        "invalid_auth": "Authentification invalide",
-        "unknown": "Erreur inattendue"
-      }
+      "description": "Impossible de se connecter à votre appareil ecoNET300 à l'adresse **{host}** après {failures} tentatives consécutives.\n\nCela pourrait être causé par :\n- Appareil hors ligne ou éteint\n- Problèmes de connectivité réseau\n- Adresse IP ou nom d'hôte incorrect\n- Problèmes de firmware de l'appareil\n\nCliquez sur **Réparer** pour mettre à jour vos paramètres de connexion."
     }
   },
   "config": {
