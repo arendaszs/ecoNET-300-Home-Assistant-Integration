@@ -1,5 +1,45 @@
 # Changelog
 
+## [v1.2.0a4] - 2025-01-03
+
+### 🚀 New Features
+
+- **Repair Issues System** (Gold tier `repair-issues` rule)
+
+  - **Connection Failure Detection**: Automatically detects persistent connection failures (after 5 consecutive failures)
+  - **User-Friendly Repairs**: Repair issues appear in **Settings → System → Repairs** with clear descriptions
+  - **One-Click Fix**: Users can update connection settings directly from the Repairs UI
+  - **Auto-Resolution**: Repair issues automatically removed when connection is restored
+  - **Files Added**: `custom_components/econet300/repairs.py`
+
+- **Reconfiguration Flow** (Gold tier `reconfiguration-flow` rule)
+  - **Options Flow**: Added ability to reconfigure host, username, and password after initial setup
+  - **Easy Access**: Available via integration options (gear icon) in Settings → Devices & Services
+  - **Validation**: Connection is validated before applying changes
+  - **Files Modified**: `custom_components/econet300/config_flow.py`
+
+### 🌐 Translation Updates
+
+- **Repair Issue Translations**: Added translations for repair issues in all 5 languages
+  - English, Polish, French, Ukrainian, Czech
+  - Clear error descriptions and resolution steps
+  - Files Modified: `strings.json`, all translation files
+
+### 🔧 Technical Improvements
+
+- **Failure Tracking**: Coordinator now tracks consecutive connection failures
+- **Issue Registry Integration**: Uses Home Assistant's native issue registry for repairs
+- **Entry Cleanup**: Repair issues automatically cleaned up when integration is removed
+- **PARALLEL_UPDATES**: Added constant for polling integration compliance
+
+### 🧪 Testing
+
+- **New Tests**: Added tests for `async_remove_entry` and repair issue cleanup
+- **Updated Tests**: Fixed switch exception handling tests for translation keys
+- **Updated Tests**: Fixed dynamic number entity tests for entity key generation
+
+---
+
 ## [v1.2.0a3] - 2025-01-03
 
 ### 🔧 Improvements
