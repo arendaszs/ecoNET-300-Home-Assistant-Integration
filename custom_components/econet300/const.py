@@ -648,10 +648,11 @@ ENTITY_SENSOR_DEVICE_CLASS_MAP: dict[str, SensorDeviceClass | None] = {
     "tempLowerBuffer": SensorDeviceClass.TEMPERATURE,
     "signal": SensorDeviceClass.SIGNAL_STRENGTH,
     "servoMixer1": SensorDeviceClass.ENUM,
+    "mode": SensorDeviceClass.ENUM,
+    "transmission": SensorDeviceClass.ENUM,
     # ecoMAX850R2-X specific device classes
     "fuelConsum": SensorDeviceClass.POWER_FACTOR,
     "fuelStream": SensorDeviceClass.POWER_FACTOR,
-    "transmission": None,
     # ecoSTER thermostat device classes
     "ecoSterTemp1": SensorDeviceClass.TEMPERATURE,
     "ecoSterTemp2": SensorDeviceClass.TEMPERATURE,
@@ -899,4 +900,13 @@ SENSOR_STATUS_CO_MAPPING: dict[int, str] = {
 SENSOR_THERMOSTAT_MAPPING: dict[int, str] = {
     0: "off",
     1: "on",
+}
+
+# =============================================================================
+# ENUM SENSOR OPTIONS
+# =============================================================================
+# Options for SensorDeviceClass.ENUM sensors - displayed in HA Developer Tools
+SENSOR_ENUM_OPTIONS: dict[str, list[str]] = {
+    "mode": list(OPERATION_MODE_NAMES.values()),
+    "transmission": list(OPERATION_MODE_NAMES.values()),
 }

@@ -26,6 +26,7 @@ from .const import (
     ENTITY_SENSOR_DEVICE_CLASS_MAP,
     ENTITY_UNIT_MAP,
     ENTITY_VALUE_PROCESSOR,
+    SENSOR_ENUM_OPTIONS,
     SENSOR_MAP_KEY,
     SENSOR_MIXER_KEY,
     SERVICE_API,
@@ -66,6 +67,7 @@ class EconetSensor(EconetEntity, SensorEntity):
         self.entity_description = entity_description
         self.api = api
         self._attr_native_value = None
+        self._raw_value: Any = None
         super().__init__(coordinator, api)
 
     @property
@@ -77,8 +79,22 @@ class EconetSensor(EconetEntity, SensorEntity):
         # Fall back to parent class device_info (main boiler device)
         return super().device_info
 
+    @property
+    def options(self) -> list[str] | None:
+        """Return options for ENUM sensors."""
+        return SENSOR_ENUM_OPTIONS.get(self.entity_description.key)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra state attributes for the sensor."""
+        attrs: dict[str, Any] = {}
+        if self._raw_value is not None:
+            attrs["raw_value"] = self._raw_value
+        return attrs
+
     def _sync_state(self, value) -> None:
         """Synchronize the state of the sensor entity."""
+        self._raw_value = value
         self._attr_native_value = self.entity_description.process_val(value)
         self.async_write_ha_state()
 

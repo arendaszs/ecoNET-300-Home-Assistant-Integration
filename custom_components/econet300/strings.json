@@ -370,7 +370,7 @@
         "name": "Module ecoSTER version"
       },
       "mode": {
-        "name": "Boiler mode",
+        "name": "Mode",
         "state": {
           "off": "[%key:common::state::off%]",
           "fire_up": "Fire up",

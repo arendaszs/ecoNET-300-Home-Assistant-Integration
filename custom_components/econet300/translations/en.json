@@ -346,7 +346,7 @@
         "name": "Firing up count"
       },
       "mode": {
-        "name": "Boiler mode",
+        "name": "Mode",
         "state": {
           "off": "Off",
           "fire_up": "Fire up",
