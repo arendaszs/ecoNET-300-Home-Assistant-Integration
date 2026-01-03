@@ -1,5 +1,17 @@
 # Changelog
 
+## [v1.2.0a3] - 2025-01-03
+
+### 🔧 Improvements
+
+- **Number Entity Input Mode**: Changed basic NUMBER_MAP entities from slider to input box
+  - **Problem**: Temperature setpoints and other number entities displayed as sliders, making precise input difficult
+  - **Solution**: Changed `NumberMode.AUTO` to `NumberMode.BOX` in `create_number_entity_description()`
+  - **Impact**: Boiler temperature and other number entities now show as input boxes for easier value entry
+  - **Files Modified**: `custom_components/econet300/number.py`
+
+---
+
 ## [v1.2.0a2] - 2025-01-03
 
 ### 🚀 New Features
