@@ -972,7 +972,7 @@ def create_number_entity_description(
         key=key,
         translation_key=camel_to_snake(map_key),
         device_class=ENTITY_NUMBER_SENSOR_DEVICE_CLASS_MAP.get(map_key),
-        mode=NumberMode.AUTO,  # Show as input box instead of slider
+        mode=NumberMode.BOX,  # Show as input box instead of slider
         native_unit_of_measurement=ENTITY_UNIT_MAP.get(map_key),
         native_min_value=min_value,
         native_max_value=max_value,
