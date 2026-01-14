@@ -25,6 +25,49 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
+def _create_base_device_info(
+    api: Econet300Api,
+    identifier: str,
+    name: str,
+    parent_device_id: str | None = None,
+    include_model_id: bool = False,
+    include_hw_version: bool = False,
+) -> DeviceInfo:
+    """Create base DeviceInfo with common fields.
+
+    Args:
+        api: Econet300Api instance
+        identifier: Unique device identifier
+        name: Device display name
+        parent_device_id: Parent device identifier for via_device
+        include_model_id: Whether to include model_id
+        include_hw_version: Whether to include hw_version
+
+    Returns:
+        DeviceInfo with common fields populated
+
+    """
+    device_info = {
+        "identifiers": {(DOMAIN, identifier)},
+        "name": name,
+        "manufacturer": DEVICE_INFO_MANUFACTURER,
+        "model": DEVICE_INFO_MODEL,
+        "configuration_url": api.host,
+        "sw_version": api.sw_rev,
+    }
+
+    if parent_device_id:
+        device_info["via_device"] = (DOMAIN, parent_device_id)
+
+    if include_model_id:
+        device_info["model_id"] = api.model_id
+
+    if include_hw_version:
+        device_info["hw_version"] = api.hw_ver
+
+    return DeviceInfo(**device_info)
+
+
 class EconetEntity(CoordinatorEntity):
     """Represents EconetEntity."""
 
@@ -46,15 +89,12 @@ class EconetEntity(CoordinatorEntity):
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device info of the entity."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, self.api.uid)},
+        return _create_base_device_info(
+            api=self.api,
+            identifier=self.api.uid,
             name=DEVICE_INFO_CONTROLLER_NAME,
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            model_id=self.api.model_id,
-            configuration_url=self.api.host,
-            sw_version=self.api.sw_rev,
-            hw_version=self.api.hw_ver,
+            include_model_id=True,
+            include_hw_version=True,
         )
 
     @callback
@@ -311,15 +351,12 @@ class MixerEntity(EconetEntity):
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device info of the entity."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{self.api.uid}-mixer-{self._idx}")},
+        return _create_base_device_info(
+            api=self.api,
+            identifier=f"{self.api.uid}-mixer-{self._idx}",
             name=f"{DEVICE_INFO_MIXER_NAME}{self._idx}",
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            model_id=self.api.model_id,
-            configuration_url=self.api.host,
-            sw_version=self.api.sw_rev,
-            via_device=(DOMAIN, self.api.uid),
+            parent_device_id=self.api.uid,
+            include_model_id=True,
         )
 
 
@@ -340,14 +377,11 @@ class LambdaEntity(EconetEntity):
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device info of the entity."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{self.api.uid}lambda")},
-            name=f"{DEVICE_INFO_LAMBDA_NAME}",
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            configuration_url=self.api.host,
-            sw_version=self.api.sw_rev,
-            via_device=(DOMAIN, self.api.uid),
+        return _create_base_device_info(
+            api=self.api,
+            identifier=f"{self.api.uid}-lambda",
+            name=DEVICE_INFO_LAMBDA_NAME,
+            parent_device_id=self.api.uid,
         )
 
 
@@ -370,15 +404,12 @@ class EcoSterEntity(EconetEntity):
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device info of the entity."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{self.api.uid}-ecoster-{self._idx}")},
+        return _create_base_device_info(
+            api=self.api,
+            identifier=f"{self.api.uid}-ecoster-{self._idx}",
             name=f"{DEVICE_INFO_ECOSTER_NAME} {self._idx}",
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            model_id=self.api.model_id,
-            configuration_url=self.api.host,
-            sw_version=self.api.sw_rev,
-            via_device=(DOMAIN, self.api.uid),
+            parent_device_id=self.api.uid,
+            include_model_id=True,
         )
 
 
@@ -401,87 +432,66 @@ def get_device_info_for_component(
     """
     # Main boiler device (parent of all others)
     if component == "boiler":
-        return DeviceInfo(
-            identifiers={(DOMAIN, api.uid)},
+        return _create_base_device_info(
+            api=api,
+            identifier=api.uid,
             name=DEVICE_INFO_CONTROLLER_NAME,
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            model_id=api.model_id,
-            configuration_url=api.host,
-            sw_version=api.sw_rev,
-            hw_version=api.hw_ver,
+            include_model_id=True,
+            include_hw_version=True,
         )
 
     # HUW Tank device
     if component == "huw":
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{api.uid}-huw")},
+        return _create_base_device_info(
+            api=api,
+            identifier=f"{api.uid}-huw",
             name=DEVICE_INFO_HUW_NAME,
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            configuration_url=api.host,
-            sw_version=api.sw_rev,
-            via_device=(DOMAIN, api.uid),
+            parent_device_id=api.uid,
         )
 
     # Mixer devices (1-4)
     if component.startswith("mixer_"):
         idx = mixer_idx or int(component.split("_")[1])
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{api.uid}-mixer-{idx}")},
+        return _create_base_device_info(
+            api=api,
+            identifier=f"{api.uid}-mixer-{idx}",
             name=f"{DEVICE_INFO_MIXER_NAME}{idx}",
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            model_id=api.model_id,
-            configuration_url=api.host,
-            sw_version=api.sw_rev,
-            via_device=(DOMAIN, api.uid),
+            parent_device_id=api.uid,
+            include_model_id=True,
         )
 
     # Lambda sensor device
     if component == "lambda":
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{api.uid}lambda")},
+        return _create_base_device_info(
+            api=api,
+            identifier=f"{api.uid}-lambda",
             name=DEVICE_INFO_LAMBDA_NAME,
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            configuration_url=api.host,
-            sw_version=api.sw_rev,
-            via_device=(DOMAIN, api.uid),
+            parent_device_id=api.uid,
         )
 
     # Buffer device
     if component == "buffer":
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{api.uid}-buffer")},
+        return _create_base_device_info(
+            api=api,
+            identifier=f"{api.uid}-buffer",
             name=DEVICE_INFO_BUFFER_NAME,
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            configuration_url=api.host,
-            sw_version=api.sw_rev,
-            via_device=(DOMAIN, api.uid),
+            parent_device_id=api.uid,
         )
 
     # Solar device
     if component == "solar":
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{api.uid}-solar")},
+        return _create_base_device_info(
+            api=api,
+            identifier=f"{api.uid}-solar",
             name=DEVICE_INFO_SOLAR_NAME,
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            configuration_url=api.host,
-            sw_version=api.sw_rev,
-            via_device=(DOMAIN, api.uid),
+            parent_device_id=api.uid,
         )
 
     # Default to main boiler device
-    return DeviceInfo(
-        identifiers={(DOMAIN, api.uid)},
+    return _create_base_device_info(
+        api=api,
+        identifier=api.uid,
         name=DEVICE_INFO_CONTROLLER_NAME,
-        manufacturer=DEVICE_INFO_MANUFACTURER,
-        model=DEVICE_INFO_MODEL,
-        model_id=api.model_id,
-        configuration_url=api.host,
-        sw_version=api.sw_rev,
-        hw_version=api.hw_ver,
+        include_model_id=True,
+        include_hw_version=True,
     )
