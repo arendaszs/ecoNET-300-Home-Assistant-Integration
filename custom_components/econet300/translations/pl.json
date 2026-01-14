@@ -380,16 +380,19 @@
         "name": "Status ogrzewania",
         "state": {
           "off": "Wyłączone",
-          "pause": "Pauza",
-          "reload": "Przeładowanie",
-          "fire": "Ogień",
-          "alert": "Alert",
-          "test_tube": "Rurka testowa",
-          "stop_circle": "Zatrzymanie",
-          "gauge": "Wskaźnik",
-          "help_circle": "Pomoc",
-          "error": "Błąd",
-          "maintenance": "Konserwacja"
+          "fire_up": "Rozpalanie",
+          "stabilization": "Stabilizacja",
+          "operation": "Praca",
+          "supervision": "Nadzór",
+          "burning_off": "Wypalanie",
+          "stop": "Stop",
+          "standby": "Gotowość",
+          "manual": "Ręczny",
+          "alarm": "Alarm",
+          "unsealing": "Rozszczelnienie",
+          "chimney": "Komin",
+          "activation": "Aktywacja",
+          "no_transmission": "Brak transmisji"
         }
       },
       "soft_ver": {

@@ -383,16 +383,19 @@
         "name": "Central heating status",
         "state": {
           "off": "Off",
-          "pause": "Pause",
-          "reload": "Reload",
-          "fire": "Fire",
-          "alert": "Alert",
-          "test_tube": "Test tube",
-          "stop_circle": "Stop circle",
-          "gauge": "Gauge",
-          "help_circle": "Help circle",
-          "error": "Error",
-          "maintenance": "Maintenance"
+          "fire_up": "Fire up",
+          "stabilization": "Stabilization",
+          "operation": "Operation",
+          "supervision": "Supervision",
+          "burning_off": "Burning off",
+          "stop": "Stop",
+          "standby": "Standby",
+          "manual": "Manual",
+          "alarm": "Alarm",
+          "unsealing": "Unsealing",
+          "chimney": "Chimney",
+          "activation": "Activation",
+          "no_transmission": "No transmission"
         }
       },
       "work_at100": {

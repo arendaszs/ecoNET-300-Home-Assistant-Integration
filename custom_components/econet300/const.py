@@ -642,7 +642,7 @@ ENTITY_SENSOR_DEVICE_CLASS_MAP: dict[str, SensorDeviceClass | None] = {
     "mixerSetTemp": SensorDeviceClass.TEMPERATURE,
     "tempBack": SensorDeviceClass.TEMPERATURE,
     "tempCWU": SensorDeviceClass.TEMPERATURE,
-    "statusCO": None,
+    "statusCO": SensorDeviceClass.ENUM,
     "statusCWU": None,
     "tempUpperBuffer": SensorDeviceClass.TEMPERATURE,
     "tempLowerBuffer": SensorDeviceClass.TEMPERATURE,
@@ -884,17 +884,20 @@ SENSOR_STATUS_CWU_MAPPING: dict[int, str] = {
 }
 
 SENSOR_STATUS_CO_MAPPING: dict[int, str] = {
-    0: "off",
-    1: "pause",
-    2: "reload",
-    3: "fire",
-    4: "fire",
-    5: "alert",
-    6: "alert",
-    7: "test_tube",
-    8: "stop_circle",
-    9: "gauge",
-    10: "help_circle",
+    0: "off",  # TURNED OFF
+    1: "fire_up",  # FIRE UP
+    2: "stabilization",  # STABILIZATION
+    3: "operation",  # OPERATION
+    4: "supervision",  # SUPERVISION
+    5: "burning_off",  # BURNING OFF
+    6: "stop",  # STOP
+    7: "standby",  # R.P.OUT (standby/ready to output)
+    8: "manual",  # MANUAL
+    9: "alarm",  # ALARM
+    10: "unsealing",  # UNSEALING
+    11: "chimney",  # CHIMNEY
+    12: "activation",  # ACTIVATION
+    13: "no_transmission",  # NO TRANSMISSION
 }
 
 SENSOR_THERMOSTAT_MAPPING: dict[int, str] = {
@@ -909,4 +912,5 @@ SENSOR_THERMOSTAT_MAPPING: dict[int, str] = {
 SENSOR_ENUM_OPTIONS: dict[str, list[str]] = {
     "mode": list(OPERATION_MODE_NAMES.values()),
     "transmission": list(OPERATION_MODE_NAMES.values()),
+    "statusCO": list(SENSOR_STATUS_CO_MAPPING.values()),
 }
