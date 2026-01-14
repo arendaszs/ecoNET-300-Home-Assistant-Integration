@@ -912,5 +912,5 @@ SENSOR_THERMOSTAT_MAPPING: dict[int, str] = {
 SENSOR_ENUM_OPTIONS: dict[str, list[str]] = {
     "mode": list(OPERATION_MODE_NAMES.values()),
     "transmission": list(OPERATION_MODE_NAMES.values()),
-    "statusCO": list(SENSOR_STATUS_CO_MAPPING.values()),
+    "statusCO": [*SENSOR_STATUS_CO_MAPPING.values(), STATE_UNKNOWN],
 }

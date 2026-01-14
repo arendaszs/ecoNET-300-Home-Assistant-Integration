@@ -395,7 +395,8 @@
           "unsealing": "Unsealing",
           "chimney": "Chimney",
           "activation": "Activation",
-          "no_transmission": "No transmission"
+          "no_transmission": "No transmission",
+          "unknown": "Unknown"
         }
       },
       "work_at100": {

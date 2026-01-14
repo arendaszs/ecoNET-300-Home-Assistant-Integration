@@ -392,7 +392,8 @@
           "unsealing": "Rozszczelnienie",
           "chimney": "Komin",
           "activation": "Aktywacja",
-          "no_transmission": "Brak transmisji"
+          "no_transmission": "Brak transmisji",
+          "unknown": "Nieznany"
         }
       },
       "soft_ver": {
