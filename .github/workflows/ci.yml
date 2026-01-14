@@ -20,7 +20,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -42,7 +42,6 @@ jobs:
         pip install ruff
         ruff check custom_components/
 
-    - name: Format check with Black
+    - name: Format check with Ruff
       run: |
-        pip install black
-        black --check custom_components/
+        ruff format --check custom_components/
