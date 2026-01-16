@@ -884,20 +884,33 @@ SENSOR_STATUS_CWU_MAPPING: dict[int, str] = {
 }
 
 SENSOR_STATUS_CO_MAPPING: dict[int, str] = {
-    0: "off",  # TURNED OFF
-    1: "fire_up",  # FIRE UP
-    2: "stabilization",  # STABILIZATION
-    3: "operation",  # OPERATION
-    4: "supervision",  # SUPERVISION
-    5: "burning_off",  # BURNING OFF
-    6: "stop",  # STOP
-    7: "standby",  # R.P.OUT (standby/ready to output)
-    8: "manual",  # MANUAL
-    9: "alarm",  # ALARM
-    10: "unsealing",  # UNSEALING
-    11: "chimney",  # CHIMNEY
-    12: "activation",  # ACTIVATION
-    13: "no_transmission",  # NO TRANSMISSION
+    0: "off",  # modeTurnOff - TURNED OFF
+    1: "stop",  # modeStop - STOP
+    2: "fire_up",  # modeKindle - FIRE UP / KINDLING
+    3: "operation",  # modeWork - OPERATION / WORK
+    4: "supervision",  # modeSupervision - SUPERVISION
+    5: "paused",  # modeHalt - HALTED / PAUSED
+    6: "cleaning",  # modeCleaning - CLEANING
+    7: "burning_off",  # modeExtinction - BURNING OFF / EXTINCTION
+    8: "alarm",  # modeAlarm - ALARM
+    9: "manual",  # modeManual - MANUAL
+    10: "unsealing",  # modeUnsealing - UNSEALING
+    11: "other",  # modeOther - OTHER
+    12: "stabilization",  # modeStabilization - STABILIZATION
+    13: "purge",  # modePurge - PURGE
+    14: "check_flame",  # modeCheckFlame - CHECK FLAME
+    15: "flame_losing",  # modeFlameLosing - FLAME LOSING
+    16: "prevention",  # modePrevention - PREVENTION
+    17: "work_grate",  # modeWorkGrate - WORK GRATE
+    18: "supervision_grate",  # modeSupervisionGrate - SUPERVISION GRATE
+    19: "calibration",  # modeCalibration - CALIBRATION
+    20: "maintain",  # modeMaintain - MAINTAIN / MAINTENANCE
+    21: "afterburning",  # modeAfterburning - AFTERBURNING
+    22: "chimney_sweep",  # modeChimneySwep - CHIMNEY SWEEP
+    23: "heating",  # modeHeats - HEATING
+    24: "open_door",  # modeOpenDoor - OPEN DOOR
+    25: "cooling",  # modeCooling - COOLING
+    26: "safe",  # modeSafe - SAFE MODE
 }
 
 SENSOR_THERMOSTAT_MAPPING: dict[int, str] = {
