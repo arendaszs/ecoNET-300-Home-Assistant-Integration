@@ -13,7 +13,19 @@ see: docs/DYNAMIC_ENTITY_VALIDATION.md
 import logging
 import re
 
-from .const import AVAILABLE_NUMBER_OF_MIXERS
+from .const import (
+    AVAILABLE_NUMBER_OF_MIXERS,
+    COMPONENT_BOILER,
+    COMPONENT_BUFFER,
+    COMPONENT_HUW,
+    COMPONENT_LAMBDA,
+    COMPONENT_MIXER_1,
+    COMPONENT_MIXER_2,
+    COMPONENT_MIXER_3,
+    COMPONENT_MIXER_4,
+    COMPONENT_SOLAR,
+    DEFAULT_COMPONENT_STATUS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -497,17 +509,7 @@ def detect_connected_components(reg_params: dict | None) -> dict[str, bool]:
 
     """
     if not reg_params:
-        return {
-            "boiler": True,
-            "huw": False,
-            "mixer_1": False,
-            "mixer_2": False,
-            "mixer_3": False,
-            "mixer_4": False,
-            "lambda": False,
-            "buffer": False,
-            "solar": False,
-        }
+        return DEFAULT_COMPONENT_STATUS.copy()
 
     def is_connected(key: str) -> bool:
         """Check if a sensor value indicates component is connected."""
@@ -519,15 +521,16 @@ def detect_connected_components(reg_params: dict | None) -> dict[str, bool]:
         )
 
     return {
-        "boiler": True,  # Boiler is always present
-        "huw": is_connected("tempCWU"),
-        "mixer_1": is_connected("mixerTemp1"),
-        "mixer_2": is_connected("mixerTemp2"),
-        "mixer_3": is_connected("mixerTemp3"),
-        "mixer_4": is_connected("mixerTemp4"),
-        "lambda": reg_params.get("lambdaStatus") is not None,
-        "buffer": is_connected("tempUpperBuffer") or is_connected("tempLowerBuffer"),
-        "solar": is_connected("tempSolarCollector"),
+        COMPONENT_BOILER: True,  # Boiler is always present
+        COMPONENT_HUW: is_connected("tempCWU"),
+        COMPONENT_MIXER_1: is_connected("mixerTemp1"),
+        COMPONENT_MIXER_2: is_connected("mixerTemp2"),
+        COMPONENT_MIXER_3: is_connected("mixerTemp3"),
+        COMPONENT_MIXER_4: is_connected("mixerTemp4"),
+        COMPONENT_LAMBDA: reg_params.get("lambdaStatus") is not None,
+        COMPONENT_BUFFER: is_connected("tempUpperBuffer")
+        or is_connected("tempLowerBuffer"),
+        COMPONENT_SOLAR: is_connected("tempSolarCollector"),
     }
 
 
@@ -554,40 +557,46 @@ def get_entity_component(
 
     """
     if not name and not key:
-        return "boiler"
+        return COMPONENT_BOILER
 
     # Combine name, key, and description for pattern matching
     text = f"{name or ''} {key or ''} {description or ''}".lower()
 
     # Check for specific mixer (numbered patterns have highest priority)
+    mixer_components = [
+        COMPONENT_MIXER_1,
+        COMPONENT_MIXER_2,
+        COMPONENT_MIXER_3,
+        COMPONENT_MIXER_4,
+    ]
     for i in range(1, 5):
         if f"mixer{i}" in text or f"mixer {i}" in text or f"mixer_{i}" in text:
-            return f"mixer_{i}"
+            return mixer_components[i - 1]
 
     # Check for HUW/CWU (hot utility water / hot tap water)
     if "huw" in text or "cwu" in text:
-        return "huw"
+        return COMPONENT_HUW
 
     # Check for Lambda sensor
     if "lambda" in text:
-        return "lambda"
+        return COMPONENT_LAMBDA
 
     # Check for Buffer
     if "buffer" in text:
-        return "buffer"
+        return COMPONENT_BUFFER
 
     # Check for Solar
     if "solar" in text:
-        return "solar"
+        return COMPONENT_SOLAR
 
     # If description mentions "mixer" generically and we have a sequence number,
     # use the sequence number to assign to the correct mixer
     if sequence_num and 1 <= sequence_num <= 4:
         if "mixer" in text:
-            return f"mixer_{sequence_num}"
+            return mixer_components[sequence_num - 1]
 
     # Default to boiler
-    return "boiler"
+    return COMPONENT_BOILER
 
 
 def get_validated_entity_component(
@@ -601,7 +610,7 @@ def get_validated_entity_component(
 
     Determines which component an entity belongs to, and validates
     that the component actually exists (e.g., mixer is connected).
-    Falls back to "boiler" if the target component doesn't exist.
+    Falls back to COMPONENT_BOILER if the target component doesn't exist.
 
     This is the primary function to use for device assignment - it combines
     pattern detection from get_entity_component() with hardware validation.
@@ -614,8 +623,8 @@ def get_validated_entity_component(
         coordinator_data: Coordinator data for validation (regParams, etc.)
 
     Returns:
-        Component identifier: "boiler", "huw", "mixer_1" through "mixer_4",
-        "lambda", "buffer", or "solar"
+        Component identifier: COMPONENT_BOILER, COMPONENT_HUW, COMPONENT_MIXER_1 through
+        COMPONENT_MIXER_4, COMPONENT_LAMBDA, COMPONENT_BUFFER, or COMPONENT_SOLAR
 
     """
     # First, determine the ideal component based on patterns
@@ -630,7 +639,7 @@ def get_validated_entity_component(
                 mixer_num,
                 name or key,
             )
-            return "boiler"
+            return COMPONENT_BOILER
 
     # Add validation for other components (lambda, buffer, solar, huw)
     # when hardware detection is available

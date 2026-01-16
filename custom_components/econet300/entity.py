@@ -10,6 +10,11 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .api import Econet300Api
 from .common import EconetDataCoordinator
 from .const import (
+    COMPONENT_BOILER,
+    COMPONENT_BUFFER,
+    COMPONENT_HUW,
+    COMPONENT_LAMBDA,
+    COMPONENT_SOLAR,
     DEVICE_INFO_BUFFER_NAME,
     DEVICE_INFO_CONTROLLER_NAME,
     DEVICE_INFO_ECOSTER_NAME,
@@ -47,25 +52,23 @@ def _create_base_device_info(
         DeviceInfo with common fields populated
 
     """
-    device_info = {
-        "identifiers": {(DOMAIN, identifier)},
-        "name": name,
-        "manufacturer": DEVICE_INFO_MANUFACTURER,
-        "model": DEVICE_INFO_MODEL,
-        "configuration_url": api.host,
-        "sw_version": api.sw_rev,
-    }
-
+    # Build base device info - always present fields
+    info = DeviceInfo(
+        identifiers={(DOMAIN, identifier)},
+        name=name,
+        manufacturer=DEVICE_INFO_MANUFACTURER,
+        model=DEVICE_INFO_MODEL,
+        configuration_url=api.host,
+        sw_version=api.sw_rev,
+    )
+    # Add optional fields only when they have values
     if parent_device_id:
-        device_info["via_device"] = (DOMAIN, parent_device_id)
-
+        info["via_device"] = (DOMAIN, parent_device_id)
     if include_model_id:
-        device_info["model_id"] = api.model_id
-
+        info["model_id"] = api.model_id
     if include_hw_version:
-        device_info["hw_version"] = api.hw_ver
-
-    return DeviceInfo(**device_info)
+        info["hw_version"] = api.hw_ver
+    return info
 
 
 class EconetEntity(CoordinatorEntity):
@@ -96,6 +99,56 @@ class EconetEntity(CoordinatorEntity):
             include_model_id=True,
             include_hw_version=True,
         )
+
+    def _get_param_data(self) -> dict | None:
+        """Get parameter data from mergedData for this entity.
+
+        Looks up parameter data using either self._param_id (instance attribute)
+        or self.entity_description.param_id, handling both string and int keys.
+
+        Returns:
+            Parameter data dict if found, None otherwise
+
+        """
+        if self.coordinator.data is None:
+            return None
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return None
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return None
+
+        # Try instance _param_id first, then entity_description.param_id
+        param_id = getattr(self, "_param_id", None) or getattr(
+            self.entity_description, "param_id", None
+        )
+        if not param_id:
+            return None
+
+        # Try direct lookup, then string/int conversion
+        if param_id in merged_parameters:
+            return merged_parameters[param_id]
+        if str(param_id).isdigit():
+            return merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
+        return None
+
+    def _is_parameter_locked(self) -> bool:
+        """Check if the parameter is locked."""
+        param_data = self._get_param_data()
+        return param_data.get("locked", False) if param_data else False
+
+    def _get_lock_reason(self) -> str | None:
+        """Get the lock reason for the parameter."""
+        param_data = self._get_param_data()
+        return param_data.get("lock_reason") if param_data else None
+
+    def _get_description(self) -> str | None:
+        """Get the description for the parameter."""
+        param_data = self._get_param_data()
+        return param_data.get("description") if param_data else None
 
     @callback
     def _handle_coordinator_update(self) -> None:
@@ -422,7 +475,7 @@ def get_device_info_for_component(
     to be grouped under their respective physical components in Home Assistant.
 
     Args:
-        component: Component identifier ("boiler", "huw", "mixer_1", etc.)
+        component: Component identifier (COMPONENT_BOILER, COMPONENT_HUW, etc.)
         api: Econet300Api instance for device information
         mixer_idx: Optional mixer index (1-4) for mixer components
 
@@ -430,68 +483,56 @@ def get_device_info_for_component(
         DeviceInfo for the specified component
 
     """
-    # Main boiler device (parent of all others)
-    if component == "boiler":
+    if component == COMPONENT_BOILER:
         return _create_base_device_info(
-            api=api,
-            identifier=api.uid,
-            name=DEVICE_INFO_CONTROLLER_NAME,
+            api,
+            api.uid,
+            DEVICE_INFO_CONTROLLER_NAME,
             include_model_id=True,
             include_hw_version=True,
         )
-
-    # HUW Tank device
-    if component == "huw":
+    if component == COMPONENT_HUW:
         return _create_base_device_info(
-            api=api,
-            identifier=f"{api.uid}-huw",
-            name=DEVICE_INFO_HUW_NAME,
+            api,
+            f"{api.uid}-huw",
+            DEVICE_INFO_HUW_NAME,
             parent_device_id=api.uid,
         )
-
-    # Mixer devices (1-4)
     if component.startswith("mixer_"):
         idx = mixer_idx or int(component.split("_")[1])
         return _create_base_device_info(
-            api=api,
-            identifier=f"{api.uid}-mixer-{idx}",
-            name=f"{DEVICE_INFO_MIXER_NAME}{idx}",
+            api,
+            f"{api.uid}-mixer-{idx}",
+            f"{DEVICE_INFO_MIXER_NAME}{idx}",
             parent_device_id=api.uid,
             include_model_id=True,
         )
-
-    # Lambda sensor device
-    if component == "lambda":
+    if component == COMPONENT_LAMBDA:
         return _create_base_device_info(
-            api=api,
-            identifier=f"{api.uid}-lambda",
-            name=DEVICE_INFO_LAMBDA_NAME,
+            api,
+            f"{api.uid}-lambda",
+            DEVICE_INFO_LAMBDA_NAME,
             parent_device_id=api.uid,
         )
-
-    # Buffer device
-    if component == "buffer":
+    if component == COMPONENT_BUFFER:
         return _create_base_device_info(
-            api=api,
-            identifier=f"{api.uid}-buffer",
-            name=DEVICE_INFO_BUFFER_NAME,
+            api,
+            f"{api.uid}-buffer",
+            DEVICE_INFO_BUFFER_NAME,
             parent_device_id=api.uid,
         )
-
-    # Solar device
-    if component == "solar":
+    if component == COMPONENT_SOLAR:
         return _create_base_device_info(
-            api=api,
-            identifier=f"{api.uid}-solar",
-            name=DEVICE_INFO_SOLAR_NAME,
+            api,
+            f"{api.uid}-solar",
+            DEVICE_INFO_SOLAR_NAME,
             parent_device_id=api.uid,
         )
-
     # Default to main boiler device
     return _create_base_device_info(
-        api=api,
-        identifier=api.uid,
-        name=DEVICE_INFO_CONTROLLER_NAME,
+        api,
+        api.uid,
+        DEVICE_INFO_CONTROLLER_NAME,
         include_model_id=True,
         include_hw_version=True,
     )

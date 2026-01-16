@@ -72,6 +72,34 @@ CONF_ENTRY_TITLE = "ecoNET300"
 CONF_ENTRY_DESCRIPTION = "PLUM Econet300"
 
 # =============================================================================
+# DEVICE COMPONENT IDENTIFIERS
+# =============================================================================
+# These constants identify device components for grouping entities in Home Assistant.
+# When adding a new device type, add a constant here and update DEFAULT_COMPONENT_STATUS.
+COMPONENT_BOILER = "boiler"
+COMPONENT_HUW = "huw"
+COMPONENT_MIXER_1 = "mixer_1"
+COMPONENT_MIXER_2 = "mixer_2"
+COMPONENT_MIXER_3 = "mixer_3"
+COMPONENT_MIXER_4 = "mixer_4"
+COMPONENT_LAMBDA = "lambda"
+COMPONENT_BUFFER = "buffer"
+COMPONENT_SOLAR = "solar"
+
+# Default component status template - used when no reg_params available
+DEFAULT_COMPONENT_STATUS: dict[str, bool] = {
+    COMPONENT_BOILER: True,
+    COMPONENT_HUW: False,
+    COMPONENT_MIXER_1: False,
+    COMPONENT_MIXER_2: False,
+    COMPONENT_MIXER_3: False,
+    COMPONENT_MIXER_4: False,
+    COMPONENT_LAMBDA: False,
+    COMPONENT_BUFFER: False,
+    COMPONENT_SOLAR: False,
+}
+
+# =============================================================================
 # API ENDPOINT CONSTANTS
 # =============================================================================
 # endpoint url sysParams
@@ -320,7 +348,7 @@ DEFAULT_SENSORS = {
 SENSOR_MAP_KEY = {
     "ecoMAX360i": ECOMAX360I_SENSORS,  # Reference only - not used
     "ecoSter": ECOSTER_SENSORS,  # Reference only - not used
-    "lambda": LAMBDA_SENSORS,  # Reference only - not used
+    COMPONENT_LAMBDA: LAMBDA_SENSORS,  # Reference only - not used
     "ecoSOL 500": ECOSOL_SENSORS,  # Reference only - not used
     "ecoSOL 301": ECOSOL_SENSORS,  # Reference only - not used
     "_default": DEFAULT_SENSORS,  # Always used for all controllers

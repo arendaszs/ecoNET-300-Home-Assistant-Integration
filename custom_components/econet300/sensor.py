@@ -20,6 +20,7 @@ from .api import Econet300Api
 from .common import EconetDataCoordinator
 from .common_functions import camel_to_snake, get_entity_component
 from .const import (
+    COMPONENT_LAMBDA,
     DOMAIN,
     ENTITY_CATEGORY,
     ENTITY_PRECISION,
@@ -466,7 +467,7 @@ def create_lambda_sensors(coordinator: EconetDataCoordinator, api: Econet300Api)
     if coordinator_data is None:
         coordinator_data = {}
 
-    for data_key in SENSOR_MAP_KEY["lambda"]:
+    for data_key in SENSOR_MAP_KEY[COMPONENT_LAMBDA]:
         if data_key in coordinator_data:
             entities.append(
                 LambdaSensors(

@@ -114,7 +114,7 @@ class EconetSwitch(EconetEntity, SwitchEntity):
             raise
 
 
-class EconetDynamicSwitch(SwitchEntity):
+class EconetDynamicSwitch(EconetEntity, SwitchEntity):
     """Represents a dynamic ecoNET switch entity from mergedData."""
 
     _attr_has_entity_name = True
@@ -140,9 +140,8 @@ class EconetDynamicSwitch(SwitchEntity):
         sequence_num: int | None = None,
     ):
         """Initialize a new dynamic ecoNET switch entity."""
+        super().__init__(coordinator, api)
         self.entity_description = entity_description
-        self.coordinator = coordinator
-        self.api = api
         self._param_id = param_id
         self._param = param
         self._attr_is_on = False
@@ -234,36 +233,6 @@ class EconetDynamicSwitch(SwitchEntity):
             if lock_reason:
                 attrs["lock_reason"] = lock_reason
         return attrs
-
-    def _is_parameter_locked(self) -> bool:
-        """Check if the parameter is locked."""
-        if self.coordinator.data is None:
-            return False
-
-        merged_data = self.coordinator.data.get("mergedData")
-        if not merged_data:
-            return False
-
-        parameters = merged_data.get("parameters", {})
-        param_data = parameters.get(self._param_id)
-        if param_data:
-            return param_data.get("locked", False)
-        return False
-
-    def _get_lock_reason(self) -> str | None:
-        """Get the lock reason for this parameter."""
-        if self.coordinator.data is None:
-            return None
-
-        merged_data = self.coordinator.data.get("mergedData")
-        if not merged_data:
-            return None
-
-        parameters = merged_data.get("parameters", {})
-        param_data = parameters.get(self._param_id)
-        if param_data:
-            return param_data.get("lock_reason")
-        return None
 
     async def async_added_to_hass(self) -> None:
         """Handle entity added to Home Assistant."""
