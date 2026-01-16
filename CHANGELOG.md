@@ -1,5 +1,34 @@
 # Changelog
 
+## [v1.2.0a5] - 2025-01-16
+
+### 🚀 New Features
+
+- **Expanded Boiler Status Codes**: Complete support for all 27 known boiler operation status codes
+  - **Problem**: `sensor.central_heating_status` showed "unknown" for status code 16 and other undocumented values
+  - **Solution**: Added all status codes from ecoNET cloud JavaScript to `SENSOR_STATUS_CO_MAPPING`
+  - **New Status Codes Added**:
+    - `prevention` (16) - Boiler in prevention/protection mode
+    - `work_grate` (17) - Work grate operation
+    - `supervision_grate` (18) - Supervision grate mode
+    - `calibration` (19) - Calibration mode
+    - `maintain` (20) - Maintenance mode
+    - `afterburning` (21) - Afterburning phase
+    - `chimney_sweep` (22) - Chimney sweep mode
+    - `heating` (23) - Heating mode
+    - `open_door` (24) - Open door status
+    - `cooling` (25) - Cooling mode
+    - `safe` (26) - Safe mode
+  - **Files Modified**: `const.py`, `strings.json`, all translation files
+
+### 🌐 Translation Updates
+
+- **Status Code Translations**: Added translations for all 27 status codes in 5 languages
+  - English, Polish, French, Ukrainian, Czech
+  - Files Modified: `strings.json`, `translations/en.json`, `translations/pl.json`, `translations/fr.json`, `translations/uk.json`, `translations/cz.json`
+
+---
+
 ## [v1.2.0a4] - 2025-01-03
 
 ### 🚀 New Features

@@ -410,6 +410,7 @@ For detailed version information and changelog, see [CHANGELOG.md](CHANGELOG.md)
 
 ### Latest Features
 
+- **Complete Boiler Status Codes**: All 27 operation status codes supported (including prevention, calibration, maintenance, etc.)
 - **Repair Issues System**: Automatic detection of connection failures with easy one-click fix in Settings → System → Repairs
 - **Reconfiguration Flow**: Update connection settings (host, username, password) after initial setup via integration options
 - **Diagnostics Support**: Comprehensive diagnostics for troubleshooting issues
@@ -466,4 +467,4 @@ If you encounter any issues or have questions:
 
 ---
 
-_This README was last updated on 2025-01-03 with v1.2.0a4 release._
+_This README was last updated on 2025-01-16 with v1.2.0a5 release._
