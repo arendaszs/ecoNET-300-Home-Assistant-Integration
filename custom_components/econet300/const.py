@@ -34,6 +34,26 @@ SERVICE_API = "api"
 SERVICE_COORDINATOR = "coordinator"
 
 # =============================================================================
+# COORDINATOR CONFIGURATION CONSTANTS
+# =============================================================================
+# Number of consecutive failures before creating a repair issue
+CONSECUTIVE_FAILURES_THRESHOLD = 5
+
+# RM endpoint dataset keys for data coordinator (order matches tasks list)
+RM_CORE_DATASET_KEYS = [
+    "currentDataParams",
+    "paramsNames",
+    "paramsData",
+    "langs",
+]
+
+RM_ADDITIONAL_DATASET_KEYS = [
+    "paramsDescs",
+    "paramsEnums",
+    "alarmsNames",
+]
+
+# =============================================================================
 # DEVICE INFORMATION CONSTANTS
 # =============================================================================
 DEVICE_INFO_MANUFACTURER = "PLUM"
