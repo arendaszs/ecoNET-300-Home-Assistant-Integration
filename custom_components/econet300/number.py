@@ -4,6 +4,7 @@ import asyncio
 from dataclasses import dataclass
 import logging
 import re
+import time
 import traceback
 from typing import Any
 
@@ -332,6 +333,13 @@ class MixerNumber(MixerEntity, NumberEntity):
         idx: int,
     ):
         """Initialize a new instance of the MixerNumber class."""
+        # Track last write time to skip coordinator updates briefly after manual changes
+        # This prevents stale API data from reverting local state
+        self._last_write_time: float = 0.0
+        self._write_cooldown_seconds: float = (
+            5.0  # Skip updates for 5 seconds after write
+        )
+
         # Initialize min/max from entity_description or use sensible defaults
         # Use 'is not None' to preserve 0.0 as valid min value
         self._attr_native_min_value = (
@@ -348,6 +356,14 @@ class MixerNumber(MixerEntity, NumberEntity):
 
     def _sync_state(self, value):
         """Sync the state of the mixer number entity."""
+        # Skip updates briefly after a manual write to prevent stale data reverting state
+        if time.monotonic() - self._last_write_time < self._write_cooldown_seconds:
+            _LOGGER.debug(
+                "Skipping _sync_state for %s (within cooldown after write)",
+                self.entity_description.key,
+            )
+            return
+
         _LOGGER.debug(
             "MixerNumber _sync_state for entity %s: %s",
             self.entity_description.key,
@@ -508,6 +524,7 @@ class MixerNumber(MixerEntity, NumberEntity):
             return
 
         self._attr_native_value = value
+        self._last_write_time = time.monotonic()  # Record write time for cooldown
         self.async_write_ha_state()
 
 

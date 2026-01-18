@@ -40,6 +40,8 @@ from .const import (
     API_SYS_PARAMS_PARAM_SW_REV,
     API_SYS_PARAMS_PARAM_UID,
     API_SYS_PARAMS_URI,
+    CACHE_KEY_STATIC_METADATA,
+    CACHE_STATIC_METADATA_TTL,
     CONTROL_PARAMS,
     NUMBER_MAP,
     RM_STRUCTURE_TYPE_CATEGORY,
@@ -338,10 +340,21 @@ class Econet300Api:
                 url,
             )
         elif param in NUMBER_MAP:
+            # param is a key like "1287"
             url = f"{self.host}/econet/rmCurrNewParam?newParamKey={param}&newParamValue={value}"
             _LOGGER.debug(
                 "Using rmCurrNewParam endpoint for temperature setpoint %s: %s",
                 param,
+                url,
+            )
+        elif param in NUMBER_MAP.values():
+            # param is a value like "mixerSetTemp1" - find the key
+            param_key = next(k for k, v in NUMBER_MAP.items() if v == param)
+            url = f"{self.host}/econet/rmCurrNewParam?newParamKey={param_key}&newParamValue={value}"
+            _LOGGER.debug(
+                "Using rmCurrNewParam endpoint for %s (key=%s): %s",
+                param,
+                param_key,
                 url,
             )
         elif param in CONTROL_PARAMS:
@@ -1259,7 +1272,7 @@ class Econet300Api:
                 return None
 
             # Merge parameter data with names
-            merged_params = []
+            merged_params: list[dict[str, Any]] = []
             for i, param in enumerate(params_data):
                 if isinstance(param, dict):
                     merged_param = param.copy()  # Start with original parameter data
@@ -1357,6 +1370,54 @@ class Econet300Api:
         else:
             return step1_data
 
+    async def _get_or_fetch_static_metadata(
+        self, lang: str, service_password: str | None
+    ) -> dict[str, list[Any]]:
+        """Get static metadata from cache or fetch and cache it.
+
+        Static metadata rarely changes and is cached for 24 hours to reduce API load.
+
+        Returns:
+            Dict with keys: names, descs, structure, enums, units, locks
+
+        """
+        cached = self._cache.get(CACHE_KEY_STATIC_METADATA)
+        if cached is not None:
+            _LOGGER.debug("Using cached static metadata")
+            return cached  # type: ignore[return-value]
+
+        _LOGGER.info("Static metadata cache miss - fetching from API")
+
+        # Fetch all static metadata in parallel
+        results = await asyncio.gather(
+            self.fetch_rm_params_names(lang),
+            self.fetch_rm_params_descs(lang),
+            self.fetch_rm_structure(lang, password=service_password),
+            self.fetch_rm_params_enums(lang),
+            self.fetch_rm_params_units_names(lang),
+            self.fetch_rm_locks_names(lang),
+            return_exceptions=True,
+        )
+
+        # Process results - use empty list for errors/None
+        keys = ["names", "descs", "structure", "enums", "units", "locks"]
+        metadata: dict[str, list[Any]] = {}
+        for key, result in zip(keys, results):
+            if isinstance(result, Exception):
+                _LOGGER.warning("Failed to fetch static metadata %s: %s", key, result)
+                metadata[key] = []
+            else:
+                metadata[key] = result if isinstance(result, list) else []
+
+        # Cache all together with 24 hour TTL
+        self._cache.set(CACHE_KEY_STATIC_METADATA, metadata, CACHE_STATIC_METADATA_TTL)
+        _LOGGER.debug(
+            "Cached static metadata: %s",
+            {k: len(v) for k, v in metadata.items()},
+        )
+
+        return metadata
+
     async def fetch_merged_rm_data_with_names_descs_and_structure(
         self,
         lang: str = "en",
@@ -1369,6 +1430,10 @@ class Econet300Api:
 
         If sys_params contains a servicePassword, authenticates with rmAccess endpoint
         before fetching data to potentially unlock service parameters.
+
+        OPTIMIZATION: Static metadata (names, descs, structure, enums, units, locks) is cached
+        for 24 hours. Only dynamic values (rmParamsData) are fetched fresh each poll.
+        This reduces API calls from ~7 to ~1 per poll cycle (85% reduction).
 
         Args:
             lang: Language code (e.g., 'en', 'pl', 'fr'). Defaults to 'en'.
@@ -1455,114 +1520,99 @@ class Econet300Api:
                             "Service authentication failed, continuing with user-level access"
                         )
 
-            # Get step 2 data (uses service password if available)
-            step2_data = await self.fetch_merged_rm_data_with_names_and_descs(
-                lang, password=service_password
-            )
-            if not step2_data:
+            # Get static metadata from cache or fetch once (cached for 24 hours)
+            meta = await self._get_or_fetch_static_metadata(lang, service_password)
+
+            # Fetch only dynamic data fresh each poll
+            params_data = await self.fetch_rm_params_data(password=service_password)
+            if not params_data:
+                _LOGGER.warning("No parameter data available from rmParamsData")
                 return None
 
-            # Fetch additional data in parallel
-            # Pass service password to structure endpoint for potential service params
-            tasks = [
-                self.fetch_rm_structure(lang, password=service_password),
-                self.fetch_rm_params_enums(lang),
-                self.fetch_rm_params_units_names(lang),
-                self.fetch_rm_locks_names(lang),
-            ]
+            # Merge parameter data with cached static metadata
+            names: list[str] = meta["names"]  # type: ignore[assignment]
+            descs: list[str] = meta["descs"]  # type: ignore[assignment]
+            merged_params: list[dict[str, Any]] = []
+            for i, param in enumerate(params_data):
+                if isinstance(param, dict):
+                    merged_param = param.copy()
+                    merged_param["name"] = (
+                        names[i] if i < len(names) else f"Parameter {i}"
+                    )
+                    merged_param["description"] = descs[i] if i < len(descs) else ""
+                    merged_param["index"] = i
+                    merged_params.append(merged_param)
 
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+            # Build unified data structure
+            step2_data = {
+                "version": "1.0-names-descs",
+                "timestamp": datetime.now().isoformat(),
+                "device": {
+                    "uid": self.uid,
+                    "controllerId": self.model_id,
+                    "language": lang,
+                },
+                "parameters": merged_params,
+                "metadata": {
+                    "totalParameters": len(merged_params),
+                    "namedParameters": len([p for p in merged_params if "name" in p]),
+                    "editableParameters": len(
+                        [p for p in merged_params if p.get("edit", False)]
+                    ),
+                    "describedParameters": len(
+                        [p for p in merged_params if p.get("description")]
+                    ),
+                },
+            }
 
-            structure: list[dict[str, Any]] = []
-            enums: list[dict[str, Any]] = []
-            units: list[str] = []
-            lock_names: list[str] = []
+            _LOGGER.debug(
+                "Merged %d parameters with cached names/descs from rmParamsData",
+                len(merged_params),
+            )
 
-            if (
-                not isinstance(results[0], Exception)
-                and results[0] is not None
-                and isinstance(results[0], list)
-            ):
-                structure = results[0]  # type: ignore[assignment]
-            if (
-                not isinstance(results[1], Exception)
-                and results[1] is not None
-                and isinstance(results[1], list)
-            ):
-                enums = results[1]  # type: ignore[assignment]
-            if (
-                not isinstance(results[2], Exception)
-                and results[2] is not None
-                and isinstance(results[2], list)
-            ):
-                units = results[2]  # type: ignore[assignment]
-            if (
-                not isinstance(results[3], Exception)
-                and results[3] is not None
-                and isinstance(results[3], list)
-            ):
-                lock_names = results[3]  # type: ignore[assignment]
+            # Add parameter numbers, units, and keys using cached metadata
+            structure: list[dict[str, Any]] = meta["structure"]  # type: ignore[assignment]
+            enums: list[dict[str, Any]] = meta["enums"]  # type: ignore[assignment]
+            units: list[str] = meta["units"]  # type: ignore[assignment]
+            locks: list[str] = meta["locks"]  # type: ignore[assignment]
 
-            # Add parameter numbers, units, and keys
-            self._add_parameter_numbers(step2_data["parameters"], structure)
-            self._add_unit_names(step2_data["parameters"], units)
+            self._add_parameter_numbers(merged_params, structure)
+            self._add_unit_names(merged_params, units)
 
             # Add keys using generate_translation_key
-            for param in step2_data["parameters"]:
-                if "name" in param:
-                    param["key"] = generate_translation_key(param["name"])
+            for merged_param in merged_params:
+                if "name" in merged_param:
+                    merged_param["key"] = generate_translation_key(merged_param["name"])
 
-            # Convert parameters array to object with string index keys
-            # Using string keys for consistency with JSON serialization
-            parameters_dict = {}
-            for param in step2_data["parameters"]:
-                param_index = str(param.get("index", 0))
-                parameters_dict[param_index] = param
-
-            # Replace parameters array with indexed object
+            # Convert parameters array to indexed dict
+            parameters_dict: dict[str, dict[str, Any]] = {
+                str(p.get("index", 0)): p for p in merged_params
+            }
             step2_data["parameters"] = parameters_dict
 
-            # Add enum data using helper methods
-            # Priority: 1) unit=31 with offset (authoritative), 2) structure data_id, 3) smart detection
+            # Add enum data (priority: unit/offset > structure > smart detection)
             unit_enum_count = self._add_enum_data_from_unit_offset(
                 parameters_dict, enums
             )
-            enum_count = self._add_enum_data_from_structure(
+            struct_enum_count = self._add_enum_data_from_structure(
                 parameters_dict, structure, enums
             )
             smart_enum_count = self._add_smart_enum_detection(parameters_dict, enums)
-            _LOGGER.debug(
-                "Enum detection: unit/offset=%d, structure=%d, smart=%d",
-                unit_enum_count,
-                enum_count,
-                smart_enum_count,
-            )
 
-            # Add lock status to parameters (with lock reasons from rmLocksNames)
-            lock_count = self._add_parameter_locks(
-                parameters_dict, structure, lock_names
-            )
-            _LOGGER.debug("Added lock status to %d locked parameters", lock_count)
+            # Add lock status to parameters
+            lock_count = self._add_parameter_locks(parameters_dict, structure, locks)
 
-            # Update version to include locks
             step2_data["version"] = (
                 "1.0-names-descs-structure-units-indexed-enums-locks-cleaned"
             )
 
-            # Extract parameter entries from structure for logging
-            param_structure_entries = [
-                item
-                for item in structure
-                if isinstance(item, dict)
-                and item.get("type") == RM_STRUCTURE_TYPE_PARAMETER
-            ]
-
             _LOGGER.debug(
-                "Added parameter numbers (%d), units (%d types), enum mappings (%d structure + %d smart) from rmStructure + rmParamsEnums + rmParamsUnitsNames. Converted to indexed format with cleaned structure.",
-                len(param_structure_entries),
-                len(units),
-                enum_count,
+                "Merged %d params: enums(unit=%d, struct=%d, smart=%d), locks=%d",
+                len(parameters_dict),
+                unit_enum_count,
+                struct_enum_count,
                 smart_enum_count,
+                lock_count,
             )
         except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
             _LOGGER.error(

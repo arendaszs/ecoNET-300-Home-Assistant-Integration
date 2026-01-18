@@ -54,6 +54,13 @@ RM_ADDITIONAL_DATASET_KEYS = [
 ]
 
 # =============================================================================
+# CACHE CONFIGURATION FOR STATIC METADATA
+# =============================================================================
+# Static metadata rarely changes - cache for 24 hours to reduce API load.
+CACHE_KEY_STATIC_METADATA = "static_metadata"
+CACHE_STATIC_METADATA_TTL = 86400  # 24 hours
+
+# =============================================================================
 # DEVICE INFORMATION CONSTANTS
 # =============================================================================
 DEVICE_INFO_MANUFACTURER = "PLUM"

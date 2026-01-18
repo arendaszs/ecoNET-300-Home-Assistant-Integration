@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import re
+import time
 from typing import Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
@@ -141,6 +142,13 @@ class EconetDynamicSwitch(EconetEntity, SwitchEntity):
         self._param = param
         self._attr_is_on = False
 
+        # Track last write time to skip coordinator updates briefly after manual changes
+        # This prevents stale API data from reverting local state
+        self._last_write_time: float = 0.0
+        self._write_cooldown_seconds: float = (
+            5.0  # Skip updates for 5 seconds after write
+        )
+
         # Get enum values for on/off mapping
         enum_data = param.get("enum", {})
         self._enum_values = enum_data.get("values", [])
@@ -239,6 +247,13 @@ class EconetDynamicSwitch(EconetEntity, SwitchEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from coordinator."""
+        # Skip updates briefly after a manual write to prevent stale data reverting state
+        if time.monotonic() - self._last_write_time < self._write_cooldown_seconds:
+            _LOGGER.debug(
+                "Skipping coordinator update for %s (within cooldown after write)",
+                self.entity_description.key,
+            )
+            return
         self._update_state_from_param()
         self.async_write_ha_state()
 
@@ -290,6 +305,7 @@ class EconetDynamicSwitch(EconetEntity, SwitchEntity):
 
         if success:
             self._attr_is_on = turn_on
+            self._last_write_time = time.monotonic()  # Record write time for cooldown
             self.async_write_ha_state()
             _LOGGER.info("Switch %s turned %s", self.entity_description.key, action)
         else:
