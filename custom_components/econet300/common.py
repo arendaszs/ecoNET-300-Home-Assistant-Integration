@@ -74,7 +74,8 @@ class EconetDataCoordinator(DataUpdateCoordinator):
             _LOGGER,
             name=f"{DOMAIN}_data_coordinator",
             # Polling interval. Will only be polled if there are subscribers.
-            update_interval=timedelta(seconds=30),
+            # 60 seconds is reasonable for heating systems - reduces API load by 50%
+            update_interval=timedelta(seconds=60),
         )
         self._api = api
         self._config_entry = config_entry
