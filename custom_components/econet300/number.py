@@ -310,114 +310,6 @@ class EconetNumber(EconetEntity, NumberEntity):
         self.async_write_ha_state()
 
 
-class MixerDynamicNumber(MixerEntity, NumberEntity):
-    """Mixer-related dynamic number class."""
-
-    entity_description: EconetNumberEntityDescription
-
-    @property
-    def entity_registry_enabled_default(self) -> bool:
-        """Return if entity should be enabled by default.
-
-        CONFIG category entities are disabled by default.
-        Other entities (DIAGNOSTIC or no category) are enabled.
-        """
-        return self.entity_description.entity_category != EntityCategory.CONFIG
-
-    def __init__(
-        self,
-        description: EconetNumberEntityDescription,
-        coordinator: EconetDataCoordinator,
-        api: Econet300Api,
-        mixer_idx: int,
-    ):
-        """Initialize a new instance of the MixerDynamicNumber class."""
-        # Initialize min/max from entity_description or use sensible defaults
-        # Use 'is not None' to preserve 0.0 as valid min value
-        self._attr_native_min_value = (
-            description.native_min_value
-            if description.native_min_value is not None
-            else 0.0
-        )
-        self._attr_native_max_value = (
-            description.native_max_value
-            if description.native_max_value is not None
-            else 100.0
-        )
-        super().__init__(description, coordinator, api, mixer_idx)
-
-    def _sync_state(self, value):
-        """Sync the state of the mixer dynamic number entity."""
-        _LOGGER.debug(
-            "MixerDynamicNumber _sync_state for entity %s: %s",
-            self.entity_description.key,
-            value,
-        )
-
-        # Handle both dict and direct value
-        if isinstance(value, dict) and "value" in value:
-            val = value.get("value")
-            self._attr_native_value = float(val) if val is not None else None
-        elif isinstance(value, (int, float, str)) and value is not None:
-            self._attr_native_value = float(value)
-        else:
-            self._attr_native_value = None
-
-        # Ensure the state is updated in Home Assistant.
-        self.async_write_ha_state()
-
-    @property
-    def icon(self) -> str | None:
-        """Return icon for entity."""
-        if self._is_parameter_locked():
-            return "mdi:lock"  # Show lock icon for locked parameters
-        return None
-
-    @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        """Return extra state attributes including lock information."""
-        attrs: dict[str, Any] = {}
-        description = self._get_description()
-        if description:
-            attrs["description"] = description
-        if self._is_parameter_locked():
-            attrs["locked"] = True
-            lock_reason = self._get_lock_reason()
-            if lock_reason:
-                attrs["lock_reason"] = lock_reason
-        return attrs
-
-    async def async_set_native_value(self, value: float) -> None:
-        """Update the current value."""
-        _LOGGER.debug("Set mixer dynamic value: %s", value)
-
-        # Check if parameter is locked
-        if self._is_parameter_locked():
-            lock_reason = self._get_lock_reason() or "Parameter is locked"
-            _LOGGER.warning(
-                "Cannot set value for locked parameter: %s (%s) - %s",
-                self.entity_description.key,
-                self.entity_description.name,
-                lock_reason,
-            )
-            raise HomeAssistantError(
-                translation_domain=DOMAIN,
-                translation_key="parameter_locked",
-                translation_placeholders={"lock_reason": lock_reason},
-            )
-
-        # Skip processing if the value is unchanged.
-        if value == self._attr_native_value:
-            return
-
-        if not await self.api.set_param(self.entity_description.key, int(value)):
-            _LOGGER.warning("Setting mixer dynamic value failed")
-            return
-
-        self._attr_native_value = value
-        self.async_write_ha_state()
-
-
 class MixerNumber(MixerEntity, NumberEntity):
     """Mixer number class."""
 
@@ -1418,9 +1310,7 @@ async def async_setup_entry(
         entities.extend(legacy_entities)
 
     # Final check - if no entities were created, log a warning
-    mixer_count = len(
-        [e for e in entities if isinstance(e, (MixerNumber, MixerDynamicNumber))]
-    )
+    mixer_count = len([e for e in entities if isinstance(e, MixerNumber)])
     dynamic_count = len([e for e in entities if e not in basic_entities])
     _LOGGER.info(
         "Final entity count: %d total entities created (%d basic + %d advanced + %d mixer)",

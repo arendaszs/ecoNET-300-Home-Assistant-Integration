@@ -71,11 +71,6 @@ class EconetSwitch(EconetEntity, SwitchEntity):
         self._attr_is_on = mode_value != 0
         self.async_write_ha_state()
 
-    def update_state_from_mode(self, mode_value: int) -> None:
-        """Update switch state based on mode value."""
-        self._attr_is_on = mode_value != 0
-        self.async_write_ha_state()
-
     @staticmethod
     def _raise_boiler_control_error(error: str) -> None:
         raise BoilerControlError(error)
@@ -249,78 +244,62 @@ class EconetDynamicSwitch(EconetEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the switch on."""
-        if self._is_parameter_locked():
-            lock_reason = self._get_lock_reason() or "Parameter is locked"
-            _LOGGER.warning(
-                "Cannot turn on locked switch %s: %s",
-                self.entity_description.key,
-                lock_reason,
-            )
-            self._raise_switch_error(f"Switch is locked: {lock_reason}")
-
-        try:
-            success = await self.api.set_param(self._param_id, self._on_value)
-            if success:
-                self._attr_is_on = True
-                self.async_write_ha_state()
-                _LOGGER.info("Switch %s turned ON", self.entity_description.key)
-            else:
-                self._raise_switch_error(
-                    f"Failed to turn on {self.entity_description.name}"
-                )
-        except HomeAssistantError:
-            raise
-        except Exception as e:
-            _LOGGER.error(
-                "Failed to turn on switch %s: %s", self.entity_description.key, e
-            )
-            raise HomeAssistantError(
-                translation_domain=DOMAIN,
-                translation_key="switch_turn_on_failed",
-                translation_placeholders={"error": str(e)},
-            ) from e
+        await self._set_switch_state(turn_on=True)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the switch off."""
+        await self._set_switch_state(turn_on=False)
+
+    async def _set_switch_state(self, turn_on: bool) -> None:
+        """Set switch state (shared logic for turn_on/turn_off)."""
+        action = "ON" if turn_on else "OFF"
+        target_value = self._on_value if turn_on else self._off_value
+        translation_key = (
+            "switch_turn_on_failed" if turn_on else "switch_turn_off_failed"
+        )
+
         if self._is_parameter_locked():
             lock_reason = self._get_lock_reason() or "Parameter is locked"
             _LOGGER.warning(
-                "Cannot turn off locked switch %s: %s",
+                "Cannot turn %s locked switch %s: %s",
+                action,
                 self.entity_description.key,
                 lock_reason,
             )
-            self._raise_switch_error(f"Switch is locked: {lock_reason}")
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key=translation_key,
+                translation_placeholders={"error": f"Switch is locked: {lock_reason}"},
+            )
 
+        param_number = self._param.get("number", self._param_id)
         try:
-            success = await self.api.set_param(self._param_id, self._off_value)
-            if success:
-                self._attr_is_on = False
-                self.async_write_ha_state()
-                _LOGGER.info("Switch %s turned OFF", self.entity_description.key)
-            else:
-                self._raise_switch_error(
-                    f"Failed to turn off {self.entity_description.name}"
-                )
-        except HomeAssistantError:
-            raise
+            success = await self.api.set_param_by_index(param_number, target_value)
         except Exception as e:
             _LOGGER.error(
-                "Failed to turn off switch %s: %s", self.entity_description.key, e
+                "Failed to turn %s switch %s: %s",
+                action,
+                self.entity_description.key,
+                e,
             )
             raise HomeAssistantError(
                 translation_domain=DOMAIN,
-                translation_key="switch_turn_off_failed",
+                translation_key=translation_key,
                 translation_placeholders={"error": str(e)},
             ) from e
 
-    @staticmethod
-    def _raise_switch_error(error: str) -> None:
-        """Raise a HomeAssistantError with a translated message."""
-        raise HomeAssistantError(
-            translation_domain=DOMAIN,
-            translation_key="switch_turn_on_failed",
-            translation_placeholders={"error": error},
-        )
+        if success:
+            self._attr_is_on = turn_on
+            self.async_write_ha_state()
+            _LOGGER.info("Switch %s turned %s", self.entity_description.key, action)
+        else:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key=translation_key,
+                translation_placeholders={
+                    "error": f"Failed to turn {action.lower()} {self.entity_description.name}"
+                },
+            )
 
 
 def should_be_switch_entity(param: dict) -> bool:
