@@ -1,3 +1,9 @@
+---
+description: API response validation against test fixtures
+globs: 
+alwaysApply: true
+---
+
 # API Endpoint Validation Rules
 
 ## 🚨 MANDATORY: API Response Validation Against Test Fixtures

@@ -141,7 +141,7 @@ ruff check custom_components/econet300/
 
 - **Faster** than Black + isort + flake8 combined
 - **Unified tool** for formatting, linting, and import sorting
-- **Python 3.12+ optimized** with modern syntax support
+- **Python 3.13+ optimized** with modern syntax support
 - **Consistent rules** across the entire project
 
 ## **Import Sorting Priority:**

@@ -1,7 +1,7 @@
 ---
-description:
-globs:
-alwaysApply: false
+description: Testing standards with pytest and fixtures
+globs: 
+alwaysApply: true
 ---
 
 # Testing Standards

@@ -1,3 +1,9 @@
+---
+description: ecoNET300 device-specific guidelines and dynamic entity validation
+globs: 
+alwaysApply: true
+---
+
 # ecoNET300-Specific Guidelines
 
 ## Device Support

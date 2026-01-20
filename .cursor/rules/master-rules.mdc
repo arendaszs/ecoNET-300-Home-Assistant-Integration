@@ -1,3 +1,9 @@
+---
+description: Master coding rules checklist - always check first
+globs: 
+alwaysApply: true
+---
+
 # 🚨 MASTER RULES - ALWAYS CHECK FIRST
 
 ## MANDATORY Before Any Code Changes
@@ -54,7 +60,32 @@
 - **Validate API documentation** against test fixtures
 - Test your changes work as expected
 
-### 8. DYNAMIC ENTITY CHANGES
+### 8. 📝 COMMIT MESSAGE GUIDELINES
+
+- **Keep commit messages SHORT and concise** (50 chars or less for subject)
+- **Use conventional commit format**: `type: short description`
+- **Types**: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
+- **NO periods** at the end of commit messages
+- **Use imperative mood**: "Add feature" not "Added feature"
+
+**Examples:**
+
+```
+feat: add mixer temperature sensor
+fix: handle null values in API response
+refactor: simplify entity creation logic
+docs: update translation reference
+test: add fixtures for ecoMAX360
+chore: update dependencies
+```
+
+**Avoid:**
+
+- ❌ Long commit messages with excessive details
+- ❌ Vague messages like "fix bug" or "update code"
+- ❌ Multiple unrelated changes in one commit
+
+### 9. DYNAMIC ENTITY CHANGES
 
 When modifying dynamic entity creation from `mergedData` API:
 
