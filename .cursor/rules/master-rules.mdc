@@ -39,6 +39,8 @@ alwaysApply: true
 
 ### 5. ALWAYS USE PROPER PATTERNS
 
+- **DRY (Don't Repeat Yourself)** - Extract common functionality, avoid duplicate code
+- **KISS (Keep It Simple, Stupid)** - Prefer simple, readable solutions over complex ones
 - Use proper error handling
 - Test your changes
 - Use Ruff for code formatting and linting

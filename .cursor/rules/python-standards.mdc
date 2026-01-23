@@ -6,7 +6,7 @@ alwaysApply: true
 
 # Python Standards for ecoNET-300
 
-*Based on: https://developers.home-assistant.io/docs/development_guidelines*
+*Based on: <https://developers.home-assistant.io/docs/development_guidelines>*
 
 ## 🚨 MANDATORY: Code Style with Ruff
 
@@ -32,6 +32,74 @@ ruff check --fix .
 # Check specific file
 ruff check custom_components/econet300/
 ```
+
+## 🎯 Fundamental Coding Principles
+
+### DRY - Don't Repeat Yourself
+
+- **Avoid duplicate code** - Extract common functionality into reusable functions or classes
+- **Single source of truth** - Each piece of knowledge should exist in one place
+- **Refactor repeated patterns** - If you copy-paste code more than once, extract it
+
+**Examples:**
+
+```python
+# ❌ BAD - Repeated code
+def process_sensor_a(value):
+    if value is not None:
+        return float(value) * 10
+    return None
+
+def process_sensor_b(value):
+    if value is not None:
+        return float(value) * 10
+    return None
+
+# ✅ GOOD - DRY principle
+def process_sensor_value(value: float | None, multiplier: float = 10) -> float | None:
+    """Process sensor value with multiplier."""
+    return float(value) * multiplier if value is not None else None
+```
+
+### KISS - Keep It Simple, Stupid
+
+- **Prefer simple solutions** over complex ones
+- **Write clear, readable code** that others can understand
+- **Avoid unnecessary abstractions** - Don't over-engineer
+- **One function, one purpose** - Keep functions focused
+
+**Examples:**
+
+```python
+# ❌ BAD - Overly complex
+def process_data(data):
+    result = []
+    for item in data:
+        if isinstance(item, dict):
+            if "value" in item:
+                if item["value"] is not None:
+                    result.append({"processed": float(item["value"]) * 10})
+    return result
+
+# ✅ GOOD - Simple and clear
+def process_data(data: list[dict]) -> list[dict]:
+    """Process data items with non-null values."""
+    return [
+        {"processed": float(item["value"]) * 10}
+        for item in data
+        if isinstance(item, dict) and item.get("value") is not None
+    ]
+```
+
+**When to Apply:**
+
+- ✅ Choose straightforward solutions over clever tricks
+- ✅ Break complex logic into smaller, named functions
+- ✅ Use descriptive variable names instead of comments
+- ✅ Favor readability over brevity
+- ❌ Don't create unnecessary abstraction layers
+- ❌ Don't optimize prematurely - optimize when needed
+- ❌ Don't use obscure language features without good reason
 
 ## PEP 8 & PEP 257 Compliance
 
@@ -313,10 +381,11 @@ except ConnectionError as err:
 
 ## Avoid
 
+- ❌ **Violating DRY** - Duplicate code (extract common functionality)
+- ❌ **Violating KISS** - Overly complex functions (keep under 25 complexity)
+- ❌ **Violating KISS** - Unnecessary abstractions or over-engineering
 - ❌ Blocking operations in async functions
 - ❌ Hardcoded values (use constants)
-- ❌ Duplicate code (extract common functionality)
-- ❌ Overly complex functions (keep under 25 complexity)
 - ❌ Unnecessary imports
 - ❌ Debug print statements in production code
 - ❌ I/O in property getters
