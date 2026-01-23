@@ -18,6 +18,30 @@ from custom_components.econet300.number import (
     should_be_number_entity,
 )
 
+# List of fixtures to test - only those with mergedData.json
+FIXTURES_WITH_MERGED_DATA = ["ecoMAX810P-L"]
+
+# All available fixtures for basic tests
+ALL_FIXTURES = [
+    "ecoMAX810P-L",
+    "ecoMAX360",
+    "ecoSOL",
+    "SControl MK1",
+    "ecoMAX850R2-X",
+    "ecoMAX860P2-N",
+    "ecoMAX860P3-V",
+    "ecoSOL500",
+]
+
+
+def load_fixture(fixture_name: str, filename: str) -> dict | None:
+    """Load a fixture file, return None if not found."""
+    fixture_path = Path(__file__).parent / "fixtures" / fixture_name / filename
+    if not fixture_path.exists():
+        return None
+    with fixture_path.open(encoding="utf-8") as f:
+        return json.load(f)
+
 
 class TestDynamicNumberEntities:
     """Test dynamic number entity creation."""
@@ -347,3 +371,114 @@ class TestDynamicNumberEntities:
         assert entity_desc.translation_key == test_param["key"]
         assert entity_desc.native_min_value == float(test_param.get("minv", 0))
         assert entity_desc.native_max_value == float(test_param.get("maxv", 100))
+
+
+class TestMultipleFixtures:
+    """Test with multiple device fixtures."""
+
+    @pytest.mark.parametrize("fixture_name", ALL_FIXTURES)
+    def test_fixture_sys_params_exists(self, fixture_name):
+        """Test that sysParams.json exists and is valid for each fixture."""
+        sys_params = load_fixture(fixture_name, "sysParams.json")
+        assert sys_params is not None, f"sysParams.json missing for {fixture_name}"
+        assert isinstance(sys_params, dict), (
+            f"sysParams should be dict for {fixture_name}"
+        )
+
+    @pytest.mark.parametrize("fixture_name", ALL_FIXTURES)
+    def test_fixture_reg_params_exists(self, fixture_name):
+        """Test that regParams.json exists and is valid for each fixture."""
+        reg_params = load_fixture(fixture_name, "regParams.json")
+        assert reg_params is not None, f"regParams.json missing for {fixture_name}"
+        assert isinstance(reg_params, dict), (
+            f"regParams should be dict for {fixture_name}"
+        )
+
+    @pytest.mark.parametrize("fixture_name", ALL_FIXTURES)
+    def test_fixture_controller_id(self, fixture_name):
+        """Test that each fixture has a valid controllerID."""
+        sys_params = load_fixture(fixture_name, "sysParams.json")
+        assert sys_params is not None
+        # Check for controllerID or controllerId (case may vary)
+        controller_id = sys_params.get("controllerID") or sys_params.get("controllerId")
+        assert controller_id is not None, f"controllerID missing for {fixture_name}"
+
+    @pytest.mark.parametrize("fixture_name", FIXTURES_WITH_MERGED_DATA)
+    def test_merged_data_structure(self, fixture_name):
+        """Test mergedData.json structure for fixtures that have it."""
+        merged_data = load_fixture(fixture_name, "mergedData.json")
+        assert merged_data is not None, f"mergedData.json missing for {fixture_name}"
+        assert "parameters" in merged_data, "mergedData should have parameters"
+        assert isinstance(merged_data["parameters"], dict)
+        assert len(merged_data["parameters"]) > 0, "Should have parameters"
+
+    @pytest.mark.parametrize("fixture_name", FIXTURES_WITH_MERGED_DATA)
+    def test_number_entity_candidates_from_merged_data(self, fixture_name):
+        """Test that we can find number entity candidates in mergedData."""
+        merged_data = load_fixture(fixture_name, "mergedData.json")
+        assert merged_data is not None
+
+        number_candidates = []
+        for param_id, param in merged_data["parameters"].items():
+            if should_be_number_entity(param):
+                number_candidates.append((param_id, param))
+
+        assert len(number_candidates) > 0, (
+            f"Should have number entity candidates in {fixture_name}"
+        )
+
+    @pytest.mark.parametrize(
+        ("fixture_name", "expected_keys"),
+        [
+            ("ecoMAX810P-L", ["controllerID", "uid", "swRevision"]),
+            ("ecoMAX360", ["controllerID", "uid"]),
+            ("ecoSOL", ["controllerID", "uid"]),
+            ("SControl MK1", ["controllerID", "uid"]),
+        ],
+    )
+    def test_sys_params_expected_keys(self, fixture_name, expected_keys):
+        """Test that sysParams has expected keys for each device type."""
+        sys_params = load_fixture(fixture_name, "sysParams.json")
+        if sys_params is None:
+            pytest.skip(f"sysParams.json not available for {fixture_name}")
+
+        for key in expected_keys:
+            # Check case-insensitive
+            found = any(k.lower() == key.lower() for k in sys_params)
+            assert found, f"Expected key {key} not found in {fixture_name} sysParams"
+
+    @pytest.mark.parametrize("fixture_name", ALL_FIXTURES)
+    def test_reg_params_has_values(self, fixture_name):
+        """Test that regParams has actual values."""
+        reg_params = load_fixture(fixture_name, "regParams.json")
+        if reg_params is None:
+            pytest.skip(f"regParams.json not available for {fixture_name}")
+
+        assert len(reg_params) > 0, f"regParams should have values for {fixture_name}"
+
+    @pytest.mark.parametrize(
+        ("fixture_name", "device_type"),
+        [
+            ("ecoMAX810P-L", "ecoMAX"),
+            ("ecoMAX360", "ecoMAX"),
+            ("ecoMAX850R2-X", "ecoMAX"),
+            ("ecoMAX860P2-N", "ecoMAX"),
+            ("ecoMAX860P3-V", "ecoMAX"),
+            ("ecoSOL", "ecoSOL"),
+            ("ecoSOL500", "ecoSOL"),
+            ("SControl MK1", "SControl"),
+        ],
+    )
+    def test_device_type_detection(self, fixture_name, device_type):
+        """Test that device type can be detected from controllerID."""
+        sys_params = load_fixture(fixture_name, "sysParams.json")
+        if sys_params is None:
+            pytest.skip(f"sysParams.json not available for {fixture_name}")
+
+        controller_id = sys_params.get("controllerID") or sys_params.get("controllerId")
+        assert controller_id is not None
+
+        # Verify device type is in controllerID
+        assert (
+            device_type in controller_id or device_type.lower() in controller_id.lower()
+        ), f"Device type {device_type} not found in controllerID {controller_id}"

@@ -1,9 +1,17 @@
-colorlog==6.7.0
-homeassistant>=2025.6.0
-ruff==0.14.10
-codespell==2.3.0
-autotyping>=24.3.0
-pytest>=7.0.0
-pytest-asyncio>=0.21.0
+# Core test dependencies
+pytest>=8.0.0
+pytest-asyncio>=1.0.0
 pytest-mock>=3.10.0
-# pymarkdown>=0.9.32  # Version not available, commented out
+
+# Home Assistant and dependencies
+homeassistant>=2025.6.0
+async_interrupt>=1.2.0
+voluptuous>=0.15.0
+
+# Code quality tools
+ruff>=0.14.0
+codespell>=2.3.0
+autotyping>=24.3.0
+
+# Logging
+colorlog>=6.7.0
