@@ -540,8 +540,15 @@ split-on-trailing-comma = false
 "tests/**/*.py" = [
     "INP001",  # Ignore implicit namespace package warning for test files
     "PLW1641",  # Redefining name from outer scope - expected for pytest fixtures
+    "PLC0415", # Allow imports inside functions for test isolation
+    "E402",    # Allow imports not at top of file for path manipulation
+    "I001",    # Ignore import sorting in test files with dynamic imports
 ]
-"scripts/**/*.py" = ["T20"]  # Allow print statements in utility scripts
+"scripts/**/*.py" = [
+    "T20",    # Allow print statements in utility scripts
+    "RET504", # Allow assignment before return in scripts
+    "D401",   # Allow non-imperative docstrings in scripts
+]
 [tool.ruff.mccabe]
 max-complexity = 25
 

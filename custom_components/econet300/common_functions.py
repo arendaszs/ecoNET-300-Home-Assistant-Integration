@@ -234,6 +234,28 @@ def get_on_off_values(
     return enum_first, enum_first + 1
 
 
+def _get_num_options(param: dict) -> int | None:
+    """Calculate number of options from min/max values.
+
+    Args:
+        param: Parameter dictionary from mergedData
+
+    Returns:
+        Number of options if calculable, None otherwise
+
+    """
+    minv = param.get("minv")
+    maxv = param.get("maxv")
+
+    if minv is None or maxv is None:
+        return None
+
+    try:
+        return int(maxv) - int(minv) + 1
+    except (ValueError, TypeError):
+        return None
+
+
 def should_be_select_entity(param: dict) -> bool:
     """Check if parameter should be a Select entity.
 
@@ -260,17 +282,7 @@ def should_be_select_entity(param: dict) -> bool:
         return False
 
     # Use min/max to determine actual number of options (more reliable)
-    minv = param.get("minv")
-    maxv = param.get("maxv")
-    num_options = None
-
-    if minv is not None and maxv is not None:
-        try:
-            num_options = int(maxv) - int(minv) + 1
-        except (ValueError, TypeError):
-            num_options = None
-
-    # Use calculated num_options if available
+    num_options = _get_num_options(param)
     if num_options is not None:
         return num_options >= 3
 
@@ -310,17 +322,7 @@ def should_be_switch_entity(param: dict) -> bool:
     enum_values = enum_data.get("values", [])
 
     # Use min/max to determine actual number of options (more reliable)
-    minv = param.get("minv")
-    maxv = param.get("maxv")
-    num_options = None
-
-    if minv is not None and maxv is not None:
-        try:
-            num_options = int(maxv) - int(minv) + 1
-        except (ValueError, TypeError):
-            num_options = None
-
-    # Use calculated num_options if available
+    num_options = _get_num_options(param)
     if num_options is not None:
         # Must have exactly 2 options
         if num_options != 2:
@@ -647,6 +649,33 @@ def get_validated_entity_component(
     return component
 
 
+def _detect_param_context(description: str | None) -> str | None:
+    """Detect parameter context from description.
+
+    Args:
+        description: Parameter description text
+
+    Returns:
+        Context type: "mixer", "huw", "circuit", "buffer", or None
+
+    """
+    if not description:
+        return None
+
+    desc_lower = description.lower()
+
+    if "mixer" in desc_lower:
+        return "mixer"
+    if any(kw in desc_lower for kw in ["hot water", "huw", "dhw", "tap water"]):
+        return "huw"
+    if "thermostat" in desc_lower and "room" in desc_lower:
+        return "circuit"
+    if "buffer" in desc_lower:
+        return "buffer"
+
+    return None
+
+
 def get_duplicate_display_name(
     param_name: str,
     sequence_num: int,
@@ -669,30 +698,18 @@ def get_duplicate_display_name(
         - "Parameter Name 1" as fallback for unknown params
 
     """
-    if description:
-        desc_lower = description.lower()
+    context = _detect_param_context(description)
 
-        # Check for mixer-related parameters
-        if "mixer" in desc_lower:
-            return f"{param_name} (Mixer {sequence_num})"
-
-        # Check for HUW-related parameters
-        if any(kw in desc_lower for kw in ["hot water", "huw", "dhw", "tap water"]):
-            return (
-                f"{param_name} (HUW {sequence_num})" if sequence_num > 1 else param_name
-            )
-
-        # Check for thermostat-related parameters
-        if "thermostat" in desc_lower and "room" in desc_lower:
-            return f"{param_name} (Circuit {sequence_num})"
-
-        # Check for buffer-related parameters
-        if "buffer" in desc_lower:
-            return (
-                f"{param_name} (Buffer {sequence_num})"
-                if sequence_num > 1
-                else param_name
-            )
+    if context == "mixer":
+        return f"{param_name} (Mixer {sequence_num})"
+    if context == "huw":
+        return f"{param_name} (HUW {sequence_num})" if sequence_num > 1 else param_name
+    if context == "circuit":
+        return f"{param_name} (Circuit {sequence_num})"
+    if context == "buffer":
+        return (
+            f"{param_name} (Buffer {sequence_num})" if sequence_num > 1 else param_name
+        )
 
     # Fallback: use simple numbering
     return f"{param_name} {sequence_num}"
@@ -716,24 +733,16 @@ def get_duplicate_entity_key(
         - "param_name_1" as fallback
 
     """
-    if description:
-        desc_lower = description.lower()
+    context = _detect_param_context(description)
 
-        # Check for mixer-related parameters
-        if "mixer" in desc_lower:
-            return f"{base_key}_mixer_{sequence_num}"
-
-        # Check for HUW-related parameters
-        if any(kw in desc_lower for kw in ["hot water", "huw", "dhw", "tap water"]):
-            return f"{base_key}_huw_{sequence_num}" if sequence_num > 1 else base_key
-
-        # Check for thermostat-related parameters
-        if "thermostat" in desc_lower and "room" in desc_lower:
-            return f"{base_key}_circuit_{sequence_num}"
-
-        # Check for buffer-related parameters
-        if "buffer" in desc_lower:
-            return f"{base_key}_buffer_{sequence_num}" if sequence_num > 1 else base_key
+    if context == "mixer":
+        return f"{base_key}_mixer_{sequence_num}"
+    if context == "huw":
+        return f"{base_key}_huw_{sequence_num}" if sequence_num > 1 else base_key
+    if context == "circuit":
+        return f"{base_key}_circuit_{sequence_num}"
+    if context == "buffer":
+        return f"{base_key}_buffer_{sequence_num}" if sequence_num > 1 else base_key
 
     # Fallback: use simple numbering
     return f"{base_key}_{sequence_num}"

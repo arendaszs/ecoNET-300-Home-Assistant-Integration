@@ -1402,7 +1402,7 @@ class Econet300Api:
         # Process results - use empty list for errors/None
         keys = ["names", "descs", "structure", "enums", "units", "locks"]
         metadata: dict[str, list[Any]] = {}
-        for key, result in zip(keys, results):
+        for key, result in zip(keys, results, strict=True):
             if isinstance(result, Exception):
                 _LOGGER.warning("Failed to fetch static metadata %s: %s", key, result)
                 metadata[key] = []
