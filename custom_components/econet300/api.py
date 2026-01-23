@@ -1418,7 +1418,7 @@ class Econet300Api:
 
         return metadata
 
-    async def fetch_merged_rm_data_with_names_descs_and_structure(
+    async def fetch_merged_rm_data(
         self,
         lang: str = "en",
         sys_params: dict[str, Any] | None = None,

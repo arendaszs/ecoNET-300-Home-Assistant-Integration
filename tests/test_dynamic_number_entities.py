@@ -35,9 +35,7 @@ class TestDynamicNumberEntities:
     def mock_api(self, mock_merged_data):
         """Create a mock API with merged data."""
         api = MagicMock(spec=Econet300Api)
-        api.fetch_merged_rm_data_with_names_descs_and_structure = AsyncMock(
-            return_value=mock_merged_data
-        )
+        api.fetch_merged_rm_data = AsyncMock(return_value=mock_merged_data)
         return api
 
     @pytest.fixture
@@ -170,9 +168,7 @@ class TestDynamicNumberEntities:
 
         # Create API that returns None for merged data
         mock_api = MagicMock(spec=Econet300Api)
-        mock_api.fetch_merged_rm_data_with_names_descs_and_structure = AsyncMock(
-            return_value=None
-        )
+        mock_api.fetch_merged_rm_data = AsyncMock(return_value=None)
 
         # Create coordinator WITHOUT mergedData to trigger fallback
         mock_coordinator_no_merged = MagicMock(spec=EconetDataCoordinator)
@@ -323,7 +319,7 @@ class TestDynamicNumberEntities:
             f"Entity key {entity_desc.key} should equal param key"
         )
         assert entity_desc.translation_key == "test_param", (
-            f"Translation key should equal param key"
+            "Translation key should equal param key"
         )
 
     def test_entity_description_from_merged_data(self, mock_merged_data):
@@ -345,9 +341,7 @@ class TestDynamicNumberEntities:
         )
 
         # Verify entity key uses param key directly
-        assert entity_desc.key == test_param["key"], (
-            "Entity key should equal param key"
-        )
+        assert entity_desc.key == test_param["key"], "Entity key should equal param key"
 
         # Verify other properties are preserved
         assert entity_desc.translation_key == test_param["key"]

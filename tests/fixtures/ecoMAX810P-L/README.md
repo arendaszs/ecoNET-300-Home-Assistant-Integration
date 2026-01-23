@@ -183,7 +183,7 @@ The merging is implemented through these step-by-step methods:
 - **Result**: Parameters with names and descriptions
 - **Version**: `1.0-names-descs`
 
-### **3. `fetch_merged_rm_data_with_names_descs_and_structure()`**
+### **3. `fetch_merged_rm_data()`**
 
 - **Merges**: Previous + `rmStructure` + `rmParamsEnums` + `rmParamsUnitsNames`
 - **Result**: Complete unified data structure with parameter numbers and units
@@ -261,7 +261,7 @@ This will:
 ```python
 # Get complete merged data
 api = Econet300Api(...)
-complete_data = await api.fetch_merged_rm_data_with_names_descs_and_structure("en")
+complete_data = await api.fetch_merged_rm_data("en")
 
 # Access parameter information
 for param in complete_data["parameters"]:

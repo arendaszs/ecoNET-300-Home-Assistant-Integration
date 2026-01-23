@@ -106,7 +106,7 @@ sequenceDiagram
         Coord->>API: fetch_sys_params()
         Coord->>API: fetch_reg_params()
         Coord->>API: fetch_param_edit_data()
-        Coord->>API: fetch_merged_rm_data_with_names_descs_and_structure()
+        Coord->>API: fetch_merged_rm_data()
     end
     API->>Device: HTTP GET requests
     Device-->>API: JSON responses
@@ -188,7 +188,7 @@ Dynamic entities are created from `mergedData` at runtime, allowing the integrat
 
 ### Data Merging Process
 
-The `fetch_merged_rm_data_with_names_descs_and_structure()` method combines:
+The `fetch_merged_rm_data()` method combines:
 
 1. `rmParamsData` - Base parameter metadata (value, min, max, edit, unit)
 2. `rmParamsNames` - Human-readable names
@@ -246,7 +246,7 @@ classDiagram
         +sw_rev: str
         +fetch_sys_params()
         +fetch_reg_params()
-        +fetch_merged_rm_data_with_names_descs_and_structure()
+        +fetch_merged_rm_data()
         +set_param(param, value)
     }
 

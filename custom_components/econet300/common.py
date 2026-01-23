@@ -132,7 +132,7 @@ class EconetDataCoordinator(DataUpdateCoordinator):
                 # Pass sys_params to enable service authentication if available
                 merged_data = None
                 try:
-                    merged_data = await self._api.fetch_merged_rm_data_with_names_descs_and_structure(
+                    merged_data = await self._api.fetch_merged_rm_data(
                         sys_params=sys_params,
                     )
                     _LOGGER.info(

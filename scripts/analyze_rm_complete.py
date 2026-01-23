@@ -76,7 +76,7 @@ def analyze_merged_data():
     print("  6. rmParamsEnums -> Enumeration values")
 
     print("\n[MERGING PROCESS]")
-    print("  fetch_merged_rm_data_with_names_descs_and_structure()")
+    print("  fetch_merged_rm_data()")
     print("  ->")
     print("  Single API call that combines all RM endpoints")
     print("  ->")

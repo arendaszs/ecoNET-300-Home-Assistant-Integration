@@ -3,7 +3,7 @@
 
 This script merges data from multiple RM endpoint files to create a complete
 parameter data structure, following the same logic as the API's
-fetch_merged_rm_data_with_names_descs_and_structure() method.
+fetch_merged_rm_data() method.
 
 The output matches what is stored in coordinator.data["mergedData"] in common.py.
 
@@ -545,7 +545,7 @@ def find_best_matching_enum(param: dict, enums: list[dict]) -> int | None:
 def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None:
     """Generate complete merged parameter data from individual RM endpoint files.
 
-    This follows the exact logic of api.py fetch_merged_rm_data_with_names_descs_and_structure()
+    This follows the exact logic of api.py fetch_merged_rm_data()
     which is called by common.py EconetDataCoordinator._async_update_data() and stored
     in coordinator.data["mergedData"].
 
@@ -588,9 +588,7 @@ def generate_merged_data(fixtures_root: Path, device_folder: str) -> dict | None
         print("\nError: No parameter data available (rmParamsData.json)")
         return None
 
-    print(
-        "\n[MERGING DATA - Following api.py fetch_merged_rm_data_with_names_descs_and_structure()]"
-    )
+    print("\n[MERGING DATA - Following api.py fetch_merged_rm_data()]")
     print("=" * 60)
 
     # Step 1: Merge parameter data with names (fetch_merged_rm_data_with_names)
