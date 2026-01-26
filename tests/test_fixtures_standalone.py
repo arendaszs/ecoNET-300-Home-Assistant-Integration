@@ -128,6 +128,10 @@ def test_device_type_detection():
             continue
 
         controller_id = sys_params.get("controllerID") or sys_params.get("controllerId")
+        if controller_id is None:
+            print(f"  {fixture_name}: SKIPPED (no controllerID)")
+            continue
+
         detected = (
             expected_type in controller_id
             or expected_type.lower() in controller_id.lower()
