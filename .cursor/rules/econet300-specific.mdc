@@ -178,6 +178,38 @@ edit=False OR locked=True OR "Information" category → SENSOR
 - Document API limitations and requirements
 - Reference test fixtures for parameter examples
 
+## Version Migration Documentation
+
+> **User Migration Guide**: `docs/MIGRATION.md`
+
+### When to Update Migration Docs
+
+Update `docs/MIGRATION.md` when:
+
+- **Breaking changes** are introduced (entity ID changes, removed features)
+- **New major features** are added that users should know about
+- **Config entry structure** changes requiring migration
+- **New entity categories** or types are introduced
+- **Controller support** changes (new supported/unsupported controllers)
+
+### Migration Doc Structure
+
+The migration guide includes:
+
+- **Version Compatibility Matrix** - Which versions can upgrade directly
+- **Upgrade Steps** - Step-by-step instructions for users
+- **Entity Changes** - What changes between versions
+- **Troubleshooting** - Common issues and solutions
+- **FAQ** - Frequently asked questions
+
+### Checklist When Releasing New Versions
+
+- [ ] Update `docs/MIGRATION.md` with new version info
+- [ ] Update version compatibility matrix
+- [ ] Document any breaking changes
+- [ ] Add troubleshooting for known issues
+- [ ] Update README.md upgrading section if needed
+
 ## Translation Requirements
 
 - **ALWAYS** check translations when adding new entities or features

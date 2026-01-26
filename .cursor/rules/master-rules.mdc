@@ -17,6 +17,7 @@ alwaysApply: true
 - `.cursor/rules/code-style-ruff.mdc` - **Code formatting with Ruff** 🚨
 - `.cursor/rules/api-endpoint-validation.mdc` - **API response validation** 🚨
 - `docs/DYNAMIC_ENTITY_VALIDATION.md` - **Dynamic entity validation layer** 🆕
+- `docs/MIGRATION.md` - **Version migration guide for users** 🆕
 
 ### 2. ALWAYS FOLLOW HA DOCUMENTATION
 
@@ -53,16 +54,74 @@ alwaysApply: true
 - **NEVER have whitespace in blank lines** (W293 rule)
 - **ALWAYS run `ruff check .` before committing**
 
-### 7. ALWAYS CHECK BEFORE COMMITTING
+### 7. 📝 MARKDOWNLINT RULES FOR DOCUMENTATION
+
+When writing or editing Markdown files (`.md`), follow these rules:
+
+**MD040 - Fenced code blocks must have language:**
+
+- ✅ CORRECT: Use triple backticks with language like `python`, `bash`, `json`, `text`
+- ❌ WRONG: Triple backticks without any language specifier
+
+**Use these language tags:**
+
+- `python` - Python code
+- `bash` - Shell commands
+- `json` - JSON data
+- `yaml` - YAML config
+- `text` - Plain text, URLs, directory structures
+
+**MD033 - HTML in Markdown:**
+
+- Use `<b>text</b>` instead of `**text**` inside HTML tags like `<summary>`
+- Example: `<summary><b>Click to expand</b></summary>` ✅
+- NOT: `<summary>**Click to expand**</summary>` ❌
+
+**MD060 - Table formatting:**
+
+- Tables must have consistent column alignment
+- Add spaces around pipe characters
+- Separator row must match header width
+
+```markdown
+# ✅ CORRECT
+| Column 1 | Column 2 | Column 3 |
+| -------- | -------- | -------- |
+| Value 1  | Value 2  | Value 3  |
+
+# ❌ WRONG - inconsistent spacing
+|Column 1|Column 2|Column 3|
+|--------|--------|--------|
+|Value 1|Value 2|Value 3|
+```
+
+**MD036 - No emphasis as heading:**
+
+- Don't use `*text*` or `_text_` alone on a line as a pseudo-heading
+- Use proper headings (`#`, `##`, etc.) or HTML comments for footers
+
+**MD047 - Files must end with newline:**
+
+- Always ensure markdown files end with a single newline character
+
+**General Rules:**
+
+- No trailing whitespace on lines
+- Blank lines should be completely empty (no spaces/tabs)
+- One blank line before and after code blocks
+- One blank line before and after headings
+
+### 8. ALWAYS CHECK BEFORE COMMITTING
 
 - Run `ruff check .` to catch style issues
 - Run `ruff format .` to auto-format code
 - Ensure no import sorting issues
 - Ensure no blank line whitespace issues
 - **Validate API documentation** against test fixtures
+- **Check markdown files** pass markdownlint
 - Test your changes work as expected
 
-### 8. 📝 COMMIT MESSAGE GUIDELINES
+### 9. 📝 COMMIT MESSAGE GUIDELINES
 
 - **Keep commit messages SHORT and concise** (50 chars or less for subject)
 - **Use conventional commit format**: `type: short description`
@@ -72,7 +131,7 @@ alwaysApply: true
 
 **Examples:**
 
-```
+```text
 feat: add mixer temperature sensor
 fix: handle null values in API response
 refactor: simplify entity creation logic
@@ -87,7 +146,7 @@ chore: update dependencies
 - ❌ Vague messages like "fix bug" or "update code"
 - ❌ Multiple unrelated changes in one commit
 
-### 9. DYNAMIC ENTITY CHANGES
+### 10. DYNAMIC ENTITY CHANGES
 
 When modifying dynamic entity creation from `mergedData` API:
 
