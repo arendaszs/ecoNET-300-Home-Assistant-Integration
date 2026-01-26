@@ -3,12 +3,12 @@
 [![Code Formatter](https://img.shields.io/badge/Code%20Formatter-Ruff-000000?style=for-the-badge&logo=python)](https://github.com/astral-sh/ruff)
 [![Latest Release](https://img.shields.io/github/v/release/jontofront/ecoNET-300-Home-Assistant-Integration?style=for-the-badge)](https://github.com/jontofront/ecoNET-300-Home-Assistant-Integration/releases)
 [![HACS](https://img.shields.io/badge/HACS-Default-41BDF5?style=for-the-badge&logo=homeassistant)](https://github.com/hacs/integration)
+[![Active Installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json&query=%24.econet300.total&label=Active%20Installs&style=for-the-badge&logo=homeassistant&color=41BDF5)](https://analytics.home-assistant.io)
 [![HACS Action](https://img.shields.io/badge/HACS%20Action-passing-brightgreen?style=for-the-badge&logo=github)](https://github.com/jontofront/ecoNET-300-Home-Assistant-Integration/actions/workflows/hacs.yml)
 [![Stability](https://img.shields.io/badge/Stability-Stable-2ecc71?style=for-the-badge)](https://guidelines.denpa.pro/stability#stable)
 [![Hassfest](https://img.shields.io/badge/Hassfest-Validated-brightgreen?style=for-the-badge&logo=homeassistant)](https://github.com/jontofront/ecoNET-300-Home-Assistant-Integration/actions/workflows/hassfest.yaml)
 
-**Note:** This repository is a fork of the original [pblxptr/ecoNET-300-Home-Assistant-Integration](https://github.com/pblxptr/ecoNET-300-Home-Assistant-Integration). Most of the work was done by [@pblxpt](https://github.com/pblxpt), and we are very grateful for their efforts.
-**Additionally, I maintained and supported this code up to version v0.3.3.**
+**Note:** This repository is a fork of the original [pblxptr/ecoNET-300-Home-Assistant-Integration](https://github.com/pblxptr/ecoNET-300-Home-Assistant-Integration). Most of the work was done by [@pblxpt](https://github.com/pblxpt), and we are very grateful for their efforts. Additionally, I maintained and supported this code up to version v0.3.3.
 
 <div align="center">
 
@@ -62,10 +62,11 @@ The integration supports **6 languages** with comprehensive translations:
 ## 📋 Table of Contents
 
 1. [Installation](#installation)
-2. [Configuration](#configuration)
-3. [Entities](#entities)
-4. [Contributing](#contributing)
-5. [Acknowledgments](#acknowledgments)
+2. [Upgrading](#upgrading)
+3. [Configuration](#configuration)
+4. [Entities](#entities)
+5. [Contributing](#contributing)
+6. [Acknowledgments](#acknowledgments)
 
 ---
 
@@ -76,7 +77,7 @@ The integration supports **6 languages** with comprehensive translations:
 1. Install and configure [HACS](https://hacs.xyz/).
 2. Add this repository as a [custom repository](https://hacs.xyz/docs/faq/custom_repositories/) using:
 
-```
+```text
 https://github.com/jontofront/ecoNET-300-Home-Assistant-Integration
 ```
 
@@ -88,7 +89,7 @@ https://github.com/jontofront/ecoNET-300-Home-Assistant-Integration
 1. Download or clone this repository.
 2. Copy `custom_components/econet300` into your `<config_directory>/custom_components/`.
 
-```
+```text
 <config directory>/
 |-- custom_components/
 |   |-- econet300/
@@ -99,6 +100,30 @@ https://github.com/jontofront/ecoNET-300-Home-Assistant-Integration
 
 ---
 
+## 🔄 Upgrading
+
+### From v1.1.x to v1.2.x
+
+**v1.2.0 introduces significant new features** including 165+ dynamic entities, parameter locking, and repair issues system.
+
+**Good news:** No manual migration required! Your existing configuration will continue to work.
+
+**After upgrading:**
+1. Restart Home Assistant
+2. Check **Settings → Devices → ecoNET300** for new entities
+3. New CONFIG category entities are disabled by default - enable as needed
+
+| What Changes | Details |
+|-------------|---------|
+| Existing entities | Continue working unchanged |
+| Entity IDs | Stable, no changes |
+| New entities | Auto-discovered, CONFIG disabled by default |
+| Configuration | Preserved, no reconfiguration needed |
+
+**📖 [Complete Migration Guide](docs/MIGRATION.md)**
+
+---
+
 ## ⚙️ Configuration
 
 Integrate ecoNET300 via the user interface:
@@ -106,7 +131,7 @@ Integrate ecoNET300 via the user interface:
 [![Add integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start?domain=econet300)
 
 <details>
-  <summary><b>Manual Configuration Steps</b></summary>
+<summary><b>Manual Configuration Steps</b></summary>
 
 Apart from using 'My button' (in case it doesn't work) you can also perform the following steps manually:
 
@@ -143,7 +168,7 @@ Apart from using 'My button' (in case it doesn't work) you can also perform the 
 The integration provides a boiler control switch that allows you to turn the boiler ON and OFF directly from Home Assistant.
 
 <details>
-  <summary>**👉 Click here to expand the table**</summary>
+<summary><b>👉 Click here to expand the table</b></summary>
 
 | Entity Key       | Description                  | Control                    | State Detection  |
 | ---------------- | ---------------------------- | -------------------------- | ---------------- |
@@ -163,7 +188,7 @@ The integration provides a boiler control switch that allows you to turn the boi
 The integration provides a heater mode selector that allows you to control the boiler operation mode directly from Home Assistant.
 
 <details>
-  <summary>**👉 Click here to expand the table**</summary>
+<summary><b>👉 Click here to expand the table</b></summary>
 
 | Entity Key    | Description                    | Options              | API Parameter |
 | ------------- | ------------------------------ | -------------------- | ------------- |
@@ -184,7 +209,7 @@ The integration provides a heater mode selector that allows you to control the b
 These sensors are retrieved from the `../econet/regParams` and `../econet/sysParams` endpoints.
 
 <details>
-  <summary>**👉 Click here to expand the table**</summary>
+<summary><b>👉 Click here to expand the table</b></summary>
 
 | Entity Key                   | Description                               | Endpoint              |
 | ---------------------------- | ----------------------------------------- | --------------------- |
@@ -271,7 +296,7 @@ These sensors are retrieved from the `../econet/regParams` and `../econet/sysPar
 ### Binary Sensors
 
 <details>
-  <summary>**👉 Click here to expand the table**</summary>
+<summary><b>👉 Click here to expand the table</b></summary>
 
 | Entity Key                   | Description                    | Endpoint              |
 | ---------------------------- | ------------------------------ | --------------------- |
@@ -321,7 +346,7 @@ These sensors are retrieved from the `../econet/regParams` and `../econet/sysPar
 ### Number Entities
 
 <details>
-  <summary>**👉 Click here to expand the table**</summary>
+<summary><b>👉 Click here to expand the table</b></summary>
 
 | Entity Key                            | Description                          | Endpoint              |
 | ------------------------------------- | ------------------------------------ | --------------------- |
@@ -373,7 +398,7 @@ The integration includes comprehensive diagnostics support to help troubleshoot 
 
 ## 📁 Project Structure
 
-```
+```text
 ecoNET-300-Home-Assistant-Integration/
 ├── custom_components/econet300/     # Home Assistant integration
 ├── docs/                            # Complete documentation
@@ -391,6 +416,7 @@ ecoNET-300-Home-Assistant-Integration/
 
 ### 📚 **Essential Documentation** (in `docs/`)
 
+- **MIGRATION.md** - Complete migration guide for upgrading between versions
 - **DIAGNOSTICS.md** - Complete diagnostics documentation and troubleshooting guide
 - **API_V1_DOCUMENTATION.md** - Complete API documentation (consolidated)
 - **BOILER_CONTROL_README.md** - Boiler control documentation and setup
