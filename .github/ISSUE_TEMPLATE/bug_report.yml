@@ -6,8 +6,10 @@ assignees: ["jontofront"]
 body:
   - type: markdown
     attributes:
-      value: >-
+      value: |
         **Please describe the bug you found. The more details you provide, the faster we can help!**
+        
+        ⚠️ **Important:** Attaching a diagnostics file helps us solve your issue much faster!
 
   - type: textarea
     id: problem_description
@@ -63,6 +65,32 @@ body:
       label: Screenshots 📸
       description: Add screenshots showing the problem (drag & drop images here)
       placeholder: "Upload screenshots of error messages, wrong values, or broken UI"
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ## 📊 Diagnostics File (Highly Recommended)
+        
+        **Attaching a diagnostics file helps us solve your issue MUCH faster!**
+        
+        **How to download diagnostics:**
+        1. Go to **Settings → Devices & Services**
+        2. Find **ecoNET300** integration
+        3. Click the **⋮** menu (three dots)
+        4. Click **Download diagnostics**
+        5. Attach the downloaded JSON file below
+        
+        ![Download Diagnostics](https://raw.githubusercontent.com/jontofront/ecoNET-300-Home-Assistant-Integration/master/images/download_diagnostics.png)
+
+  - type: textarea
+    id: diagnostics_file
+    attributes:
+      label: Diagnostics File 📊
+      description: "Drag & drop your diagnostics JSON file here. This file contains your device configuration and helps us debug faster. (Sensitive data like passwords is automatically redacted)"
+      placeholder: "Drag & drop your diagnostics .json file here, or paste its contents"
+    validations:
+      required: false
 
   - type: input
     id: versions
