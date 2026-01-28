@@ -109,16 +109,17 @@ https://github.com/jontofront/ecoNET-300-Home-Assistant-Integration
 **Good news:** No manual migration required! Your existing configuration will continue to work.
 
 **After upgrading:**
+
 1. Restart Home Assistant
 2. Check **Settings → Devices → ecoNET300** for new entities
 3. New CONFIG category entities are disabled by default - enable as needed
 
-| What Changes | Details |
-|-------------|---------|
-| Existing entities | Continue working unchanged |
-| Entity IDs | Stable, no changes |
-| New entities | Auto-discovered, CONFIG disabled by default |
-| Configuration | Preserved, no reconfiguration needed |
+| What Changes      | Details                                     |
+| ----------------- | ------------------------------------------- |
+| Existing entities | Continue working unchanged                  |
+| Entity IDs        | Stable, no changes                          |
+| New entities      | Auto-discovered, CONFIG disabled by default |
+| Configuration     | Preserved, no reconfiguration needed        |
 
 **📖 [Complete Migration Guide](docs/MIGRATION.md)**
 
@@ -165,13 +166,13 @@ Apart from using 'My button' (in case it doesn't work) you can also perform the 
 
 The integration provides multiple entity types:
 
-| Type | Count | Description |
-|------|-------|-------------|
-| Sensors | 50+ | Temperature, status, system info |
-| Binary Sensors | 25+ | Pumps, fans, connections |
-| Switches | 1 | Boiler ON/OFF control |
-| Select | 1 | Heater mode (Winter/Summer/Auto) |
-| Number | 15+ | Temperature setpoints |
+| Type           | Count | Description                      |
+| -------------- | ----- | -------------------------------- |
+| Sensors        | 50+   | Temperature, status, system info |
+| Binary Sensors | 25+   | Pumps, fans, connections         |
+| Switches       | 1     | Boiler ON/OFF control            |
+| Select         | 1     | Heater mode (Winter/Summer/Auto) |
+| Number         | 15+   | Temperature setpoints            |
 
 **Key Features:**
 
@@ -297,4 +298,5 @@ If you encounter any issues or have questions:
 
 ---
 
+_This README was last updated on 2025-01-28 with v1.2.0 release._
 _This README was last updated on 2025-01-28 with v1.2.0 release._
