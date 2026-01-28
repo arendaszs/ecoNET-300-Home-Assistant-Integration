@@ -104,14 +104,12 @@
 ### Bug Fixes
 
 - **Select Entity Translation Display**: Fixed issue where raw values were shown instead of translated text
-
   - **Problem**: Option values in dictionary were lowercase (`"summer"`) but translations expected Title Case (`"Summer"`)
   - **Solution**: Updated all option values to use Title Case consistently across all files
   - **Impact**: UI now displays proper translations (e.g., "Summer" instead of "summer")
   - **Files Modified**: `const.py`, `icons.json`, `strings.json`, all translation files
 
 - **Select Entity Option Conversion**: Fixed dictionary lookup errors in option value conversion
-
   - **Problem**: Legacy functions used wrong dictionary keys (`"heater_mode"` vs `"heaterMode"`)
   - **Solution**: Updated `get_heater_mode_value()` and `get_heater_mode_name()` to use correct camelCase keys
   - **Impact**: Select entity option changes now work correctly (e.g., changing to "Summer" mode)
@@ -126,14 +124,12 @@
 ### Technical Improvements
 
 - **Code Cleanup**: Reduced verbose debug logging while preserving essential troubleshooting information
-
   - **Removed**: 9 verbose debug logs that cluttered output
   - **Kept**: 25 essential debug logs for troubleshooting
   - **Benefits**: Cleaner logs, better performance, easier debugging
   - **Files Modified**: `custom_components/econet300/select.py`
 
 - **Icon System Optimization**: Centralized icon management in `icons.json` file
-
   - **Removed**: Duplicate icon mappings from `const.py`
   - **Centralized**: All icon definitions now in `icons.json` following Home Assistant best practices
   - **State-Specific Icons**: Select options now have proper state-specific icons
@@ -250,7 +246,6 @@
 ### v1.1.10 Architecture Changes
 
 - **Icon System Architecture**: Replaced old icon constants with modern translation-based approach
-
   - **Before**: Icons defined in `const.py` as hardcoded constants
   - **After**: Icons managed in `icons.json` with translation key mapping
   - **Benefits**: Better maintainability, easier customization, Home Assistant best practices compliance
@@ -263,7 +258,6 @@
 ### v1.1.10 Bug Fixes
 
 - **Invalid Material Design Icons**: Resolved 20+ non-existent icon references
-
   - **Problem**: Many icons like `mdi:screw-lag`, `mdi:fire-off`, `mdi:gauge-off` didn't exist in MDI database
   - **Solution**: Replaced with valid alternatives like `mdi:gauge`, `mdi:fire`, `mdi:conveyor-belt`
   - **Impact**: All entities now display proper icons in Home Assistant UI
@@ -301,7 +295,6 @@
 ### Critical Fixes
 
 - **Critical Error Resolution**: Fixed `TypeError: argument of type 'NoneType' is not iterable` error
-
   - **Problem**: System crashed when controllers didn't support `rmCurrentDataParamsEdits` endpoint
   - **Solution**: Added controller-specific endpoint support detection and comprehensive safety checks
   - **Impact**: No more crashes for ecoSOL500, ecoSOL, SControl MK1, and ecoMAX360i controllers
@@ -316,7 +309,6 @@
 ### v1.1.8 New Features
 
 - **Controller-Specific Endpoint Support**: Added intelligent detection of endpoint compatibility
-
   - **Supported Controllers**: ecoMAX series (810P-L, 850R2-X, 860P2-N, 860P3-V)
   - **Unsupported Controllers**: ecoSOL500, ecoSOL, SControl MK1, ecoMAX360i
   - **Smart Detection**: System automatically detects controller type and skips incompatible endpoints
