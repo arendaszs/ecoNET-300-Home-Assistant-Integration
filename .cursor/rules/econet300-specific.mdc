@@ -1,3 +1,9 @@
+---
+description: ecoNET300 device-specific guidelines and dynamic entity validation
+globs: 
+alwaysApply: true
+---
+
 # ecoNET300-Specific Guidelines
 
 ## Device Support
@@ -74,6 +80,64 @@
 - Handle null values appropriately
 - Consider parameter sections for organization
 
+## Dynamic Entity Validation Layer
+
+> **Full Documentation**: `docs/DYNAMIC_ENTITY_VALIDATION.md`
+
+### Overview
+
+Dynamic entities are created from `mergedData` API endpoint. A validation layer ensures data integrity and proper handling of device-side locks.
+
+### Validation Functions (in `common_functions.py`)
+
+| Function | Purpose |
+|----------|---------|
+| `validate_parameter_data(param)` | Validates parameter completeness (key, name, min/max, enum) |
+| `is_parameter_locked(param)` | Checks if parameter is locked by device |
+| `get_lock_reason(param)` | Gets human-readable lock reason |
+| `should_be_number_entity(param)` | Detects NUMBER entity type |
+| `should_be_switch_entity(param)` | Detects SWITCH entity type (2 options, binary) |
+| `should_be_select_entity(param)` | Detects SELECT entity type (3+ options) |
+| `should_be_read_only_sensor(param, category)` | Detects read-only SENSOR type |
+
+### Entity Type Detection Rules
+
+```
+edit=True + unit_name + valid min/max → NUMBER
+edit=True + enum (2 options) + binary pattern → SWITCH
+edit=True + enum (3+ options) → SELECT
+edit=False OR locked=True OR "Information" category → SENSOR
+```
+
+### Lock Handling
+
+- **Locked parameters** become unavailable in Home Assistant UI (grayed out)
+- **Lock icon** (`mdi:lock`) displayed for locked entities
+- **Lock reason** shown in entity attributes
+- **Dynamic updates**: Lock status checked on each coordinator update
+
+### Configuration Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `show_locked_as_sensors` | `True` | Create read-only sensors for locked editable parameters |
+| `include_lock_reasons` | `True` | Include lock_reason in entity attributes |
+
+### Files Affected
+
+- `number.py` - EconetNumber, MixerNumber, MixerDynamicNumber with lock support
+- `switch.py` - MenuCategorySwitch with lock support
+- `select.py` - MenuCategorySelect with lock support
+- `sensor.py` - Read-only sensors for locked/non-editable parameters
+- `common_functions.py` - All validation and detection functions
+
+### When Modifying Dynamic Entity Logic
+
+1. **Update documentation**: `docs/DYNAMIC_ENTITY_VALIDATION.md`
+2. **Update validation functions** in `common_functions.py`
+3. **Run tests**: `pytest tests/test_validation_functions.py -v`
+4. **Update this rules file** if adding new entity types or validation rules
+
 ## Device Discovery and Compatibility
 
 - Use test fixtures as reference for device capabilities
@@ -113,6 +177,38 @@
 - Keep device compatibility matrix updated
 - Document API limitations and requirements
 - Reference test fixtures for parameter examples
+
+## Version Migration Documentation
+
+> **User Migration Guide**: `docs/MIGRATION.md`
+
+### When to Update Migration Docs
+
+Update `docs/MIGRATION.md` when:
+
+- **Breaking changes** are introduced (entity ID changes, removed features)
+- **New major features** are added that users should know about
+- **Config entry structure** changes requiring migration
+- **New entity categories** or types are introduced
+- **Controller support** changes (new supported/unsupported controllers)
+
+### Migration Doc Structure
+
+The migration guide includes:
+
+- **Version Compatibility Matrix** - Which versions can upgrade directly
+- **Upgrade Steps** - Step-by-step instructions for users
+- **Entity Changes** - What changes between versions
+- **Troubleshooting** - Common issues and solutions
+- **FAQ** - Frequently asked questions
+
+### Checklist When Releasing New Versions
+
+- [ ] Update `docs/MIGRATION.md` with new version info
+- [ ] Update version compatibility matrix
+- [ ] Document any breaking changes
+- [ ] Add troubleshooting for known issues
+- [ ] Update README.md upgrading section if needed
 
 ## Translation Requirements
 

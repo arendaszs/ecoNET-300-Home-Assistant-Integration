@@ -1,3 +1,9 @@
+---
+description: Home Assistant development guidelines - PEP8, logging, typing
+globs: 
+alwaysApply: true
+---
+
 # Home Assistant Development Guidelines
 
 *Based on: https://developers.home-assistant.io/docs/development_guidelines*

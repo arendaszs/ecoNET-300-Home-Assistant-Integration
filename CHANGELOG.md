@@ -1,5 +1,96 @@
 # Changelog
 
+## [v1.2.0] - 2025-01-28
+
+### 🚀 New Features
+
+- **Dynamic Entity System**: Complete rewrite of entity creation from `mergedData` API
+  - 165+ dynamic parameters from boiler's remote menu
+  - Automatic entity type detection (Number, Switch, Select, Sensor)
+  - Category-based entity grouping with smart defaults (CONFIG entities disabled by default)
+
+- **Mixer Device Support**: Entities correctly assigned to mixer devices (Mixer 1-4)
+  - Keyword-based detection for mixer-related entities (`MIXER_RELATED_KEYWORDS`)
+  - Hardware validation to prevent phantom mixer devices
+
+- **ecoSTER Panel Detection**: Smart filtering for ecoSTER-related entities
+  - Entities only created when ecoSTER panel is connected (`ecoster_exists()`)
+
+- **Parameter Locking**: Device-side parameter locks reflected in Home Assistant
+  - Lock icon (`mdi:lock`) displayed for locked parameters
+  - Lock reason shown in entity attributes
+
+- **Transmission State Mappings**: Added complete transmission state support
+  - 14 boiler operation modes with proper state mappings
+  - Multi-language translations (EN, PL, FR) for all modes
+  - Icons and state translations in `icons.json`
+
+- **Expanded Boiler Status Codes**: Complete support for all 27 known boiler operation status codes
+  - Added all status codes from ecoNET cloud JavaScript to `SENSOR_STATUS_CO_MAPPING`
+  - New status codes: `prevention` (16), `work_grate` (17), `supervision_grate` (18), `calibration` (19), `maintain` (20), `afterburning` (21), `chimney_sweep` (22), `heating` (23), `open_door` (24), `cooling` (25), `safe` (26)
+
+- **Repair Issues System** (Gold tier `repair-issues` rule)
+  - Connection Failure Detection: Automatically detects persistent connection failures (after 5 consecutive failures)
+  - User-Friendly Repairs: Repair issues appear in **Settings → System → Repairs** with clear descriptions
+  - One-Click Fix: Users can update connection settings directly from the Repairs UI
+  - Auto-Resolution: Repair issues automatically removed when connection is restored
+
+- **Reconfiguration Flow** (Gold tier `reconfiguration-flow` rule)
+  - Options Flow: Added ability to reconfigure host, username, and password after initial setup
+  - Easy Access: Available via integration options (gear icon) in Settings → Devices & Services
+  - Validation: Connection is validated before applying changes
+
+### 🐛 Bug Fixes
+
+- **Number Entity Min/Max**: Fixed initialization to properly handle `0.0` as valid minimum value
+- **Heating Curve Values**: Fixed value setting - now correctly sends float values to API via `set_param_by_index()`
+- **Boiler On/Off Switch**: Fixed state reading from `regParams.mode` instead of incorrect path
+- **Entity Icons**: Fixed `icons.json` translations using `_attr_has_entity_name` attribute
+- **Switch Entity Init**: Fixed `async_write_ha_state()` called before entity added to Home Assistant
+- **Entity Registry Default**: Reverted property-based `entity_registry_enabled_default` to maintain compatibility
+- **moduleEcoSTERSoftVer**: Fixed incorrect treatment as numeric sensor (#189)
+- **Dynamic Entity Limits**: Skip API limits lookup for entities with pre-set limits from mergedData (reduces log spam)
+
+### 🔧 Improvements
+
+- **Number Entity Input Mode**: Changed basic NUMBER_MAP entities from slider to input box for easier value entry
+
+### ⚙️ Technical Improvements
+
+- **API Enhancement**: New `set_param_by_index()` method for dynamic parameter editing
+- **Entity Registry**: CONFIG category entities disabled by default, DIAGNOSTIC/uncategorized enabled
+- **Code Quality**: Refactored mixer keywords to `MIXER_RELATED_KEYWORDS` constant in `const.py`
+- **Validation Layer**: Centralized parameter validation in `common_functions.py`
+  - `validate_parameter_data()`, `is_parameter_locked()`, `get_lock_reason()`
+  - `should_be_number_entity()`, `should_be_switch_entity()`, `should_be_select_entity()`
+- **Component Detection**: `get_validated_entity_component()` with hardware validation
+- **Entity Setup**: Enhanced setup process to ensure registration for updates even when coordinator data unavailable
+- **Failure Tracking**: Coordinator now tracks consecutive connection failures
+- **Issue Registry Integration**: Uses Home Assistant's native issue registry for repairs
+- **Entry Cleanup**: Repair issues automatically cleaned up when integration is removed
+- **PARALLEL_UPDATES**: Added constant for polling integration compliance
+- **CI Updates**: Updated `actions/checkout` from v4 to v6 in GitHub workflows
+
+### 🌐 Translation Updates
+
+- **Status Code Translations**: Added translations for all 27 status codes in 5 languages (English, Polish, French, Ukrainian, Czech)
+- **Repair Issue Translations**: Added translations for repair issues in all 5 languages
+
+### 🧪 Testing
+
+- New tests for `async_remove_entry` and repair issue cleanup
+- Updated tests for switch exception handling and dynamic number entity key generation
+
+### 📚 Documentation
+
+- Added `docs/DYNAMIC_ENTITY_VALIDATION.md` for dynamic entity system
+- **Boiler Operation Mode Reference**: Complete mapping table with 14 operation modes
+- Updated API documentation with 80+ discovered endpoints
+- Enhanced cursor rules for dynamic entity changes
+- Improved bug report template with dropdown device selection
+
+---
+
 ## [v1.1.15] - 2025-01-13
 
 ### New Features
@@ -13,14 +104,12 @@
 ### Bug Fixes
 
 - **Select Entity Translation Display**: Fixed issue where raw values were shown instead of translated text
-
   - **Problem**: Option values in dictionary were lowercase (`"summer"`) but translations expected Title Case (`"Summer"`)
   - **Solution**: Updated all option values to use Title Case consistently across all files
   - **Impact**: UI now displays proper translations (e.g., "Summer" instead of "summer")
   - **Files Modified**: `const.py`, `icons.json`, `strings.json`, all translation files
 
 - **Select Entity Option Conversion**: Fixed dictionary lookup errors in option value conversion
-
   - **Problem**: Legacy functions used wrong dictionary keys (`"heater_mode"` vs `"heaterMode"`)
   - **Solution**: Updated `get_heater_mode_value()` and `get_heater_mode_name()` to use correct camelCase keys
   - **Impact**: Select entity option changes now work correctly (e.g., changing to "Summer" mode)
@@ -35,14 +124,12 @@
 ### Technical Improvements
 
 - **Code Cleanup**: Reduced verbose debug logging while preserving essential troubleshooting information
-
   - **Removed**: 9 verbose debug logs that cluttered output
   - **Kept**: 25 essential debug logs for troubleshooting
   - **Benefits**: Cleaner logs, better performance, easier debugging
   - **Files Modified**: `custom_components/econet300/select.py`
 
 - **Icon System Optimization**: Centralized icon management in `icons.json` file
-
   - **Removed**: Duplicate icon mappings from `const.py`
   - **Centralized**: All icon definitions now in `icons.json` following Home Assistant best practices
   - **State-Specific Icons**: Select options now have proper state-specific icons
@@ -159,7 +246,6 @@
 ### v1.1.10 Architecture Changes
 
 - **Icon System Architecture**: Replaced old icon constants with modern translation-based approach
-
   - **Before**: Icons defined in `const.py` as hardcoded constants
   - **After**: Icons managed in `icons.json` with translation key mapping
   - **Benefits**: Better maintainability, easier customization, Home Assistant best practices compliance
@@ -172,7 +258,6 @@
 ### v1.1.10 Bug Fixes
 
 - **Invalid Material Design Icons**: Resolved 20+ non-existent icon references
-
   - **Problem**: Many icons like `mdi:screw-lag`, `mdi:fire-off`, `mdi:gauge-off` didn't exist in MDI database
   - **Solution**: Replaced with valid alternatives like `mdi:gauge`, `mdi:fire`, `mdi:conveyor-belt`
   - **Impact**: All entities now display proper icons in Home Assistant UI
@@ -210,7 +295,6 @@
 ### Critical Fixes
 
 - **Critical Error Resolution**: Fixed `TypeError: argument of type 'NoneType' is not iterable` error
-
   - **Problem**: System crashed when controllers didn't support `rmCurrentDataParamsEdits` endpoint
   - **Solution**: Added controller-specific endpoint support detection and comprehensive safety checks
   - **Impact**: No more crashes for ecoSOL500, ecoSOL, SControl MK1, and ecoMAX360i controllers
@@ -225,7 +309,6 @@
 ### v1.1.8 New Features
 
 - **Controller-Specific Endpoint Support**: Added intelligent detection of endpoint compatibility
-
   - **Supported Controllers**: ecoMAX series (810P-L, 850R2-X, 860P2-N, 860P3-V)
   - **Unsupported Controllers**: ecoSOL500, ecoSOL, SControl MK1, ecoMAX360i
   - **Smart Detection**: System automatically detects controller type and skips incompatible endpoints

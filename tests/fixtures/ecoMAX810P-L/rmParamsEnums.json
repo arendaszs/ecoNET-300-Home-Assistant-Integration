@@ -1,280 +1,282 @@
 {
-    "remoteMenuParamsEnumsVer": "23521_1",
-    "data": [
-        {
-            "values": [],
-            "first": 0
-        },
-        {
-            "values": [
-                "OFF",
-                "ON"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "STOP",
-                "START",
-                "",
-                "Calibration"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "",
-                "Calibration"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "STOP",
-                "OFF",
-                "ON"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Disconnected",
-                "Connected"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "",
-                "OPEN",
-                "WEP",
-                "WPA",
-                "WPA2"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "TURNED OFF",
-                "FIRE UP",
-                "STABILIZATION",
-                "OPERATION",
-                "SUPERVISION",
-                "BURNING OFF",
-                "STOP",
-                "R.P.OUT",
-                "MANUAL",
-                "ALARM",
-                "UNSEALING",
-                "CHIMNEY",
-                "ACTIVACTION",
-                "NO TRANSMISSION"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Standard",
-                "FuzzyLogic",
-                "Lambda FuzzyLogic"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Off",
-                "Priority",
-                "No priority"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Off",
-                "On"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Winter",
-                "Summer",
-                "Auto",
-                "Winter",
-                "Summer"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "No",
-                "Yes"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Off",
-                "On"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Off",
-                "CH on",
-                "Floor on",
-                "Pump only"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "No",
-                "Yes"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "No",
-                "Universal",
-                "ecoSTER T1",
-                "ecoSTER T2",
-                "ecoSTER T3",
-                "Off",
-                "Universal",
-                "ecoSTER T2",
-                "ecoSTER T3",
-                "Off",
-                "Universal",
-                "ecoSTER T3",
-                "Off",
-                "Universal",
-                "ecoSTER T1",
-                "ecoSTER T3",
-                "Off",
-                "ecoSTER T1",
-                "ecoSTER T2",
-                "ecoSTER T3",
-                "Off",
-                "ecoSTER T2",
-                "ecoSTER T3",
-                "Off",
-                "ecoSTER T3",
-                "Off",
-                "ecoSTER T1",
-                "ecoSTER T3",
-                "Universal",
-                "Universal",
-                "Universal",
-                "Off",
-                "Off",
-                "Off"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "No",
-                "Yes"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Fuel level 100%",
-                "Fuel level 0%",
-                ""
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Off",
-                "On"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "On",
-                "Disabled SUMMER",
-                "Off"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "No",
-                "Yes"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "No",
-                "Yes"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "No",
-                "Yes"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "No",
-                "Yes"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Off",
-                "On"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Off",
-                "On"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Feeder and grate",
-                "Grate only"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "Reserve boiler",
-                "Alarms",
-                "Circulation pump"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "No",
-                "Yes"
-            ],
-            "first": 0
-        },
-        {
-            "values": [
-                "30%",
-                "50%",
-                "100%"
-            ],
-            "first": 0
-        }
+    "remoteMenuParamsEnumsVer":"23521_1",
+    "data":[
+       {
+          "values":[
+             
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "OFF",
+             "ON"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "STOP",
+             "START",
+             "",
+             "Calibration"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "",
+             "Calibration"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "STOP",
+             "OFF",
+             "ON"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Disconnected",
+             "Connected"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "",
+             "OPEN",
+             "WEP",
+             "WPA",
+             "WPA2"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "TURNED OFF",
+             "FIRE UP",
+             "STABILIZATION",
+             "OPERATION",
+             "SUPERVISION",
+             "BURNING OFF",
+             "STOP",
+             "R.P.OUT",
+             "MANUAL",
+             "ALARM",
+             "UNSEALING",
+             "CHIMNEY",
+             "ACTIVACTION",
+             "NO TRANSMISSION"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Standard",
+             "FuzzyLogic",
+             "Lambda FuzzyLogic"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Off",
+             "Priority",
+             "No priority"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Off",
+             "On"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Winter",
+             "Summer",
+             "Auto",
+             "Winter",
+             "Summer"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "No",
+             "Yes"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Off",
+             "On"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Off",
+             "CH on",
+             "Floor on",
+             "Pump only"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "No",
+             "Yes"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Off",
+             "Universal",
+             "ecoSTER T1",
+             "ecoSTER T2",
+             "ecoSTER T3",
+             "Off",
+             "Universal",
+             "ecoSTER T2",
+             "ecoSTER T3",
+             "Off",
+             "Universal",
+             "ecoSTER T3",
+             "Off",
+             "Universal",
+             "ecoSTER T1",
+             "ecoSTER T3",
+             "Off",
+             "ecoSTER T1",
+             "ecoSTER T2",
+             "ecoSTER T3",
+             "Off",
+             "ecoSTER T2",
+             "ecoSTER T3",
+             "Off",
+             "ecoSTER T3",
+             "Off",
+             "ecoSTER T1",
+             "ecoSTER T3",
+             "Universal",
+             "Universal",
+             "Universal",
+             "Off",
+             "Off",
+             "Off"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "No",
+             "Yes"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Fuel level 100%",
+             "Fuel level 0%",
+             ""
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Off",
+             "On"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "On",
+             "Disabled SUMMER",
+             "Off"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "No",
+             "Yes"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "No",
+             "Yes"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "No",
+             "Yes"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "No",
+             "Yes"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Off",
+             "On"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Off",
+             "On"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Feeder and grate",
+             "Grate only"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "Reserve boiler",
+             "Alarms",
+             "Circulation pump"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "No",
+             "Yes"
+          ],
+          "first":0
+       },
+       {
+          "values":[
+             "30%",
+             "50%",
+             "100%"
+          ],
+          "first":0
+       }
     ]
-}
+ }

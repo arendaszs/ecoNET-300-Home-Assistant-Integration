@@ -1,8 +1,9 @@
 ---
-description: 
+description: Home Assistant integration development standards
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
+
 # Home Assistant Integration Standards
 
 ## Core Guidelines

@@ -1,4 +1,51 @@
 {
+  "exceptions": {
+    "parameter_locked": {
+      "message": "Nelze změnit hodnotu: {lock_reason}"
+    },
+    "boiler_control_failed": {
+      "message": "Nepodařilo se ovládat kotel: {error}"
+    },
+    "switch_turn_on_failed": {
+      "message": "Nepodařilo se zapnout přepínač: {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Nepodařilo se vypnout přepínač: {error}"
+    },
+    "heater_mode_change_failed": {
+      "message": "Nepodařilo se změnit režim topení na {mode}"
+    },
+    "select_change_failed": {
+      "message": "Nepodařilo se změnit možnost: {error}"
+    },
+    "number_set_failed": {
+      "message": "Nepodařilo se nastavit hodnotu: {error}"
+    },
+    "api_communication_error": {
+      "message": "Chyba komunikace se zařízením: {error}"
+    },
+    "device_unavailable": {
+      "message": "Zařízení není dostupné: {error}"
+    }
+  },
+  "issues": {
+    "connection_failed": {
+      "title": "Připojení k zařízení ecoNET300 selhalo",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Aktualizovat nastavení připojení",
+            "description": "Nelze se připojit k vašemu zařízení ecoNET300 na adrese **{host}** po {failures} po sobě jdoucích pokusech.\n\nAktualizujte nastavení připojení pro obnovení konektivity.",
+            "data": {
+              "host": "Host",
+              "username": "Uživatelské jméno",
+              "password": "Heslo"
+            }
+          }
+        }
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
@@ -16,6 +63,24 @@
     },
     "abort": {
       "already_configured": "Zařízení je již nakonfigurováno"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Možnosti ecoNET300",
+        "description": "Aktualizujte nastavení připojení ecoNET300",
+        "data": {
+          "host": "Host",
+          "username": "Uživatelské jméno",
+          "password": "Heslo"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nepodařilo se připojit",
+      "invalid_auth": "Neplatné ověření",
+      "unknown": "Neočekávaná chyba"
     }
   },
   "entity": {
@@ -255,13 +320,13 @@
           "operation": "Provoz",
           "work": "Práce",
           "supervision": "Dohled",
-          "halted": "Zastaveno",
-          "stop": "Stop",
+          "paused": "Pozastaveno",
+          "stop": "Zastaveno",
           "burning_off": "Dohasínání",
           "manual": "Manuální",
-          "alarm": "Alarm",
-          "unsealing": "Odepěťování",
-          "chimney": "Komín",
+          "problem": "Alarm",
+          "unsealing": "Odvzdušnění",
+          "chimney": "Kominík",
           "stabilization": "Stabilizace",
           "no_transmission": "Bez přenosu",
           "unknown": "Neznámý"
@@ -408,7 +473,24 @@
         "name": "Návratová teplota"
       },
       "transmission": {
-        "name": "Přenos"
+        "name": "Přenos",
+        "state": {
+          "off": "Vypnuto",
+          "fire_up": "Rozpalování",
+          "operation": "Provoz",
+          "work": "Práce",
+          "supervision": "Dohled",
+          "paused": "Pozastaveno",
+          "stop": "Zastaveno",
+          "burning_off": "Dohasínání",
+          "manual": "Manuální",
+          "problem": "Alarm",
+          "unsealing": "Odvzdušnění",
+          "chimney": "Kominík",
+          "stabilization": "Stabilizace",
+          "no_transmission": "Bez přenosu",
+          "unknown": "Neznámý"
+        }
       },
       "ecoster_temp1": {
         "name": "Pokojová teplota 1"

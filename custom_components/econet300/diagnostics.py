@@ -15,6 +15,7 @@ from .const import DOMAIN, SERVICE_API, SERVICE_COORDINATOR
 # Data to redact from diagnostics
 TO_REDACT = [
     "password",
+    "servicePassword",  # Service password hash - sensitive
     "username",  # May contain sensitive info
     "host",  # May contain internal network info
     "uid",  # Device UID - unique device identifier
@@ -28,20 +29,20 @@ TO_REDACT = [
 
 
 def _redact_data(data: Any, to_redact: list[str]) -> Any:
-    """Redact sensitive data from a dictionary."""
-    if not isinstance(data, dict):
-        return data
-
-    redacted: dict[str, Any] = {}
-    for key, value in data.items():
-        if key in to_redact:
-            redacted[key] = "**REDACTED**"
-        elif isinstance(value, dict):
-            redacted[key] = _redact_data(value, to_redact)
-        else:
-            redacted[key] = value
-
-    return redacted
+    """Redact sensitive data from a dictionary or list."""
+    if isinstance(data, dict):
+        redacted: dict[str, Any] = {}
+        for key, value in data.items():
+            if key in to_redact:
+                redacted[key] = "**REDACTED**"
+            elif isinstance(value, (dict, list)):
+                redacted[key] = _redact_data(value, to_redact)
+            else:
+                redacted[key] = value
+        return redacted
+    if isinstance(data, list):
+        return [_redact_data(item, to_redact) for item in data]
+    return data
 
 
 async def async_get_config_entry_diagnostics(
@@ -144,7 +145,7 @@ async def async_get_config_entry_diagnostics(
             "entry_options": getattr(entry, "options", {}),
             "connection_status": connection_status,
             "api_info": _redact_data(api_info, TO_REDACT),
-            "coordinator_data": coordinator_data,
+            "coordinator_data": _redact_data(coordinator_data, TO_REDACT),
             "api_endpoint_data": _redact_data(api_endpoint_data, TO_REDACT),
         }
     except (AttributeError, TypeError, ValueError, KeyError) as e:

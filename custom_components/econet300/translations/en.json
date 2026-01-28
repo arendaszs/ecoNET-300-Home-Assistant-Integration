@@ -1,4 +1,51 @@
 {
+  "exceptions": {
+    "parameter_locked": {
+      "message": "Cannot change value: {lock_reason}"
+    },
+    "boiler_control_failed": {
+      "message": "Failed to control boiler: {error}"
+    },
+    "switch_turn_on_failed": {
+      "message": "Failed to turn on switch: {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Failed to turn off switch: {error}"
+    },
+    "heater_mode_change_failed": {
+      "message": "Failed to change heater mode to {mode}"
+    },
+    "select_change_failed": {
+      "message": "Failed to change select option: {error}"
+    },
+    "number_set_failed": {
+      "message": "Failed to set value: {error}"
+    },
+    "api_communication_error": {
+      "message": "Error communicating with device: {error}"
+    },
+    "device_unavailable": {
+      "message": "Device is unavailable: {error}"
+    }
+  },
+  "issues": {
+    "connection_failed": {
+      "title": "Connection to ecoNET300 device failed",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Update connection settings",
+            "description": "Unable to connect to your ecoNET300 device at **{host}** after {failures} consecutive attempts.\n\nUpdate your connection settings to restore connectivity.",
+            "data": {
+              "host": "Host",
+              "username": "Username",
+              "password": "Password"
+            }
+          }
+        }
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
@@ -18,15 +65,140 @@
       "already_configured": "Device is already configured"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "ecoNET300 Options",
+        "description": "Update your ecoNET300 connection settings",
+        "data": {
+          "host": "Host",
+          "username": "Username",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "invalid_auth": "Invalid authentication",
+      "unknown": "Unexpected error"
+    }
+  },
   "entity": {
     "switch": {
       "boiler_control": {
         "name": "Boiler On/Off"
+      },
+      "buffer_support": {
+        "name": "Buffer Support"
       }
     },
     "select": {
       "heater_mode": {
         "name": "Heater Mode"
+      },
+      "parametr_a_fuzzylogic": {
+        "name": "Parameter A FuzzyLogic"
+      },
+      "exchanger": {
+        "name": "Exchanger"
+      },
+      "mixer1_support": {
+        "name": "Mixer 1 support"
+      },
+      "off_by_thermostat": {
+        "name": "Off by thermostat"
+      },
+      "thermostat_lock": {
+        "name": "Thermostat lock"
+      },
+      "boiler_pump_lock": {
+        "name": "Boiler pump lock"
+      },
+      "output_h1": {
+        "name": "Output H1"
+      },
+      "output_h2_and_h3": {
+        "name": "Output H2 and H3"
+      },
+      "alarms": {
+        "name": "Alarms"
+      }
+    },
+    "number": {
+      "parametr_b_fuzzylogic": {
+        "name": "Parameter B FuzzyLogic"
+      },
+      "parametr_c_fuzzylogic": {
+        "name": "Parameter C FuzzyLogic"
+      },
+      "minimum_airflow_output": {
+        "name": "Minimum airflow output"
+      },
+      "min_boiler_temperature": {
+        "name": "Min. boiler temperature"
+      },
+      "max_boiler_temperature": {
+        "name": "Max. boiler temperature"
+      },
+      "minimum_huw_temperature": {
+        "name": "Minimum HUW temperature"
+      },
+      "maximum_huw_temperature": {
+        "name": "Maximum HUW temperature"
+      },
+      "ch_pump_activation_temperature": {
+        "name": "CH pump activation temperature"
+      },
+      "ch_pump_standstill_when_loading_huw": {
+        "name": "CH pump standstill when loading HUW"
+      },
+      "boiler_inc_by_huw_mixer": {
+        "name": "Boiler inc. by HUW, Mixer"
+      },
+      "extending_huw_pump_operation_time": {
+        "name": "Extending HUW pump operation time"
+      },
+      "min_mixer1_temp": {
+        "name": "Min. mixer 1 temperature"
+      },
+      "max_mixer1_temp": {
+        "name": "Max. mixer 1 temperature"
+      },
+      "proportional_range": {
+        "name": "Proportional range"
+      },
+      "integration_time_constant": {
+        "name": "Integration time constant"
+      },
+      "valve_full_opening_time": {
+        "name": "Valve full opening time"
+      },
+      "mixer1_input_dead_zone": {
+        "name": "Mixer 1 input dead zone"
+      },
+      "boiler_cooling_temperature": {
+        "name": "Boiler cooling temperature"
+      },
+      "poker_cycle_time": {
+        "name": "Poker cycle time"
+      },
+      "no_fuel_detection_time": {
+        "name": "No fuel detection time"
+      },
+      "feeder_operat_time_2": {
+        "name": "Feeder operation time 2"
+      },
+      "feeder_interval_2": {
+        "name": "Feeder interval 2"
+      },
+      "reserve_boiler": {
+        "name": "Reserve boiler"
+      },
+      "maxburner_temp": {
+        "name": "Max burner temperature"
+      },
+      "extempwno_fuel": {
+        "name": "Ext. temp w/o fuel"
       }
     },
     "binary_sensor": {
@@ -180,20 +352,64 @@
       "lambda_level": {
         "name": "Lambda level"
       },
+      "parameter_a_lambda": {
+        "name": "Parameter A Lambda"
+      },
+      "parameter_b_lambda": {
+        "name": "Parameter B Lambda"
+      },
+      "parameter_c_lambda": {
+        "name": "Parameter C Lambda"
+      },
+      "100percent_oxygen": {
+        "name": "100% Oxygen"
+      },
+      "50percent_oxygen": {
+        "name": "50% Oxygen"
+      },
+      "30percent_oxygen": {
+        "name": "30% Oxygen"
+      },
+      "fl_oxygen_correction": {
+        "name": "FL Oxygen correction"
+      },
+      "operation_with_lambda_sensor": {
+        "name": "Operation with Lambda sensor"
+      },
+      "fuel_detection_oxygen": {
+        "name": "Fuel detection: oxygen"
+      },
       "status_co": {
         "name": "Central heating status",
         "state": {
           "off": "Off",
-          "pause": "Pause",
-          "reload": "Reload",
-          "fire": "Fire",
-          "alert": "Alert",
-          "test_tube": "Test tube",
-          "stop_circle": "Stop circle",
-          "gauge": "Gauge",
-          "help_circle": "Help circle",
-          "error": "Error",
-          "maintenance": "Maintenance"
+          "stop": "Stop",
+          "fire_up": "Fire up",
+          "operation": "Operation",
+          "supervision": "Supervision",
+          "paused": "Paused",
+          "cleaning": "Cleaning",
+          "burning_off": "Burning off",
+          "alarm": "Alarm",
+          "manual": "Manual",
+          "unsealing": "Unsealing",
+          "other": "Other",
+          "stabilization": "Stabilization",
+          "purge": "Purge",
+          "check_flame": "Check flame",
+          "flame_losing": "Flame extinguished",
+          "prevention": "Prevention",
+          "work_grate": "Work grate",
+          "supervision_grate": "Supervision grate",
+          "calibration": "Calibration",
+          "maintain": "Maintain",
+          "afterburning": "Afterburning",
+          "chimney_sweep": "Chimney-sweep",
+          "heating": "Heating",
+          "open_door": "Open door",
+          "cooling": "Cooling",
+          "safe": "Safe",
+          "unknown": "Unknown"
         }
       },
       "work_at100": {
@@ -212,20 +428,20 @@
         "name": "Firing up count"
       },
       "mode": {
-        "name": "Boiler mode",
+        "name": "Mode",
         "state": {
           "off": "Off",
           "fire_up": "Fire up",
           "operation": "Operation",
           "work": "Work",
           "supervision": "Supervision",
-          "halted": "Halted",
-          "stop": "Stop",
-          "burning_off": "Burning off",
+          "paused": "Paused",
+          "stop": "Stopped",
+          "burning_off": "Burning OFF",
           "manual": "Manual",
-          "alarm": "Alarm",
+          "problem": "Alarm",
           "unsealing": "Unsealing",
-          "chimney": "Chimney",
+          "chimney": "Chimney-sweep",
           "stabilization": "Stabilization",
           "no_transmission": "No transmission",
           "unknown": "Unknown"
@@ -396,7 +612,24 @@
         "name": "Return temperature"
       },
       "transmission": {
-        "name": "Transmission"
+        "name": "Transmission",
+        "state": {
+          "off": "Off",
+          "fire_up": "Fire up",
+          "operation": "Operation",
+          "work": "Work",
+          "supervision": "Supervision",
+          "paused": "Paused",
+          "stop": "Stopped",
+          "burning_off": "Burning OFF",
+          "manual": "Manual",
+          "problem": "Alarm",
+          "unsealing": "Unsealing",
+          "chimney": "Chimney-sweep",
+          "stabilization": "Stabilization",
+          "no_transmission": "No transmission",
+          "unknown": "Unknown"
+        }
       },
       "ecoster_temp1": {
         "name": "Room temperature 1"

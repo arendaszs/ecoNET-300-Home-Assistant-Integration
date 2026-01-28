@@ -1,26 +1,26 @@
 {
-    "currentDataParamsEditsVer": 1,
-    "data": {
-        "1798": {
-            "type": 10
-        },
-        "1280": {
-            "max": 68,
-            "type": 4,
-            "value": 40,
-            "min": 27
-        },
-        "2048": {
-            "max": 2,
-            "type": 4,
-            "value": 0,
-            "min": 0
-        },
-        "2049": {
-            "max": 2,
-            "type": 4,
-            "value": 0,
-            "min": 0
-        }
+    "currentDataParamsEditsVer":2,
+    "data":{
+       "1280":{
+          "max":68,
+          "type":4,
+          "value":47,
+          "min":27
+       },
+       "1798":{
+          "type":10
+       },
+       "2048":{
+          "max":2,
+          "type":4,
+          "value":0,
+          "min":0
+       },
+       "2049":{
+          "max":2,
+          "type":4,
+          "value":0,
+          "min":0
+       }
     }
-}
+ }

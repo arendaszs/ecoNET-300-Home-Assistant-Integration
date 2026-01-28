@@ -10,6 +10,7 @@ from custom_components.econet300 import (
     DOMAIN,
     SERVICE_API,
     SERVICE_COORDINATOR,
+    async_remove_entry,
     async_setup_entry,
     async_unload_entry,
 )
@@ -131,3 +132,21 @@ class TestIntegrationSetup:
 
         assert result is True
         # Should not raise an error even if no data exists
+
+    @pytest.mark.asyncio
+    async def test_async_remove_entry_cleans_up_issues(
+        self, hass: HomeAssistant, mock_config_entry
+    ):
+        """Test that async_remove_entry cleans up repair issues."""
+        # Mock the issue registry delete function
+        with patch(
+            "custom_components.econet300.async_delete_issue"
+        ) as mock_delete_issue:
+            await async_remove_entry(hass, mock_config_entry)
+
+            # Verify that delete_issue was called with correct parameters
+            mock_delete_issue.assert_called_once_with(
+                hass,
+                DOMAIN,
+                f"connection_failed_{mock_config_entry.entry_id}",
+            )

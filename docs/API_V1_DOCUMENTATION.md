@@ -13,6 +13,7 @@
 We have successfully discovered **80+ API endpoints** for the ecoNET-300 device through local testing and cloud analysis! This represents a massive expansion from the original 4 known endpoints to a comprehensive API with extensive functionality, including advanced ecoMAX features and remote menu capabilities.
 
 ### 📊 Discovery Statistics
+
 - **Total Data Retrieved:** 89.5 KB (local) + Cloud analysis data
 - **Average Response Time:** 0.130s (local endpoints)
 - **Fastest Endpoint:** rmParamsUnits (0.039s)
@@ -28,8 +29,9 @@ We have successfully discovered **80+ API endpoints** for the ecoNET-300 device 
 This document provides comprehensive documentation of the ecoNET-300 API V1 endpoints discovered through local device testing and analysis. These endpoints can be used to interact with ecoNET-300 devices locally.
 
 ### 📚 **Related Documentation**
+
 - **`ecoSOL_DISCOVERY_SUMMARY.md`** - Complete ecoSOL device analysis and features
-- **`ecoMAX360_DISCOVERY_SUMMARY.md`** - Complete ecoMAX device analysis and features  
+- **`ecoMAX360_DISCOVERY_SUMMARY.md`** - Complete ecoMAX device analysis and features
 - **`NEW_API_ENDPOINTS_DISCOVERED.md`** - Detailed list of cloud-discovered endpoints
 - **`CLOUD_TRANSLATIONS.md`** - Multi-language translation system documentation
 - **`ecoMAX810P-L_PARAMETER_NAMES_ANALYSIS.md`** - Local test results and parameter analysis
@@ -37,6 +39,7 @@ This document provides comprehensive documentation of the ecoNET-300 API V1 endp
 ## Base URL Structure
 
 All API endpoints follow this pattern:
+
 ```
 http://DEVICE_IP/econet/{endpoint}
 ```
@@ -48,6 +51,7 @@ Most endpoints require basic authentication with username and password.
 ## Device Compatibility
 
 ### Tested Devices
+
 - **ecoMAX810P-L TOUCH** (Software: 3.2.3879)
 - **ecoMAX850R2-X** (Software: 2.0.3521)
 - **ecoMAX360i**
@@ -57,6 +61,7 @@ Most endpoints require basic authentication with username and password.
 - **SControl MK1**
 
 ### Device Information Structure
+
 - **Controller ID**: Device model identifier
 - **Software Version**: Firmware version
 - **Protocol**: em (ecoMAX)
@@ -68,6 +73,7 @@ Most endpoints require basic authentication with username and password.
 ## 🔧 Core System Endpoints
 
 ### 1. **sysParams** - System Parameters
+
 - **URL:** `GET /econet/sysParams`
 - **Size:** 13.6 KB
 - **Response Time:** 0.279s
@@ -75,6 +81,7 @@ Most endpoints require basic authentication with username and password.
 - **Key Data:** Device info, firmware versions, network settings, alarms, schedules
 
 **Response Structure**:
+
 ```json
 {
   "uid": "DEVICE_UID",
@@ -115,6 +122,7 @@ Most endpoints require basic authentication with username and password.
 ```
 
 ### 2. **regParams** - Register Parameters
+
 - **URL:** `GET /econet/regParams`
 - **Size:** 1.7 KB
 - **Response Time:** 0.061s
@@ -122,6 +130,7 @@ Most endpoints require basic authentication with username and password.
 - **Key Data:** Parameter versions, current values, editable parameters
 
 ### 3. **regParamsData** - Register Parameters Data
+
 - **URL:** `GET /econet/regParamsData`
 - **Size:** 2.5 KB
 - **Response Time:** 0.079s
@@ -133,6 +142,7 @@ Most endpoints require basic authentication with username and password.
 ## 📊 Data & Parameter Endpoints
 
 ### 4. **rmCurrentDataParams** - Real-time Current Data Parameters ⭐
+
 - **URL:** `GET /econet/rmCurrentDataParams`
 - **Size:** 4.8 KB
 - **Response Time:** 0.164s
@@ -141,6 +151,7 @@ Most endpoints require basic authentication with username and password.
 - **Priority:** **HIGH** - Contains live sensor readings
 
 ### 5. **rmParamsData** - Parameter Data
+
 - **URL:** `GET /econet/rmParamsData`
 - **Size:** 12.7 KB
 - **Response Time:** 0.679s
@@ -149,6 +160,7 @@ Most endpoints require basic authentication with username and password.
 - **Priority:** **HIGH** - Essential for parameter monitoring
 
 ### 6. **rmParamsNames** - Parameter Names
+
 - **URL:** `GET /econet/rmParamsNames`
 - **Size:** 5.4 KB
 - **Response Time:** 0.107s
@@ -157,6 +169,7 @@ Most endpoints require basic authentication with username and password.
 - **Priority:** **HIGH** - Required for user-friendly displays
 
 ### 7. **rmParamsDescs** - Parameter Descriptions ⭐
+
 - **URL:** `GET /econet/rmParamsDescs`
 - **Size:** 29.1 KB
 - **Response Time:** 0.775s
@@ -165,6 +178,7 @@ Most endpoints require basic authentication with username and password.
 - **Priority:** **HIGH** - Essential for understanding parameters
 
 ### 8. **rmParamsEnums** - Parameter Enumerations
+
 - **URL:** `GET /econet/rmParamsEnums`
 - **Size:** 2.5 KB
 - **Response Time:** 0.127s
@@ -173,6 +187,7 @@ Most endpoints require basic authentication with username and password.
 - **Priority:** **MEDIUM** - Useful for parameter validation
 
 ### 9. **rmCurrentDataParamsEdits** - Current Data Parameter Edits
+
 - **URL:** `GET /econet/rmCurrentDataParamsEdits`
 - **Size:** 0.2 KB
 - **Response Time:** 0.098s
@@ -185,6 +200,7 @@ Most endpoints require basic authentication with username and password.
 ## 🏗️ System Structure & Configuration
 
 ### 10. **rmStructure** - System Structure
+
 - **URL:** `GET /econet/rmStructure`
 - **Size:** 13.1 KB
 - **Response Time:** 0.24s
@@ -193,6 +209,7 @@ Most endpoints require basic authentication with username and password.
 - **Priority:** **MEDIUM** - Understanding system architecture
 
 ### 11. **rmCatsNames** - Category Names
+
 - **URL:** `GET /econet/rmCatsNames`
 - **Size:** 1.1 KB
 - **Response Time:** 0.123s
@@ -205,6 +222,7 @@ Most endpoints require basic authentication with username and password.
 ## 🚨 Status & Monitoring Endpoints
 
 ### 12. **rmStatus** - System Status
+
 - **URL:** `GET /econet/rmStatus`
 - **Size:** 0.1 KB
 - **Response Time:** 0.091s
@@ -213,6 +231,7 @@ Most endpoints require basic authentication with username and password.
 - **Priority:** **HIGH** - System health monitoring
 
 ### 13. **rmAlarms** - System Alarms
+
 - **URL:** `GET /econet/rmAlarms`
 - **Size:** 0.1 KB
 - **Response Time:** 0.094s
@@ -221,6 +240,7 @@ Most endpoints require basic authentication with username and password.
 - **Priority:** **HIGH** - Critical for monitoring
 
 ### 14. **rmAlarmsNames** - Alarm Names
+
 - **URL:** `GET /econet/rmAlarmsNames`
 - **Size:** 0.5 KB
 - **Response Time:** 0.095s
@@ -233,6 +253,7 @@ Most endpoints require basic authentication with username and password.
 ## 🔧 Parameter Management Endpoints
 
 ### 15-30. **rmParams[Type]** - Parameter Metadata (16 endpoints)
+
 These endpoints provide detailed metadata about parameters:
 
 - **rmParamsStructure** - Parameter structure definitions
@@ -262,6 +283,7 @@ These endpoints provide detailed metadata about parameters:
 ## 🛠️ System Management Endpoints
 
 ### 31. **rmDiagnostics** - Diagnostic Information
+
 - **URL:** `GET /econet/rmDiagnostics`
 - **Size:** 0.1 KB
 - **Response Time:** 0.096s
@@ -269,6 +291,7 @@ These endpoints provide detailed metadata about parameters:
 - **Priority:** **MEDIUM** - Troubleshooting
 
 ### 32. **rmLogs** - System Logs
+
 - **URL:** `GET /econet/rmLogs`
 - **Size:** 0.1 KB
 - **Response Time:** 0.092s
@@ -276,6 +299,7 @@ These endpoints provide detailed metadata about parameters:
 - **Priority:** **LOW** - Debugging
 
 ### 33. **rmConfig** - Configuration
+
 - **URL:** `GET /econet/rmConfig`
 - **Size:** 0.1 KB
 - **Response Time:** 0.079s
@@ -283,6 +307,7 @@ These endpoints provide detailed metadata about parameters:
 - **Priority:** **LOW** - System administration
 
 ### 34. **rmFirmware** - Firmware Information
+
 - **URL:** `GET /econet/rmFirmware`
 - **Size:** 0.1 KB
 - **Response Time:** 0.04s
@@ -290,6 +315,7 @@ These endpoints provide detailed metadata about parameters:
 - **Priority:** **LOW** - System administration
 
 ### 35. **rmNetwork** - Network Settings
+
 - **URL:** `GET /econet/rmNetwork`
 - **Size:** 0.1 KB
 - **Response Time:** 0.04s
@@ -297,6 +323,7 @@ These endpoints provide detailed metadata about parameters:
 - **Priority:** **LOW** - Network administration
 
 ### 36. **rmSecurity** - Security Settings
+
 - **URL:** `GET /econet/rmSecurity`
 - **Size:** 0.1 KB
 - **Response Time:** 0.107s
@@ -304,6 +331,7 @@ These endpoints provide detailed metadata about parameters:
 - **Priority:** **LOW** - Security administration
 
 ### 37. **rmUsers** - User Management
+
 - **URL:** `GET /econet/rmUsers`
 - **Size:** 0.1 KB
 - **Response Time:** 0.079s
@@ -315,6 +343,7 @@ These endpoints provide detailed metadata about parameters:
 ## 📅 Scheduling & Automation
 
 ### 38. **rmSchedule** - Scheduling
+
 - **URL:** `GET /econet/rmSchedule`
 - **Size:** 0.1 KB
 - **Response Time:** 0.087s
@@ -326,6 +355,7 @@ These endpoints provide detailed metadata about parameters:
 ## 📈 Statistics & Monitoring
 
 ### 39. **rmStatistics** - Statistics
+
 - **URL:** `GET /econet/rmStatistics`
 - **Size:** 0.1 KB
 - **Response Time:** 0.083s
@@ -337,6 +367,7 @@ These endpoints provide detailed metadata about parameters:
 ## 🔧 Maintenance & Service
 
 ### 40. **rmMaintenance** - Maintenance
+
 - **URL:** `GET /econet/rmMaintenance`
 - **Size:** 0.1 KB
 - **Response Time:** 0.091s
@@ -344,6 +375,7 @@ These endpoints provide detailed metadata about parameters:
 - **Priority:** **LOW** - Service management
 
 ### 41. **rmService** - Service Information
+
 - **URL:** `GET /econet/rmService`
 - **Size:** 0.1 KB
 - **Response Time:** 0.075s
@@ -355,6 +387,7 @@ These endpoints provide detailed metadata about parameters:
 ## 🧪 Testing & Calibration
 
 ### 42. **rmTest** - Testing
+
 - **URL:** `GET /econet/rmTest`
 - **Size:** 0.1 KB
 - **Response Time:** 0.127s
@@ -362,6 +395,7 @@ These endpoints provide detailed metadata about parameters:
 - **Priority:** **LOW** - System testing
 
 ### 43. **rmCalibration** - Calibration
+
 - **URL:** `GET /econet/rmCalibration`
 - **Size:** 0.1 KB
 - **Response Time:** 0.128s
@@ -373,6 +407,7 @@ These endpoints provide detailed metadata about parameters:
 ## 🏭 Factory & Backup
 
 ### 44. **rmFactory** - Factory Settings
+
 - **URL:** `GET /econet/rmFactory`
 - **Size:** 0.1 KB
 - **Response Time:** 0.086s
@@ -380,6 +415,7 @@ These endpoints provide detailed metadata about parameters:
 - **Priority:** **LOW** - Factory operations
 
 ### 45. **rmBackup** - Backup
+
 - **URL:** `GET /econet/rmBackup`
 - **Size:** 0.1 KB
 - **Response Time:** 0.129s
@@ -387,6 +423,7 @@ These endpoints provide detailed metadata about parameters:
 - **Priority:** **LOW** - Data backup
 
 ### 46. **rmRestore** - Restore
+
 - **URL:** `GET /econet/rmRestore`
 - **Size:** 0.1 KB
 - **Response Time:** 0.139s
@@ -398,6 +435,7 @@ These endpoints provide detailed metadata about parameters:
 ## 🌐 Internationalization
 
 ### 47. **rmExistingLangs** - Existing Languages
+
 - **URL:** `GET /econet/rmExistingLangs`
 - **Size:** 0.1 KB
 - **Response Time:** 0.123s
@@ -409,6 +447,7 @@ These endpoints provide detailed metadata about parameters:
 ## Available Parameters
 
 ### Temperature Sensors
+
 - `tempCO` - Central heating temperature (with setpoint `tempCOSet`)
 - `tempCWU` - Hot water temperature (with setpoint `tempCWUSet`)
 - `tempExternalSensor` - External temperature sensor (-35°C to 40°C)
@@ -417,17 +456,20 @@ These endpoints provide detailed metadata about parameters:
 - `mixerTemp1` - Mixer temperature (with setpoint `mixerSetTemp1`)
 
 ### Control Parameters
+
 - `mode` - Boiler operation mode (with CAN_TURN_ON_BOILER capability)
 - `boilerPower` - Boiler power output (0-100%)
 - `fanPower` - Fan power (0-100%)
 - `lambdaLevel` - Lambda sensor level (0-100%)
 
 ### Status Parameters
+
 - `fuelLevel` - Fuel level (0-100%)
 
 ## Parameter Index Mapping
 
 ### Temperature Parameters (1024-1034)
+
 - **1024**: `tempCO` - Central Heating temperature
 - **1025**: `tempCWU` - Hot Water temperature
 - **1028**: Mixer temperature
@@ -437,6 +479,7 @@ These endpoints provide detailed metadata about parameters:
 - **1032-1034**: Other mixer temperatures
 
 ### Setpoint Parameters (1280-1290) - EDITABLE
+
 - **1280**: `tempCOSet` - Central Heating setpoint (min: 27°C, max: 68°C)
 - **1281**: `tempCWUSet` - Hot Water setpoint
 - **1287**: `mixerSetTemp1` - Mixer 1 setpoint
@@ -445,9 +488,11 @@ These endpoints provide detailed metadata about parameters:
 - **1290**: `mixerSetTemp4` - Mixer 4 setpoint
 
 ### Status Parameters (1536-1555)
+
 - **1536-1555**: Various boolean status parameters (pumps, fans, etc.)
 
 ### Control Parameters (1792-2049)
+
 - **1792-1795**: Control values
 - **1798**: Unknown control (type 10 - boolean/enum)
 - **2048**: Control 1 (0-2 range)
@@ -456,6 +501,7 @@ These endpoints provide detailed metadata about parameters:
 ## Editable Parameters
 
 ### Parameter 1280 - Central Heating Setpoint
+
 - **Name**: "Katilui užduota temp." (Boiler Set Temperature)
 - **Min**: 27°C
 - **Max**: 68°C
@@ -463,16 +509,19 @@ These endpoints provide detailed metadata about parameters:
 - **Parameter Name**: `tempCOSet`
 
 ### Parameter 1798 - Unknown Control
+
 - **Type**: 10 (boolean/enum)
 - **No min/max** (likely a switch or enum)
 
 ### Parameter 2048 - Control 1
+
 - **Min**: 0
 - **Max**: 2
 - **Type**: 4 (numeric)
 - **Possible values**: 0, 1, 2
 
 ### Parameter 2049 - Control 2
+
 - **Min**: 0
 - **Max**: 2
 - **Type**: 4 (numeric)
@@ -481,6 +530,7 @@ These endpoints provide detailed metadata about parameters:
 ## Parameter Names (Lithuanian)
 
 Key parameter names from the device:
+
 - **1280**: "Katilui užduota temp." - Boiler Set Temperature
 - **1281**: "BVŠ nustatyta temp" - Hot Water Set Temperature
 - **1287**: "Maišytuvo 1 nustatyta temperatūra" - Mixer 1 Set Temperature
@@ -491,22 +541,89 @@ Key parameter names from the device:
 ## Boiler Status Information
 
 ### Operation Modes
-- **Mode 0**: OFF - Boiler is off
-- **Mode 1**: Fire up
-- **Mode 2**: Operation
-- **Mode 3**: Work
-- **Mode 4**: Supervision
-- **Mode 5**: Halted
-- **Mode 6**: Stop
-- **Mode 7**: Burning off
-- **Mode 8**: Manual
-- **Mode 9**: Alarm
-- **Mode 10**: Unsealing
-- **Mode 11**: Chimney
-- **Mode 12**: Stabilization
-- **Mode 13**: No transmission
+
+The boiler operation mode is reported via the `mode` and `transmission` parameters. These values are mapped to Home Assistant states and cloud translation keys.
+
+#### Complete Operation Mode Mapping Table
+
+| Value | HA Core State     | State Key (const.py) | Display (EN)    | Display (PL)    | Cloud Translation Key |
+| :---: | :---------------- | :------------------- | :-------------- | :-------------- | :-------------------- |
+|   0   | `off`             | `STATE_OFF`          | Turned off      | Wyłączony       | `modeTurnOff`         |
+|   1   | `fire_up`         | `fire_up`            | Fire up         | Rozpalanie      | `modeKindle`          |
+|   2   | `operation`       | `operation`          | Operation       | Praca           | `modeWork`\*          |
+|   3   | `work`            | `work`               | Work            | Praca           | `modeWork`            |
+|   4   | `supervision`     | `supervision`        | Supervision     | Nadzór          | `modeSupervision`     |
+|   5   | `paused`          | `STATE_PAUSED`       | Halted          | Postój          | `modeHalt`            |
+|   6   | `stop`            | `stop`               | Stopped         | Zatrzymany      | `modeStop`            |
+|   7   | `burning_off`     | `burning_off`        | Burning OFF     | Wygaszanie      | `modeExtinction`      |
+|   8   | `manual`          | `manual`             | Manual          | Ręczny          | `modeManual`          |
+|   9   | `problem`         | `STATE_PROBLEM`      | Alarm           | Alarm           | `modeAlarm`           |
+|  10   | `unsealing`       | `unsealing`          | Unsealing       | Rozszczelnienie | `modeUnsealing`       |
+|  11   | `chimney`         | `chimney`            | Chimney-sweep   | Kominiarz       | `modeChimneySweep`    |
+|  12   | `stabilization`   | `stabilization`      | Stabilization   | Stabilizacja    | `modeStabilization`   |
+|  13   | `no_transmission` | `no_transmission`    | No transmission | Brak transmisji | _—_                   |
+
+**Notes:**
+
+- `STATE_OFF`, `STATE_PAUSED`, `STATE_PROBLEM` are imported from `homeassistant.const`
+- Value 2 (`operation`) may be device-specific; verify with actual device data
+- Value 13 indicates no communication with the controller
+
+#### Additional Cloud Mode Keys (Not Currently Mapped)
+
+These additional mode states exist in the cloud translations but are not currently mapped in the integration:
+
+| Cloud Translation Key  | Display (EN)       | Display (PL)          |
+| :--------------------- | :----------------- | :-------------------- |
+| `modeCleaning`         | Cleaning           | Czyszczenie           |
+| `modePurge`            | Purge              | Przedmuch             |
+| `modeOther`            | Other              | Inny                  |
+| `modeWorkGrate`        | Work grate         | Praca - ruszt         |
+| `modeSupervisionGrate` | Supervision grate  | Nadzór - ruszt        |
+| `modeCalibration`      | Calibration        | Kalibracja            |
+| `modeMaintain`         | Maintain           | Podtrzymanie          |
+| `modeAfterburning`     | Afterburning       | Dopalanie             |
+| `modeSafe`             | Safe               | Bezpieczny            |
+| `modeCheckFlame`       | Check flame        | Sprawdzanie płomienia |
+| `modeFlameLosing`      | Flame extinguished | Płomień zgaszony      |
+| `modePrevention`       | Prevention         | Zapobieganie          |
+
+#### Implementation Reference
+
+The mode mapping is defined in `custom_components/econet300/const.py`:
+
+```python
+OPERATION_MODE_NAMES = {
+    0: STATE_OFF,           # "off" - from homeassistant.const
+    1: "fire_up",
+    2: "operation",
+    3: "work",
+    4: "supervision",
+    5: STATE_PAUSED,        # "paused" - from homeassistant.const
+    6: "stop",
+    7: "burning_off",
+    8: "manual",
+    9: STATE_PROBLEM,       # "problem" - from homeassistant.const
+    10: "unsealing",
+    11: "chimney",
+    12: "stabilization",
+    13: "no_transmission",
+}
+```
+
+#### Value Processing
+
+Both `mode` and `transmission` sensors use this mapping:
+
+```python
+ENTITY_VALUE_PROCESSOR = {
+    "mode": lambda x: SENSOR_MODE_MAPPING.get(x, STATE_UNKNOWN),
+    "transmission": lambda x: OPERATION_MODE_NAMES.get(x, STATE_UNKNOWN),
+}
+```
 
 ### Temperature Readings
+
 - **Central Heating**: Current temperature (setpoint: configurable)
 - **Hot Water**: Current temperature (setpoint: configurable)
 - **External Sensor**: External temperature
@@ -515,6 +632,7 @@ Key parameter names from the device:
 - **Mixer 1-4**: Mixer temperatures (setpoints: configurable)
 
 ### System Status
+
 - **Fuel Level**: Current fuel level percentage
 - **Lambda Level**: Lambda sensor reading percentage
 - **Fan Power**: Fan power output percentage
@@ -523,6 +641,7 @@ Key parameter names from the device:
 ## Alarm System
 
 The device supports alarm monitoring with the following alarm codes:
+
 - **Alarm Code 0**: Normal operation
 - **Alarm Code 7**: System alarm
 - **Alarm Code 2**: Another alarm type
@@ -532,6 +651,7 @@ The device supports alarm monitoring with the following alarm codes:
 ## 💡 Home Assistant Integration Recommendations
 
 ### 🎯 **HIGH PRIORITY** - Implement First
+
 1. **rmCurrentDataParams** - Real-time sensor data (temperature, status, power)
 2. **rmParamsData** - Parameter values for monitoring
 3. **rmParamsNames** - Human-readable parameter names
@@ -540,6 +660,7 @@ The device supports alarm monitoring with the following alarm codes:
 6. **rmStatus** - System status monitoring
 
 ### 🔧 **MEDIUM PRIORITY** - Implement Second
+
 1. **rmStructure** - System structure understanding
 2. **rmParamsEnums** - Parameter options and validation
 3. **rmCatsNames** - Parameter categorization
@@ -548,6 +669,7 @@ The device supports alarm monitoring with the following alarm codes:
 6. **rmStatistics** - Performance monitoring
 
 ### ⚙️ **LOW PRIORITY** - Advanced Features
+
 1. **rmConfig** - Configuration management
 2. **rmFirmware** - Firmware updates
 3. **rmNetwork** - Network settings
@@ -560,6 +682,7 @@ The device supports alarm monitoring with the following alarm codes:
 ## 🔍 Key Discoveries
 
 ### 🌟 **Major Breakthroughs:**
+
 1. **48 Total Endpoints** - Massive expansion from 4 known endpoints
 2. **100% Success Rate** - All endpoints respond successfully
 3. **Real-time Data** - rmCurrentDataParams provides live sensor readings
@@ -568,12 +691,14 @@ The device supports alarm monitoring with the following alarm codes:
 6. **System Architecture** - rmStructure reveals complete system organization
 
 ### 📊 **Data Volume:**
+
 - **Total API Data:** 89.5 KB
 - **Largest Endpoint:** rmParamsDescs (29.1 KB)
 - **Most Complex:** rmCurrentDataParams (493 complexity score)
 - **Fastest Response:** rmParamsUnits (0.039s)
 
 ### 🎯 **Integration Potential:**
+
 - **11 Potential Sensors** identified
 - **45 Potential Controls** identified
 - **Complete parameter ecosystem** for monitoring and control
@@ -585,12 +710,15 @@ The device supports alarm monitoring with the following alarm codes:
 ## 🆕 Additional API Endpoints Discovered from Cloud Analysis
 
 ### 📋 **Overview**
+
 Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_set5.js`), we've discovered **30+ additional API endpoints** that extend the local API capabilities. These endpoints provide access to advanced features, remote menu functionality, and ecoMAX-specific capabilities.
 
 ### 🔥 **ecoMAX-Specific Endpoints**
 
 #### Fuel Consumption & History
+
 - **`getFuelConsumption`** - Historical fuel usage data
+
   - **URL:** `GET /econet/getFuelConsumption`
   - **Parameters:** `uid`, `fromDate`, `toDate`
   - **Description:** Retrieves historical fuel consumption data with configurable time ranges
@@ -605,7 +733,9 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
   - **Priority:** **HIGH** - Historical data analysis
 
 #### Advanced Scheduling
+
 - **`getSchedule`** - Retrieve device schedules
+
   - **URL:** `GET /econet/getSchedule`
   - **Parameters:** `uid` (optional)
   - **Description:** Gets current scheduling configuration for thermostats and mixer circuits
@@ -613,6 +743,7 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
   - **Priority:** **MEDIUM** - Automation capabilities
 
 - **`saveSchedules`** - Save ecoMAX schedules
+
   - **URL:** `GET /econet/saveSchedules`
   - **Parameters:** `uid` (optional)
   - **Description:** Saves scheduling configuration for ecoMAX devices
@@ -629,13 +760,16 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
 ### 🎛️ **Remote Menu (RM) API System**
 
 #### Core Remote Menu Endpoints
+
 - **`rmLangs`** - Available languages
+
   - **URL:** `GET /econet/rmLangs`
   - **Parameters:** `uid` (optional)
   - **Description:** Lists available languages for remote menu interface
   - **Priority:** **MEDIUM** - Internationalization support
 
 - **`rmExistingLangs`** - Existing language list
+
   - **URL:** `GET /econet/rmExistingLangs`
   - **Parameters:** `uid` (optional)
   - **Description:** Lists languages already configured on the device
@@ -648,13 +782,16 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
   - **Priority:** **MEDIUM** - User preferences
 
 #### Parameter Management
+
 - **`newParam`** - Save parameter value
+
   - **URL:** `GET /econet/newParam`
   - **Parameters:** `newParamName`, `newParamValue`, `uid` (optional)
   - **Description:** Saves new parameter values to the system
   - **Priority:** **HIGH** - Parameter control
 
 - **`rmNewParam`** - Save remote menu parameter
+
   - **URL:** `GET /econet/rmNewParam`
   - **Parameters:** `newParamIndex`, `newParamValue`, `uid` (optional)
   - **Description:** Saves parameters specifically for remote menu functionality
@@ -669,13 +806,16 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
 ### 🔐 **Access Control & Security**
 
 #### Authentication & Passwords
+
 - **`password`** - Service password
+
   - **URL:** `GET /econet/password`
   - **Parameters:** `uid` (optional)
   - **Description:** Retrieves service access passwords
   - **Priority:** **HIGH** - Security management
 
 - **`etpassword`** - ET service passwords
+
   - **URL:** `GET /econet/etpassword`
   - **Parameters:** `uid` (optional)
   - **Description:** Retrieves ET (ecoTRONIC) service passwords
@@ -690,7 +830,9 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
 ### 🚀 **Software & System Management**
 
 #### Updates & Maintenance
+
 - **`checkSoftwareUpdate`** - Check for updates
+
   - **URL:** `GET /econet/checkSoftwareUpdate`
   - **Parameters:** `protocol`, `uid` (optional)
   - **Description:** Checks for available software updates
@@ -703,13 +845,16 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
   - **Priority:** **MEDIUM** - System updates
 
 #### Device Management
+
 - **`getDevices`** - Device listing
+
   - **URL:** `GET /econet/getDevices`
   - **Parameters:** `active`, `notactive`, `blocked`, `deviceType`, `uid`, `prodId`, `softVer`, `ver_mod_a`, `ver_panel`
   - **Description:** Lists all devices with comprehensive filtering options
   - **Priority:** **HIGH** - Device discovery and management
 
 - **`getDeviceParams`** - Device parameters
+
   - **URL:** `GET /econet/getDeviceParams`
   - **Parameters:** `uid`
   - **Description:** Retrieves parameters for a specific device
@@ -724,7 +869,9 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
 ### 🔧 **Service & Utility Endpoints**
 
 #### System Services
+
 - **`deleteDeviceAlarms`** - Clear device alarms
+
   - **URL:** `POST /service/deleteDeviceAlarms`
   - **Parameters:** `uid` (in POST data)
   - **Headers:** `X-CSRFToken`
@@ -739,18 +886,22 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
   - **Priority:** **LOW** - Internationalization support
 
 #### Additional Utilities
+
 - **`saveAlertDateUser`** - Save alert dates
+
   - **URL:** `GET /econet/saveAlertDateUser`
   - **Parameters:** `userDate`
   - **Description:** Saves user-defined alert dates
   - **Priority:** **LOW** - User customization
 
 - **`getAlertsDates`** - Get alert dates
+
   - **URL:** `GET /econet/getAlertsDates`
   - **Description:** Retrieves configured alert dates
   - **Priority:** **LOW** - Alert management
 
 - **`deviceTypes`** - Available device types
+
   - **URL:** `GET /econet/deviceTypes`
   - **Description:** Lists all supported device types
   - **Priority:** **MEDIUM** - Device discovery
@@ -763,16 +914,19 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
 ### 🌟 **ecoMAX360-Specific Advanced Features**
 
 #### Enhanced Temperature Control
+
 - **Room Temperature Sensors**: Support for up to 8 room temperature sensors (`ecoSterTemp1` through `ecoSterTemp8`)
 - **Mixer Circuits**: Support for up to 8 mixer circuits (`mixerTemp1` through `mixerTemp8`)
 - **Advanced Scheduling**: 7-day scheduling with multiple time zones for thermostats and mixer circuits
 
 #### Lambda Sensor Monitoring
+
 - **Precision Handling**: Lambda sensor values are stored with 10x precision and divided by 10 for display
 - **Real-time Monitoring**: Continuous oxygen level monitoring for optimal combustion
 - **Setpoint Control**: Configurable lambda sensor setpoints for performance optimization
 
 #### Fuel Consumption Analytics
+
 - **Historical Data**: Hourly and daily fuel consumption tracking
 - **Chart Visualization**: Configurable time ranges with chart generation
 - **Performance Analysis**: Fuel efficiency monitoring and optimization
@@ -782,11 +936,13 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
 ## 📊 **Updated API Statistics**
 
 ### **Total Endpoints Available:**
+
 - **Local API Endpoints:** 48 (100% success rate)
 - **Cloud-Discovered Endpoints:** 30+
 - **Total Estimated Endpoints:** 80+
 
 ### **New Integration Capabilities:**
+
 - **Fuel Consumption Monitoring** - Historical fuel usage analysis
 - **Advanced Scheduling** - 7-day temperature control automation
 - **Remote Menu System** - Complete parameter management interface
@@ -795,6 +951,7 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
 - **Device Discovery** - Comprehensive device listing and filtering
 
 ### **ecoMAX360-Specific Enhancements:**
+
 - **8 Room Temperature Sensors** - Multi-zone temperature control
 - **8 Mixer Circuits** - Advanced heating circuit management
 - **Lambda Sensor Integration** - Combustion optimization
@@ -806,6 +963,7 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
 ## 🎯 **Enhanced Home Assistant Integration Recommendations**
 
 ### 🚀 **NEW HIGH PRIORITY** - Implement First
+
 1. **`getFuelConsumption`** - Fuel monitoring for ecoMAX devices
 2. **`getHistoryParamsValues`** - Historical data analysis
 3. **`getSchedule` + `saveSchedules`** - Advanced scheduling automation
@@ -813,6 +971,7 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
 5. **`rmAccess`** - Enhanced security integration
 
 ### 🔧 **NEW MEDIUM PRIORITY** - Implement Second
+
 1. **Remote Menu System** - Complete parameter management
 2. **Lambda Sensor Monitoring** - Combustion optimization
 3. **Advanced Temperature Control** - Multi-zone management
@@ -820,6 +979,7 @@ Through analysis of ecoNET24 cloud JavaScript files (`dev_set1.js` through `dev_
 5. **Enhanced Device Control** - Parameter modification
 
 ### ⚙️ **NEW LOW PRIORITY** - Advanced Features
+
 1. **Fuel Analytics Dashboard** - Performance monitoring
 2. **Multi-language Support** - Internationalization
 3. **Advanced Scheduling UI** - Time-based automation

@@ -11,26 +11,36 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
-from .common_functions import camel_to_snake
+from .common_functions import camel_to_snake, get_entity_component
 from .const import (
+    COMPONENT_LAMBDA,
     DOMAIN,
     ENTITY_CATEGORY,
     ENTITY_PRECISION,
     ENTITY_SENSOR_DEVICE_CLASS_MAP,
     ENTITY_UNIT_MAP,
     ENTITY_VALUE_PROCESSOR,
+    SENSOR_ENUM_OPTIONS,
     SENSOR_MAP_KEY,
     SENSOR_MIXER_KEY,
     SERVICE_API,
     SERVICE_COORDINATOR,
     STATE_CLASS_MAP,
 )
-from .entity import EconetEntity, EcoSterEntity, LambdaEntity, MixerEntity
+from .entity import (
+    EconetEntity,
+    EcoSterEntity,
+    LambdaEntity,
+    MixerEntity,
+    get_device_info_for_component,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,6 +50,7 @@ class EconetSensorEntityDescription(SensorEntityDescription):
     """Describes ecoNET sensor entity."""
 
     process_val: Callable[[Any], Any] = lambda x: x  # noqa: E731
+    component: str | None = None  # Component for device grouping (huw, mixer_1, etc.)
 
 
 class EconetSensor(EconetEntity, SensorEntity):
@@ -57,10 +68,34 @@ class EconetSensor(EconetEntity, SensorEntity):
         self.entity_description = entity_description
         self.api = api
         self._attr_native_value = None
+        self._raw_value: Any = None
         super().__init__(coordinator, api)
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device info based on entity component."""
+        component = getattr(self.entity_description, "component", None)
+        if component:
+            return get_device_info_for_component(component, self.api)
+        # Fall back to parent class device_info (main boiler device)
+        return super().device_info
+
+    @property
+    def options(self) -> list[str] | None:
+        """Return options for ENUM sensors."""
+        return SENSOR_ENUM_OPTIONS.get(self.entity_description.key)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra state attributes for the sensor."""
+        attrs: dict[str, Any] = {}
+        if self._raw_value is not None:
+            attrs["raw_value"] = self._raw_value
+        return attrs
 
     def _sync_state(self, value) -> None:
         """Synchronize the state of the sensor entity."""
+        self._raw_value = value
         self._attr_native_value = self.entity_description.process_val(value)
         self.async_write_ha_state()
 
@@ -133,9 +168,101 @@ class EcoSterSensor(EcoSterEntity, SensorEntity):
         self.async_write_ha_state()
 
 
+class InformationDynamicSensor(EconetEntity, SensorEntity):
+    """Dynamic sensor entity for Information category parameters (read-only)."""
+
+    entity_description: EconetSensorEntityDescription
+
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Other entities (DIAGNOSTIC or no category) are enabled.
+        Sensors are typically read-only data, so they're enabled by default.
+        """
+        entity_category = getattr(self.entity_description, "entity_category", None)
+        return entity_category != EntityCategory.CONFIG
+
+    def __init__(
+        self,
+        entity_description: EconetSensorEntityDescription,
+        coordinator: EconetDataCoordinator,
+        api: Econet300Api,
+        param_number: int,
+    ):
+        """Initialize a new Information dynamic sensor entity.
+
+        Args:
+            entity_description: Entity description
+            coordinator: Data coordinator
+            api: API instance
+            param_number: Parameter number from merged data
+
+        """
+        self.entity_description = entity_description
+        self.api = api
+        self._param_number = param_number
+        self._attr_native_value = None
+        super().__init__(coordinator, api)
+
+    def _sync_state(self, value) -> None:
+        """Synchronize the state of the Information sensor entity."""
+        _LOGGER.debug(
+            "InformationDynamicSensor _sync_state for entity %s: %s",
+            self.entity_description.key,
+            value,
+        )
+
+        # Handle both dict and direct value
+        if isinstance(value, dict) and "value" in value:
+            val = value.get("value")
+            self._attr_native_value = float(val) if val is not None else None
+        elif isinstance(value, (int, float, str)) and value is not None:
+            try:
+                self._attr_native_value = float(value)
+            except (ValueError, TypeError):
+                self._attr_native_value = value
+        else:
+            self._attr_native_value = None
+
+        self.async_write_ha_state()
+
+    @property
+    def native_value(self) -> float | None:
+        """Return the native value of the sensor."""
+        if self.coordinator.data is None:
+            return None
+
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return None
+
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return None
+
+        # Find parameter by number
+        for param in merged_parameters.values():
+            if isinstance(param, dict) and param.get("number") == self._param_number:
+                param_value = param.get("value")
+                if param_value is not None:
+                    try:
+                        return float(param_value)
+                    except (ValueError, TypeError):
+                        return param_value
+                break
+
+        return None
+
+
 def create_sensor_entity_description(key: str) -> EconetSensorEntityDescription:
     """Create ecoNET300 sensor entity based on supplied key."""
     _LOGGER.debug("Creating sensor entity description for key: %s", key)
+
+    # Determine component for device grouping based on key patterns
+    component = get_entity_component(key, key)
+
     entity_description = EconetSensorEntityDescription(
         key=key,
         device_class=ENTITY_SENSOR_DEVICE_CLASS_MAP.get(key, None),
@@ -145,8 +272,13 @@ def create_sensor_entity_description(key: str) -> EconetSensorEntityDescription:
         state_class=STATE_CLASS_MAP.get(key, SensorStateClass.MEASUREMENT),
         suggested_display_precision=ENTITY_PRECISION.get(key, 0),
         process_val=ENTITY_VALUE_PROCESSOR.get(key, lambda x: x),  # noqa: E731
+        component=component,
     )
-    _LOGGER.debug("Created sensor entity description: %s", entity_description)
+    _LOGGER.debug(
+        "Created sensor entity description: %s (component=%s)",
+        entity_description,
+        component,
+    )
     return entity_description
 
 
@@ -157,19 +289,33 @@ def create_controller_sensors(
     entities: list[EconetSensor] = []
 
     # Get the system and regular parameters from the coordinator
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no controller sensors will be created")
+        return entities
+
     data_regParams = coordinator.data.get("regParams", {})
+    if data_regParams is None:
+        data_regParams = {}
+
     data_sysParams = coordinator.data.get("sysParams", {})
+    if data_sysParams is None:
+        data_sysParams = {}
 
     # Extract the controllerID from sysParams
-    controller_id = data_sysParams.get("controllerID", None)
+    controller_id = data_sysParams.get("controllerID")
 
-    # Determine the keys to use based on the controllerID
-    sensor_keys = SENSOR_MAP_KEY.get(controller_id, SENSOR_MAP_KEY["_default"])
-    _LOGGER.info(
-        "Using sensor keys for controllerID '%s': %s",
-        controller_id if controller_id else "None (default)",
-        sensor_keys,
-    )
+    # Always use default sensor mapping for all controllers
+    sensor_keys = SENSOR_MAP_KEY["_default"].copy()
+    if controller_id and controller_id in SENSOR_MAP_KEY:
+        _LOGGER.info(
+            "ControllerID '%s' found in mapping, but using default sensor mapping",
+            controller_id,
+        )
+    else:
+        _LOGGER.info(
+            "ControllerID '%s' not found in mapping, using default sensor mapping",
+            controller_id if controller_id else "None",
+        )
 
     # Always filter out ecoSTER sensors from controller sensors since they are created as separate devices
     ecoSTER_sensors = SENSOR_MAP_KEY.get("ecoSter", set())
@@ -222,15 +368,19 @@ def create_controller_sensors(
 
 def can_add_mixer(key: str, coordinator: EconetDataCoordinator) -> bool:
     """Check if a mixer can be added."""
+    if coordinator.data is None:
+        return False
+
+    reg_params = coordinator.data.get("regParams")
+    if reg_params is None:
+        reg_params = {}
+
     _LOGGER.debug(
         "Checking if mixer can be added for key: %s, data %s",
         key,
-        coordinator.data.get("regParams", {}),
+        reg_params,
     )
-    return (
-        coordinator.has_reg_data(key)
-        and coordinator.data.get("regParams", {}).get(key) is not None
-    )
+    return coordinator.has_reg_data(key) and reg_params.get(key) is not None
 
 
 def create_mixer_sensor_entity_description(key: str) -> EconetSensorEntityDescription:
@@ -255,12 +405,17 @@ def create_mixer_sensors(
     """Create individual sensor descriptions for mixer sensors."""
     entities: list[MixerSensor] = []
 
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no mixer sensors will be created")
+        return entities
+
+    reg_params = coordinator.data.get("regParams")
+    if reg_params is None:
+        reg_params = {}
+
     for key, mixer_keys in SENSOR_MIXER_KEY.items():
         # Check if all required mixer keys have valid (non-null) values
-        if any(
-            coordinator.data.get("regParams", {}).get(mixer_key) is None
-            for mixer_key in mixer_keys
-        ):
+        if any(reg_params.get(mixer_key) is None for mixer_key in mixer_keys):
             _LOGGER.info("Mixer: %s will not be created due to invalid data.", key)
             continue
 
@@ -295,7 +450,13 @@ def create_lambda_sensor_entity_description(key: str) -> EconetSensorEntityDescr
 def create_lambda_sensors(coordinator: EconetDataCoordinator, api: Econet300Api):
     """Create controller sensor entities."""
     entities: list[LambdaSensors] = []
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no lambda sensors will be created")
+        return entities
+
     sys_params = coordinator.data.get("sysParams", {})
+    if sys_params is None:
+        sys_params = {}
 
     # Check if moduleLambdaSoftVer is None
     if sys_params.get("moduleLambdaSoftVer") is None:
@@ -303,8 +464,10 @@ def create_lambda_sensors(coordinator: EconetDataCoordinator, api: Econet300Api)
         return entities
 
     coordinator_data = coordinator.data.get("regParams", {})
+    if coordinator_data is None:
+        coordinator_data = {}
 
-    for data_key in SENSOR_MAP_KEY["lambda"]:
+    for data_key in SENSOR_MAP_KEY[COMPONENT_LAMBDA]:
         if data_key in coordinator_data:
             entities.append(
                 LambdaSensors(
@@ -343,7 +506,13 @@ def create_ecoster_sensor_entity_description(key: str) -> EconetSensorEntityDesc
 def create_ecoster_sensors(coordinator: EconetDataCoordinator, api: Econet300Api):
     """Create ecoSTER sensor entities."""
     entities: list[EcoSterSensor] = []
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no ecoSTER sensors will be created")
+        return entities
+
     sys_params = coordinator.data.get("sysParams", {})
+    if sys_params is None:
+        sys_params = {}
 
     # Check if moduleEcoSTERSoftVer is None
     if sys_params.get("moduleEcoSTERSoftVer") is None:
@@ -351,6 +520,8 @@ def create_ecoster_sensors(coordinator: EconetDataCoordinator, api: Econet300Api
         return entities
 
     coordinator_data = coordinator.data.get("regParams", {})
+    if coordinator_data is None:
+        coordinator_data = {}
 
     # Create ecoSTER sensors for each thermostat (1-8)
     for thermostat_idx in range(1, 9):  # 1-8

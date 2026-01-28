@@ -10,10 +10,11 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .common import Econet300Api, EconetDataCoordinator
-from .common_functions import camel_to_snake
+from .common_functions import camel_to_snake, get_entity_component
 from .const import (
     BINARY_SENSOR_MAP_KEY,
     DOMAIN,
@@ -26,7 +27,12 @@ from .const import (
     SERVICE_API,
     SERVICE_COORDINATOR,
 )
-from .entity import EconetEntity, EcoSterEntity, MixerEntity
+from .entity import (
+    EconetEntity,
+    EcoSterEntity,
+    MixerEntity,
+    get_device_info_for_component,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,6 +42,7 @@ class EconetBinarySensorEntityDescription(BinarySensorEntityDescription):
     """Describes Econet binary sensor entity."""
 
     availability_key: str = ""
+    component: str | None = None  # Component for device grouping (huw, mixer_1, etc.)
 
 
 class EconetBinarySensor(EconetEntity, BinarySensorEntity):
@@ -59,6 +66,15 @@ class EconetBinarySensor(EconetEntity, BinarySensorEntity):
             self.unique_id,
             self.entity_description,
         )
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return device info based on entity component."""
+        component = getattr(self.entity_description, "component", None)
+        if component:
+            return get_device_info_for_component(component, self.api)
+        # Fall back to parent class device_info (main boiler device)
+        return super().device_info
 
     def _sync_state(self, value: bool):
         """Sync state."""
@@ -140,6 +156,9 @@ def create_binary_entity_description(key: str) -> EconetBinarySensorEntityDescri
     entity_category = ENTITY_CATEGORY.get(key, None)
     _LOGGER.debug("Entity category for %s: %s", key, entity_category)
 
+    # Determine component for device grouping based on key patterns
+    component = get_entity_component(key, key)
+
     # All binary sensors now use icon translations
     # The translation_key will automatically link to icons.json
     entity_description = EconetBinarySensorEntityDescription(
@@ -147,25 +166,38 @@ def create_binary_entity_description(key: str) -> EconetBinarySensorEntityDescri
         translation_key=camel_to_snake(key),
         device_class=ENTITY_BINARY_DEVICE_CLASS_MAP.get(key, None),
         entity_category=entity_category,
+        component=component,
         # No icon or icon_off - Home Assistant will use icons.json automatically
     )
-    _LOGGER.debug("create_binary_entity_description: %s", entity_description)
+    _LOGGER.debug("create_binary_entity_description: %s (component=%s)", entity_description, component)
     return entity_description
 
 
 def create_binary_sensors(coordinator: EconetDataCoordinator, api: Econet300Api):
     """Create binary sensors."""
     entities: list[EconetBinarySensor] = []
+    if coordinator.data is None:
+        _LOGGER.info("Coordinator data is None, no binary sensors will be created")
+        return entities
+
     data_regParams = coordinator.data.get("regParams") or {}
     data_sysParams = coordinator.data.get("sysParams") or {}
 
     # Get controller ID to determine which binary sensors to create
     controller_id = data_sysParams.get("controllerID", None)
 
-    # Get controller-specific binary sensor keys or fall back to default
-    binary_sensor_keys = BINARY_SENSOR_MAP_KEY.get(
-        controller_id or "_default", BINARY_SENSOR_MAP_KEY["_default"]
-    ).copy()
+    # Always use default binary sensor mapping for all controllers
+    binary_sensor_keys = BINARY_SENSOR_MAP_KEY["_default"].copy()
+    if controller_id and controller_id in BINARY_SENSOR_MAP_KEY:
+        _LOGGER.info(
+            "ControllerID '%s' found in mapping, but using default binary sensor mapping",
+            controller_id,
+        )
+    else:
+        _LOGGER.info(
+            "ControllerID '%s' not found in mapping, using default binary sensor mapping",
+            controller_id if controller_id else "None",
+        )
 
     # Always filter out ecoSTER binary sensors from controller binary sensors since they are created as separate devices
     ecoSTER_binary_sensors = BINARY_SENSOR_MAP_KEY.get("ecoSter", set())
@@ -205,6 +237,12 @@ def create_binary_sensors(coordinator: EconetDataCoordinator, api: Econet300Api)
 def create_mixer_binary_sensors(coordinator: EconetDataCoordinator, api: Econet300Api):
     """Create mixer binary sensors."""
     entities: list[MixerBinarySensor] = []
+    if coordinator.data is None:
+        _LOGGER.info(
+            "Coordinator data is None, no mixer binary sensors will be created"
+        )
+        return entities
+
     data_regParams = coordinator.data.get("regParams") or {}
 
     # Create mixer pump status sensors using the dynamic keys
@@ -243,7 +281,15 @@ def create_ecoster_binary_sensors(
 ):
     """Create ecoSTER binary sensor entities."""
     entities: list[EcoSterBinarySensor] = []
+    if coordinator.data is None:
+        _LOGGER.info(
+            "Coordinator data is None, no ecoSTER binary sensors will be created"
+        )
+        return entities
+
     sys_params = coordinator.data.get("sysParams", {})
+    if sys_params is None:
+        sys_params = {}
 
     # Check if moduleEcoSTERSoftVer is None
     if sys_params.get("moduleEcoSTERSoftVer") is None:
