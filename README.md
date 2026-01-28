@@ -163,214 +163,24 @@ Apart from using 'My button' (in case it doesn't work) you can also perform the 
 
 ## 🏠 Entities
 
-### Switches
+The integration provides multiple entity types:
 
-The integration provides a boiler control switch that allows you to turn the boiler ON and OFF directly from Home Assistant.
+| Type | Count | Description |
+|------|-------|-------------|
+| Sensors | 50+ | Temperature, status, system info |
+| Binary Sensors | 25+ | Pumps, fans, connections |
+| Switches | 1 | Boiler ON/OFF control |
+| Select | 1 | Heater mode (Winter/Summer/Auto) |
+| Number | 15+ | Temperature setpoints |
 
-<details>
-<summary><b>👉 Click here to expand the table</b></summary>
+**Key Features:**
 
-| Entity Key       | Description                  | Control                    | State Detection  |
-| ---------------- | ---------------------------- | -------------------------- | ---------------- |
-| `boiler_control` | Boiler ON/OFF control switch | `BOILER_CONTROL` parameter | `mode` parameter |
+- **Boiler Control**: Turn boiler ON/OFF directly from Home Assistant
+- **Temperature Setpoints**: Control heating and hot water temperatures
+- **Heater Mode**: Switch between Winter, Summer, and Auto modes
+- **Real-time Monitoring**: All sensors update in real-time from your device
 
-</details>
-
-**Features:**
-
-- **Direct Control**: Turn boiler ON/OFF with a simple switch
-- **State Synchronization**: Switch state reflects actual boiler operation mode
-- **API Integration**: Uses the ecoNET-300's native `BOILER_CONTROL` parameter
-- **Real-time Updates**: Switch state updates based on current boiler mode
-
-### Select Entities
-
-The integration provides a heater mode selector that allows you to control the boiler operation mode directly from Home Assistant.
-
-<details>
-<summary><b>👉 Click here to expand the table</b></summary>
-
-| Entity Key    | Description                    | Options              | API Parameter |
-| ------------- | ------------------------------ | -------------------- | ------------- |
-| `heater_mode` | Heater operation mode selector | Winter, Summer, Auto | Parameter 55  |
-
-</details>
-
-**Features:**
-
-- **Winter Mode**: Full heating operation for cold weather
-- **Summer Mode**: Hot water only operation for warm weather
-- **Auto Mode**: Automatic mode selection based on conditions
-- **Real-time Sync**: Mode selection reflects actual boiler operation
-- **API Integration**: Uses ecoNET-300's native parameter 55
-
-### Sensors
-
-These sensors are retrieved from the `../econet/regParams` and `../econet/sysParams` endpoints.
-
-<details>
-<summary><b>👉 Click here to expand the table</b></summary>
-
-| Entity Key                   | Description                               | Endpoint              |
-| ---------------------------- | ----------------------------------------- | --------------------- |
-| **Boiler & Heating**         |
-| `boilerPower`                | Boiler output                             | `../econet/regParams` |
-| `boilerPowerKW`              | Boiler power                              | `../econet/regParams` |
-| `tempCO`                     | Heating temperature                       | `../econet/regParams` |
-| `tempCOSet`                  | Heating target temperature                | `../econet/regParams` |
-| `tempBack`                   | Return temperature                        | `../econet/regParams` |
-| `statusCO`                   | Central heating status                    | `../econet/regParams` |
-| **Hot Water (CWU)**          |
-| `tempCWU`                    | Water heater temperature                  | `../econet/regParams` |
-| `tempCWUSet`                 | Water heater set temperature              | `../econet/regParams` |
-| `statusCWU`                  | Water heater status                       | `../econet/regParams` |
-| **Temperature Sensors**      |
-| `tempFeeder`                 | Feeder temperature                        | `../econet/regParams` |
-| `tempFlueGas`                | Flue gas temperature                      | `../econet/regParams` |
-| `tempExternalSensor`         | Outside temperature                       | `../econet/regParams` |
-| `tempLowerBuffer`            | Lower buffer temperature                  | `../econet/regParams` |
-| `tempUpperBuffer`            | Upper buffer temperature                  | `../econet/regParams` |
-| **Mixer Temperatures**       |
-| `mixerTemp1`                 | Mixer 1 temperature                       | `../econet/regParams` |
-| `mixerTemp2`                 | Mixer 2 temperature                       | `../econet/regParams` |
-| `mixerTemp3`                 | Mixer 3 temperature                       | `../econet/regParams` |
-| `mixerTemp4`                 | Mixer 4 temperature                       | `../econet/regParams` |
-| `mixerTemp5`                 | Mixer 5 temperature                       | `../econet/regParams` |
-| `mixerTemp6`                 | Mixer 6 temperature                       | `../econet/regParams` |
-| **System Status**            |
-| `mode`                       | Boiler mode                               | `../econet/regParams` |
-| `fanPower`                   | Fan power                                 | `../econet/regParams` |
-| `thermostat`                 | Thermostat                                | `../econet/regParams` |
-| **Fuel & Consumption**       |
-| `fuelLevel`                  | Fuel level                                | `../econet/regParams` |
-| `fuelConsum`                 | Fuel consumption                          | `../econet/regParams` |
-| `fuelStream`                 | Fuel stream                               | `../econet/regParams` |
-| **ecoSTER Room Thermostats** |
-| `ecosterTemp1`               | Room temperature 1                        | `../econet/regParams` |
-| `ecosterTemp2`               | Room temperature 2                        | `../econet/regParams` |
-| `ecosterTemp3`               | Room temperature 3                        | `../econet/regParams` |
-| `ecosterTemp4`               | Room temperature 4                        | `../econet/regParams` |
-| `ecosterTemp5`               | Room temperature 5                        | `../econet/regParams` |
-| `ecosterTemp6`               | Room temperature 6                        | `../econet/regParams` |
-| `ecosterTemp7`               | Room temperature 7                        | `../econet/regParams` |
-| `ecosterTemp8`               | Room temperature 8                        | `../econet/regParams` |
-| `ecosterMode1`               | Room thermostat 1 mode                    | `../econet/regParams` |
-| `ecosterMode2`               | Room thermostat 2 mode                    | `../econet/regParams` |
-| `ecosterMode3`               | Room thermostat 3 mode                    | `../econet/regParams` |
-| `ecosterMode4`               | Room thermostat 4 mode                    | `../econet/regParams` |
-| `ecosterMode5`               | Room thermostat 5 mode                    | `../econet/regParams` |
-| `ecosterMode6`               | Room thermostat 6 mode                    | `../econet/regParams` |
-| `ecosterMode7`               | Room thermostat 7 mode                    | `../econet/regParams` |
-| `ecosterMode8`               | Room thermostat 8 mode                    | `../econet/regParams` |
-| **Lambda Sensor Module**     |
-| `lambdaStatus`               | Lambda status                             | `../econet/regParams` |
-| `lambdaSet`                  | Lambda set                                | `../econet/regParams` |
-| `lambdaLevel`                | Lambda level                              | `../econet/regParams` |
-| **ecoSOL 500 Solar System**  |
-| `T1`                         | Collector Temperature                     | `../econet/regParams` |
-| `T2`                         | Tank Temperature                          | `../econet/regParams` |
-| `T3`                         | Tank Temperature                          | `../econet/regParams` |
-| `T4`                         | Return Temperature                        | `../econet/regParams` |
-| `T5`                         | Collector Temperature - Power Measurement | `../econet/regParams` |
-| `T6`                         | Temperature Sensor                        | `../econet/regParams` |
-| `TzCWU`                      | Hot Water Temperature                     | `../econet/regParams` |
-| `P1`                         | Pump 1 Status                             | `../econet/regParams` |
-| `P2`                         | Pump 2 Status                             | `../econet/regParams` |
-| `H`                          | Output Status                             | `../econet/regParams` |
-| `Uzysk_ca_kowity`            | Total Heat Output                         | `../econet/regParams` |
-| **System Information**       |
-| `quality`                    | Signal quality                            | `../econet/sysParams` |
-| `signal`                     | Signal strength                           | `../econet/sysParams` |
-| `softVer`                    | Module ecoNET version                     | `../econet/sysParams` |
-| `controllerID`               | Controller name                           | `../econet/sysParams` |
-| `moduleASoftVer`             | Module A version                          | `../econet/sysParams` |
-| `moduleBSoftVer`             | Module B version                          | `../econet/sysParams` |
-| `moduleCSoftVer`             | Module C version                          | `../econet/sysParams` |
-| `moduleLambdaSoftVer`        | Module Lambda version                     | `../econet/sysParams` |
-| `modulePanelSoftVer`         | Module Panel version                      | `../econet/sysParams` |
-| `moduleEcoSTERSoftVer`       | Module ecoSTER version                    | `../econet/sysParams` |
-| `transmission`               | Transmission                              | `../econet/regParams` |
-
-</details>
-
-### Binary Sensors
-
-<details>
-<summary><b>👉 Click here to expand the table</b></summary>
-
-| Entity Key                   | Description                    | Endpoint              |
-| ---------------------------- | ------------------------------ | --------------------- |
-| **Pump Status**              |
-| `pumpCOWorks`                | Central heating pump working   | `../econet/regParams` |
-| `pumpCWUWorks`               | Hot water pump working         | `../econet/regParams` |
-| `pumpSolarWorks`             | Solar pump working             | `../econet/regParams` |
-| `pumpCirculationWorks`       | Circulation pump working       | `../econet/regParams` |
-| `pumpFireplaceWorks`         | Fireplace pump working         | `../econet/regParams` |
-| **Fan Status**               |
-| `fanWorks`                   | Fan working                    | `../econet/regParams` |
-| **System Components**        |
-| `lighterWorks`               | Lighter working                | `../econet/regParams` |
-| `feederWorks`                | Feeder working                 | `../econet/regParams` |
-| `thermostat`                 | Thermostat                     | `../econet/regParams` |
-| `statusCWU`                  | Hot water status               | `../econet/regParams` |
-| **Network & Communication**  |
-| `mainSrv`                    | Econet24.com server            | `../econet/regParams` |
-| `wifi`                       | Wi-Fi connection               | `../econet/regParams` |
-| `lan`                        | LAN connection                 | `../econet/regParams` |
-| **ecoMAX850R2-X Specific**   |
-| `contactGZC`                 | GZC contact                    | `../econet/regParams` |
-| `contactGZCActive`           | GZC contact active             | `../econet/regParams` |
-| **ecoSTER Room Thermostats** |
-| `ecosterContacts1`           | Room thermostat 1 contacts     | `../econet/regParams` |
-| `ecosterContacts2`           | Room thermostat 2 contacts     | `../econet/regParams` |
-| `ecosterContacts3`           | Room thermostat 3 contacts     | `../econet/regParams` |
-| `ecosterContacts4`           | Room thermostat 4 contacts     | `../econet/regParams` |
-| `ecosterContacts5`           | Room thermostat 5 contacts     | `../econet/regParams` |
-| `ecosterContacts6`           | Room thermostat 6 contacts     | `../econet/regParams` |
-| `ecosterContacts7`           | Room thermostat 7 contacts     | `../econet/regParams` |
-| `ecosterContacts8`           | Room thermostat 8 contacts     | `../econet/regParams` |
-| `ecosterDaySched1`           | Room thermostat 1 day schedule | `../econet/regParams` |
-| `ecosterDaySched2`           | Room thermostat 2 day schedule | `../econet/regParams` |
-| `ecosterDaySched3`           | Room thermostat 3 day schedule | `../econet/regParams` |
-| `ecosterDaySched4`           | Room thermostat 4 day schedule | `../econet/regParams` |
-| `ecosterDaySched5`           | Room thermostat 5 day schedule | `../econet/regParams` |
-| `ecosterDaySched6`           | Room thermostat 6 day schedule | `../econet/regParams` |
-| `ecosterDaySched7`           | Room thermostat 7 day schedule | `../econet/regParams` |
-| `ecosterDaySched8`           | Room thermostat 8 day schedule | `../econet/regParams` |
-| **ecoSOL 500 Solar System**  |
-| `fuelConsumptionCalc`        | Fuel consumption calculator    | `../econet/regParams` |
-| `ecosrvHttps`                | ecoNET server HTTPS            | `../econet/regParams` |
-
-</details>
-
-### Number Entities
-
-<details>
-<summary><b>👉 Click here to expand the table</b></summary>
-
-| Entity Key                            | Description                          | Endpoint              |
-| ------------------------------------- | ------------------------------------ | --------------------- |
-| **Temperature Setpoints**             |
-| `tempCOSet`                           | Central heating temperature setpoint | `../econet/regParams` |
-| `tempCWUSet`                          | Hot water temperature setpoint       | `../econet/regParams` |
-| **Mixer Temperature Setpoints**       |
-| `mixerSetTemp1`                       | Mixer 1 target temperature           | `../econet/regParams` |
-| `mixerSetTemp2`                       | Mixer 2 target temperature           | `../econet/regParams` |
-| `mixerSetTemp3`                       | Mixer 3 target temperature           | `../econet/regParams` |
-| `mixerSetTemp4`                       | Mixer 4 target temperature           | `../econet/regParams` |
-| `mixerSetTemp5`                       | Mixer 5 target temperature           | `../econet/regParams` |
-| `mixerSetTemp6`                       | Mixer 6 target temperature           | `../econet/regParams` |
-| **ecoSTER Room Thermostat Setpoints** |
-| `ecosterSetTemp1`                     | Room thermostat 1 setpoint           | `../econet/regParams` |
-| `ecosterSetTemp2`                     | Room thermostat 2 setpoint           | `../econet/regParams` |
-| `ecosterSetTemp3`                     | Room thermostat 3 setpoint           | `../econet/regParams` |
-| `ecosterSetTemp4`                     | Room thermostat 4 setpoint           | `../econet/regParams` |
-| `ecosterSetTemp5`                     | Room thermostat 5 setpoint           | `../econet/regParams` |
-| `ecosterSetTemp6`                     | Room thermostat 6 setpoint           | `../econet/regParams` |
-| `ecosterSetTemp7`                     | Room thermostat 7 setpoint           | `../econet/regParams` |
-| `ecosterSetTemp8`                     | Room thermostat 8 setpoint           | `../econet/regParams` |
-
-</details>
+**📖 [Complete Entity Reference](docs/ENTITIES.md)** - Full list of all entities with descriptions
 
 ---
 
@@ -416,17 +226,11 @@ ecoNET-300-Home-Assistant-Integration/
 
 ### 📚 **Essential Documentation** (in `docs/`)
 
-- **MIGRATION.md** - Complete migration guide for upgrading between versions
-- **DIAGNOSTICS.md** - Complete diagnostics documentation and troubleshooting guide
-- **API_V1_DOCUMENTATION.md** - Complete API documentation (consolidated)
-- **BOILER_CONTROL_README.md** - Boiler control documentation and setup
-- **CLOUD_TRANSLATIONS.md** - Cloud translations documentation and usage
-- **ecoSOL_DISCOVERY_SUMMARY.md** - ecoSOL device discovery and analysis
-- **ecoMAX810P-L_PARAMETER_NAMES_ANALYSIS.md** - Parameter analysis for ecoMAX810P-L
-- **ecoMAX850R2-X_DOCUMENTATION.md** - Complete ecoMAX850R2-X documentation
-- **NEW_API_ENDPOINTS_DISCOVERED.md** - Newly discovered API endpoints
-- **devices/** - Device-specific documentation and parameters
-- **cloud_translations/** - Cloud translation data and references
+- **[ENTITIES.md](docs/ENTITIES.md)** - Complete entity reference (sensors, switches, numbers)
+- **[MIGRATION.md](docs/MIGRATION.md)** - Migration guide for upgrading between versions
+- **[DIAGNOSTICS.md](docs/DIAGNOSTICS.md)** - Diagnostics documentation and troubleshooting
+- **[API_V1_DOCUMENTATION.md](docs/API_V1_DOCUMENTATION.md)** - Complete API documentation
+- **[devices/](docs/devices/)** - Device-specific documentation (ecoMAX, ecoSOL)
 
 ---
 
@@ -493,4 +297,4 @@ If you encounter any issues or have questions:
 
 ---
 
-_This README was last updated on 2025-01-16 with v1.2.0a5 release._
+_This README was last updated on 2025-01-28 with v1.2.0 release._
