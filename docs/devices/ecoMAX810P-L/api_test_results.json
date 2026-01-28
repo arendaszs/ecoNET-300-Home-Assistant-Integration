@@ -1,0 +1,55 @@
+{
+  "test_date": "2024-12-22",
+  "device": "ecoMAX810P-L",
+  "endpoints_tested": {
+    "rmAccess": {
+      "url": "/econet/password",
+      "method": "POST",
+      "request": {
+        "password": "b61265c6a561e90476ef78be3d2cea768306afa55a2e510c591008f8dc3e6f8a9520687e5fd3805e2da67cf5c58aa1603f960e027b0d5307fd7f98b673dd172f"
+      },
+      "response": {
+        "access": true,
+        "index": 1,
+        "level": "edit"
+      },
+      "status": "SUCCESS",
+      "notes": "SHA512 hash authentication works. Grants service level 1 edit access."
+    },
+    "rmStructure_with_password": {
+      "url": "/econet/rmStructure?password=...",
+      "status": "SUCCESS",
+      "notes": "Returns same structure as without password. Service categories (pass_index > 0) are visible but NO parameters (type: 1) follow them.",
+      "service_categories": [
+        {"pass_index": 1, "index": 26, "type": 0, "name": "Service Settings"},
+        {"pass_index": 2, "index": 27, "type": 0, "name": "Advanced Settings"},
+        {"pass_index": 3, "index": 28, "type": 0, "name": "Service Information"},
+        {"pass_index": 4, "index": 29, "type": 0, "name": "Factory Settings"}
+      ],
+      "finding": "Parameters under service categories are NOT exposed by API - firmware security"
+    },
+    "rmParamsData_with_password": {
+      "url": "/econet/rmParamsData?password=...",
+      "status": "SUCCESS",
+      "total_parameters": 165,
+      "notes": "Same 165 parameters as without password. All user-level parameters.",
+      "sample_entries": [
+        {"index": 0, "value": 60, "unit": 5, "minv": 15, "maxv": 100, "edit": true},
+        {"index": 18, "value": 0, "unit": 31, "offset": 8, "mult": 0, "notes": "enum type"},
+        {"index": 41, "value": 8.5, "unit": 5, "mult": 0.1, "notes": "decimal value"}
+      ]
+    },
+    "unsupported_endpoints": [
+      {"endpoint": "GetAdvancedUserPass", "error": "'Controller' object has no attribute 'onGetAdvancedUserPass'"},
+      {"endpoint": "rmPassword", "error": "'Controller' object has no attribute 'onrmPassword'"},
+      {"endpoint": "rmCheckPassword", "error": "'Controller' object has no attribute 'onrmCheckPassword'"}
+    ]
+  },
+  "conclusions": {
+    "authentication": "Works correctly with SHA512 hashed password",
+    "service_parameters": "Not exposed by API - hidden at firmware level",
+    "security_model": "API shows category structure but hides service parameter values",
+    "integration_impact": "All user-accessible parameters available; service params require physical panel"
+  }
+}
+

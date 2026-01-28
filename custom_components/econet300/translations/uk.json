@@ -1,4 +1,51 @@
 {
+  "exceptions": {
+    "parameter_locked": {
+      "message": "Неможливо змінити значення: {lock_reason}"
+    },
+    "boiler_control_failed": {
+      "message": "Не вдалося керувати котлом: {error}"
+    },
+    "switch_turn_on_failed": {
+      "message": "Не вдалося увімкнути перемикач: {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Не вдалося вимкнути перемикач: {error}"
+    },
+    "heater_mode_change_failed": {
+      "message": "Не вдалося змінити режим опалення на {mode}"
+    },
+    "select_change_failed": {
+      "message": "Не вдалося змінити опцію: {error}"
+    },
+    "number_set_failed": {
+      "message": "Не вдалося встановити значення: {error}"
+    },
+    "api_communication_error": {
+      "message": "Помилка зв'язку з пристроєм: {error}"
+    },
+    "device_unavailable": {
+      "message": "Пристрій недоступний: {error}"
+    }
+  },
+  "issues": {
+    "connection_failed": {
+      "title": "Підключення до пристрою ecoNET300 не вдалося",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Оновити налаштування підключення",
+            "description": "Не вдається підключитися до вашого пристрою ecoNET300 за адресою **{host}** після {failures} послідовних спроб.\n\nОновіть налаштування підключення, щоб відновити з'єднання.",
+            "data": {
+              "host": "Хост",
+              "username": "Ім'я користувача",
+              "password": "Пароль"
+            }
+          }
+        }
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
@@ -26,6 +73,24 @@
     "abort": {
       "already_configured": "Пристрій вже налаштований",
       "reconfigure_failed": "Переналаштування не вдалося. Спробуйте ще раз."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Налаштування ecoNET300",
+        "description": "Оновіть налаштування підключення ecoNET300",
+        "data": {
+          "host": "Хост",
+          "username": "Ім'я користувача",
+          "password": "Пароль"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Не вдалося підключитися",
+      "invalid_auth": "Недійсна автентифікація",
+      "unknown": "Неочікувана помилка"
     }
   },
   "entity": {
@@ -256,13 +321,13 @@
           "operation": "Робота",
           "work": "Працює",
           "supervision": "Нагляд",
-          "halted": "Зупинено",
-          "stop": "Стоп",
+          "paused": "Призупинено",
+          "stop": "Зупинено",
           "burning_off": "Затухання",
           "manual": "Ручний",
-          "alarm": "Тривога",
+          "problem": "Тривога",
           "unsealing": "Розгерметизація",
-          "chimney": "Димар",
+          "chimney": "Сажотрус",
           "stabilization": "Стабілізація",
           "no_transmission": "Без передачі",
           "unknown": "Невідомо"
@@ -409,7 +474,24 @@
         "name": "Температура повернення"
       },
       "transmission": {
-        "name": "Передача"
+        "name": "Передача",
+        "state": {
+          "off": "Вимкнено",
+          "fire_up": "Розпалювання",
+          "operation": "Робота",
+          "work": "Робота",
+          "supervision": "Нагляд",
+          "paused": "Призупинено",
+          "stop": "Зупинено",
+          "burning_off": "Затухання",
+          "manual": "Ручний",
+          "problem": "Тривога",
+          "unsealing": "Розгерметизація",
+          "chimney": "Сажотрус",
+          "stabilization": "Стабілізація",
+          "no_transmission": "Без передачі",
+          "unknown": "Невідомо"
+        }
       },
       "ecoster_temp1": {
         "name": "Кімнатна температура 1"

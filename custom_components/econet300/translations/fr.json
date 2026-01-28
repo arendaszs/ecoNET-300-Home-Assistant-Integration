@@ -1,4 +1,51 @@
 {
+  "exceptions": {
+    "parameter_locked": {
+      "message": "Impossible de modifier la valeur : {lock_reason}"
+    },
+    "boiler_control_failed": {
+      "message": "Échec du contrôle de la chaudière : {error}"
+    },
+    "switch_turn_on_failed": {
+      "message": "Échec de l'activation de l'interrupteur : {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Échec de la désactivation de l'interrupteur : {error}"
+    },
+    "heater_mode_change_failed": {
+      "message": "Échec du changement de mode de chauffage en {mode}"
+    },
+    "select_change_failed": {
+      "message": "Échec du changement d'option : {error}"
+    },
+    "number_set_failed": {
+      "message": "Échec de la définition de la valeur : {error}"
+    },
+    "api_communication_error": {
+      "message": "Erreur de communication avec l'appareil : {error}"
+    },
+    "device_unavailable": {
+      "message": "Appareil indisponible : {error}"
+    }
+  },
+  "issues": {
+    "connection_failed": {
+      "title": "La connexion à l'appareil ecoNET300 a échoué",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Mettre à jour les paramètres de connexion",
+            "description": "Impossible de se connecter à votre appareil ecoNET300 à l'adresse **{host}** après {failures} tentatives consécutives.\n\nMettez à jour vos paramètres de connexion pour rétablir la connectivité.",
+            "data": {
+              "host": "Hôte",
+              "username": "Nom d'utilisateur",
+              "password": "Mot de passe"
+            }
+          }
+        }
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
@@ -26,6 +73,24 @@
     "abort": {
       "already_configured": "L'appareil est déjà configuré",
       "reconfigure_failed": "La reconfiguration a échoué. Veuillez réessayer."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options ecoNET300",
+        "description": "Mettre à jour les paramètres de connexion ecoNET300",
+        "data": {
+          "host": "Hôte",
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Échec de la connexion",
+      "invalid_auth": "Authentification invalide",
+      "unknown": "Erreur inattendue"
     }
   },
   "entity": {
@@ -256,13 +321,13 @@
           "operation": "Fonctionnement",
           "work": "Marche normale",
           "supervision": "Surveillance",
-          "halted": "Arrêt",
-          "stop": "Stop",
+          "paused": "En pause",
+          "stop": "Arrêté",
           "burning_off": "Extinction",
           "manual": "Manuel",
-          "alarm": "Alarme",
-          "unsealing": "Déscellement",
-          "chimney": "Cheminée",
+          "problem": "Alarme",
+          "unsealing": "Descellement",
+          "chimney": "Ramoneur",
           "stabilization": "Stabilisation",
           "no_transmission": "Pas de transmission",
           "unknown": "Inconnu"
@@ -409,7 +474,24 @@
         "name": "Température de retour"
       },
       "transmission": {
-        "name": "Transmission"
+        "name": "Transmission",
+        "state": {
+          "off": "Arrêté",
+          "fire_up": "Allumage",
+          "operation": "Fonctionnement",
+          "work": "Marche normale",
+          "supervision": "Surveillance",
+          "paused": "En pause",
+          "stop": "Arrêté",
+          "burning_off": "Extinction",
+          "manual": "Manuel",
+          "problem": "Alarme",
+          "unsealing": "Descellement",
+          "chimney": "Ramoneur",
+          "stabilization": "Stabilisation",
+          "no_transmission": "Pas de transmission",
+          "unknown": "Inconnu"
+        }
       },
       "ecoster_temp1": {
         "name": "Température ambiante 1"

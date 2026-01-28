@@ -20,6 +20,7 @@ from homeassistant.const import (
     STATE_PROBLEM,
     STATE_UNKNOWN,
     EntityCategory,
+    UnitOfMass,
     UnitOfPower,
     UnitOfTemperature,
     UnitOfTime,
@@ -33,17 +34,77 @@ SERVICE_API = "api"
 SERVICE_COORDINATOR = "coordinator"
 
 # =============================================================================
+# COORDINATOR CONFIGURATION CONSTANTS
+# =============================================================================
+# Number of consecutive failures before creating a repair issue
+CONSECUTIVE_FAILURES_THRESHOLD = 5
+
+# RM endpoint dataset keys for data coordinator (order matches tasks list)
+RM_CORE_DATASET_KEYS = [
+    "currentDataParams",
+    "paramsNames",
+    "paramsData",
+    "langs",
+]
+
+RM_ADDITIONAL_DATASET_KEYS = [
+    "paramsDescs",
+    "paramsEnums",
+    "alarmsNames",
+]
+
+# =============================================================================
+# CACHE CONFIGURATION FOR STATIC METADATA
+# =============================================================================
+# Static metadata rarely changes - cache for 24 hours to reduce API load.
+CACHE_KEY_STATIC_METADATA = "static_metadata"
+CACHE_STATIC_METADATA_TTL = 86400  # 24 hours
+
+# =============================================================================
 # DEVICE INFORMATION CONSTANTS
 # =============================================================================
 DEVICE_INFO_MANUFACTURER = "PLUM"
 DEVICE_INFO_MODEL = "ecoNET300"
-DEVICE_INFO_CONTROLLER_NAME = "PLUM ecoNET300"
+DEVICE_INFO_CONTROLLER_NAME = "Boiler"
 DEVICE_INFO_MIXER_NAME = "Mixer device"
 DEVICE_INFO_LAMBDA_NAME = "Module Lambda"
 DEVICE_INFO_ECOSTER_NAME = "ecoSTER"
+DEVICE_INFO_HUW_NAME = "HUW Tank"
+DEVICE_INFO_BUFFER_NAME = "Buffer"
+DEVICE_INFO_SOLAR_NAME = "Solar"
+DEVICE_INFO_SERVICE_PARAMETERS_NAME = "Service Parameters"
+DEVICE_INFO_ADVANCED_PARAMETERS_NAME = "Advanced Parameters"
 
 CONF_ENTRY_TITLE = "ecoNET300"
 CONF_ENTRY_DESCRIPTION = "PLUM Econet300"
+
+# =============================================================================
+# DEVICE COMPONENT IDENTIFIERS
+# =============================================================================
+# These constants identify device components for grouping entities in Home Assistant.
+# When adding a new device type, add a constant here and update DEFAULT_COMPONENT_STATUS.
+COMPONENT_BOILER = "boiler"
+COMPONENT_HUW = "huw"
+COMPONENT_MIXER_1 = "mixer_1"
+COMPONENT_MIXER_2 = "mixer_2"
+COMPONENT_MIXER_3 = "mixer_3"
+COMPONENT_MIXER_4 = "mixer_4"
+COMPONENT_LAMBDA = "lambda"
+COMPONENT_BUFFER = "buffer"
+COMPONENT_SOLAR = "solar"
+
+# Default component status template - used when no reg_params available
+DEFAULT_COMPONENT_STATUS: dict[str, bool] = {
+    COMPONENT_BOILER: True,
+    COMPONENT_HUW: False,
+    COMPONENT_MIXER_1: False,
+    COMPONENT_MIXER_2: False,
+    COMPONENT_MIXER_3: False,
+    COMPONENT_MIXER_4: False,
+    COMPONENT_LAMBDA: False,
+    COMPONENT_BUFFER: False,
+    COMPONENT_SOLAR: False,
+}
 
 # =============================================================================
 # API ENDPOINT CONSTANTS
@@ -71,6 +132,51 @@ API_REG_PARAMS_DATA_PARAM_DATA = "data"
 API_EDIT_PARAM_URI = "rmCurrNewParam"
 API_EDITABLE_PARAMS_LIMITS_URI = "rmCurrentDataParamsEdits"
 API_EDITABLE_PARAMS_LIMITS_DATA = "data"
+
+# =============================================================================
+# RM... ENDPOINT CONSTANTS (Remote Menu API)
+# =============================================================================
+# These endpoints provide structured data for the ecoNET24 web interface
+# Based on analysis of dev_set1.js and test fixtures
+
+# Core RM endpoints for parameter management
+API_RM_PARAMS_NAMES_URI = "rmParamsNames"
+API_RM_PARAMS_DATA_URI = "rmParamsData"
+API_RM_PARAMS_DESCS_URI = "rmParamsDescs"
+API_RM_PARAMS_ENUMS_URI = "rmParamsEnums"
+API_RM_PARAMS_UNITS_NAMES_URI = "rmParamsUnitsNames"
+
+# RM endpoints for categories and structure
+API_RM_STRUCTURE_URI = "rmStructure"
+
+# RM endpoints for current data
+API_RM_CURRENT_DATA_PARAMS_URI = "rmCurrentDataParams"
+API_RM_CURRENT_DATA_PARAMS_EDITS_URI = "rmCurrentDataParamsEdits"
+
+# RM endpoints for system information
+API_RM_LANGS_URI = "rmLangs"
+API_RM_EXISTING_LANGS_URI = "rmExistingLangs"
+API_RM_LOCKS_NAMES_URI = "rmLocksNames"
+API_RM_ALARMS_NAMES_URI = "rmAlarmsNames"
+
+# RM endpoints for authentication and parameter modification
+API_RM_ACCESS_URI = "rmAccess"  # Service password authentication
+API_RM_NEW_PARAM_URI = "rmNewParam"  # Save parameter by index
+API_RM_CURR_NEW_PARAM_URI = "rmCurrNewParam"  # Save current param by key
+
+# RM endpoint data key (all endpoints use "data" as the key)
+API_RM_DATA_KEY = "data"
+
+# =============================================================================
+# RM STRUCTURE ENTRY TYPES
+# =============================================================================
+# These constants define the entry types in rmStructure API response
+# Each entry in the structure has a "type" field indicating its purpose
+
+RM_STRUCTURE_TYPE_CATEGORY = 0  # Category entry - defines category context
+RM_STRUCTURE_TYPE_PARAMETER = 1  # Editable parameter entry
+RM_STRUCTURE_TYPE_DATA_REF = 3  # Data reference (read-only, has data_id)
+RM_STRUCTURE_TYPE_MENU_GROUP = 7  # Menu group/header (resets pass_index)
 
 # =============================================================================
 # OPERATION MODES AND STATUS MAPPINGS
@@ -109,6 +215,15 @@ SENSOR_MIXER_KEY = {
 MIXER_PUMP_BINARY_SENSOR_KEYS = {
     f"mixerPumpWorks{i}" for i in range(1, AVAILABLE_NUMBER_OF_MIXERS + 1)
 }
+
+# Keywords that indicate mixer-related parameters for duplicate entity filtering
+MIXER_RELATED_KEYWORDS: list[str] = [
+    "mixer",
+    "valve",
+    "heating circuit",
+    "actuator",
+    "circuit",
+]
 
 # =============================================================================
 # DEVICE-SPECIFIC SENSOR MAPPINGS
@@ -236,13 +351,14 @@ DEFAULT_SENSORS = {
 }
 
 # Main sensor mapping by controller type
+# All controllers use DEFAULT_SENSORS (specific mappings are for reference only)
 SENSOR_MAP_KEY = {
-    "ecoMAX360i": ECOMAX360I_SENSORS,
-    "ecoSter": ECOSTER_SENSORS,
-    "lambda": LAMBDA_SENSORS,
-    "ecoSOL 500": ECOSOL_SENSORS,
-    "ecoSOL 301": ECOSOL_SENSORS,  # ecoSOL 301 uses same sensors as ecoSOL 500
-    "_default": DEFAULT_SENSORS,
+    "ecoMAX360i": ECOMAX360I_SENSORS,  # Reference only - not used
+    "ecoSter": ECOSTER_SENSORS,  # Reference only - not used
+    COMPONENT_LAMBDA: LAMBDA_SENSORS,  # Reference only - not used
+    "ecoSOL 500": ECOSOL_SENSORS,  # Reference only - not used
+    "ecoSOL 301": ECOSOL_SENSORS,  # Reference only - not used
+    "_default": DEFAULT_SENSORS,  # Always used for all controllers
 }
 
 # =============================================================================
@@ -300,11 +416,12 @@ ECOSOL_BINARY_SENSORS = {
 }
 
 # Main binary sensor mapping by controller type
+# All controllers use DEFAULT_BINARY_SENSORS (specific mappings are for reference only)
 BINARY_SENSOR_MAP_KEY = {
-    "_default": DEFAULT_BINARY_SENSORS,
-    "ecoSter": ECOSTER_BINARY_SENSORS,
-    "ecoSOL 500": ECOSOL_BINARY_SENSORS,
-    "ecoSOL 301": ECOSOL_BINARY_SENSORS,  # ecoSOL 301 uses same binary sensors as ecoSOL 500
+    "_default": DEFAULT_BINARY_SENSORS,  # Always used for all controllers
+    "ecoSter": ECOSTER_BINARY_SENSORS,  # Reference only - not used
+    "ecoSOL 500": ECOSOL_BINARY_SENSORS,  # Reference only - not used
+    "ecoSOL 301": ECOSOL_BINARY_SENSORS,  # Reference only - not used
 }
 
 # Helper: Extract ecoSOL controller IDs for easy access
@@ -389,6 +506,22 @@ CONTROL_PARAMS = {
 
 # Individual control parameter constants
 BOILER_CONTROL = "BOILER_CONTROL"
+
+# =============================================================================
+# DYNAMIC ENTITY UNIT MAPPINGS
+# =============================================================================
+# Mapping from ecoNET unit names to Home Assistant units
+# Used for dynamic number entity creation from merged parameter data
+UNIT_NAME_TO_HA_UNIT = {
+    "%": PERCENTAGE,
+    "°C": UnitOfTemperature.CELSIUS,
+    "sek.": UnitOfTime.SECONDS,
+    "min.": UnitOfTime.MINUTES,
+    "h.": UnitOfTime.HOURS,
+    "kg": UnitOfMass.KILOGRAMS,
+    "kW": UnitOfPower.KILO_WATT,
+    "r/min": "r/min",  # Custom unit for revolutions per minute
+}
 
 # =============================================================================
 # ENTITY UNIT MAPPINGS
@@ -493,6 +626,7 @@ ENTITY_UNIT_MAP = {
     "protocolType": None,
     "controllerID": None,
     "ecosrvSoftVer": None,
+    "moduleEcoSTERSoftVer": None,
 }
 
 # =============================================================================
@@ -563,16 +697,17 @@ ENTITY_SENSOR_DEVICE_CLASS_MAP: dict[str, SensorDeviceClass | None] = {
     "mixerSetTemp": SensorDeviceClass.TEMPERATURE,
     "tempBack": SensorDeviceClass.TEMPERATURE,
     "tempCWU": SensorDeviceClass.TEMPERATURE,
-    "statusCO": None,
+    "statusCO": SensorDeviceClass.ENUM,
     "statusCWU": None,
     "tempUpperBuffer": SensorDeviceClass.TEMPERATURE,
     "tempLowerBuffer": SensorDeviceClass.TEMPERATURE,
     "signal": SensorDeviceClass.SIGNAL_STRENGTH,
     "servoMixer1": SensorDeviceClass.ENUM,
+    "mode": SensorDeviceClass.ENUM,
+    "transmission": SensorDeviceClass.ENUM,
     # ecoMAX850R2-X specific device classes
     "fuelConsum": SensorDeviceClass.POWER_FACTOR,
     "fuelStream": SensorDeviceClass.POWER_FACTOR,
-    "transmission": None,
     # ecoSTER thermostat device classes
     "ecoSterTemp1": SensorDeviceClass.TEMPERATURE,
     "ecoSterTemp2": SensorDeviceClass.TEMPERATURE,
@@ -649,6 +784,8 @@ ENTITY_BINARY_DEVICE_CLASS_MAP = {
     # ecoMAX850R2-X specific binary sensors
     "contactGZC": BinarySensorDeviceClass.CONNECTIVITY,
     "contactGZCActive": BinarySensorDeviceClass.CONNECTIVITY,
+    # Alarm sensors
+    "alarmActive": BinarySensorDeviceClass.PROBLEM,
 }
 
 # =============================================================================
@@ -678,6 +815,7 @@ ENTITY_PRECISION = {
     "thermostat": None,
     "lambdaStatus": None,
     "mode": None,
+    "transmission": None,
     "softVer": None,
     "controllerID": None,
     "moduleASoftVer": None,
@@ -726,7 +864,6 @@ ENTITY_PRECISION = {
     "ecosrvAddr": None,
     "routerType": None,
     "protocolType": None,
-    "ecosrvSoftVer": None,
 }
 
 NO_CWU_TEMP_SET_STATUS_CODE = 128
@@ -737,6 +874,7 @@ ENTITY_VALUE_PROCESSOR = {
     "statusCWU": lambda x: SENSOR_STATUS_CWU_MAPPING.get(x, STATE_UNKNOWN),
     "statusCO": lambda x: SENSOR_STATUS_CO_MAPPING.get(x, STATE_UNKNOWN),
     "thermostat": lambda x: SENSOR_THERMOSTAT_MAPPING.get(x, STATE_UNKNOWN),
+    "transmission": lambda x: OPERATION_MODE_NAMES.get(x, STATE_UNKNOWN),
 }
 
 # =============================================================================
@@ -783,19 +921,9 @@ ENTITY_STEP = {
 }
 
 # Sensor value mappings for both display and icon support
-SENSOR_MODE_MAPPING: dict[int, str] = {
-    0: "off",
-    1: "manual",
-    2: "auto",
-    3: "service",
-    4: "test",
-    5: "pause",
-    6: "error",
-    7: "standby",
-    8: "emergency",
-    9: "maintenance",
-    10: "calibration",
-}
+# Note: mode and transmission use the same OPERATION_MODE_NAMES mapping
+# to ensure consistent state display across both sensors
+SENSOR_MODE_MAPPING: dict[int, str] = OPERATION_MODE_NAMES
 
 SENSOR_LAMBDA_STATUS_MAPPING: dict[int, str] = {
     0: "stop",
@@ -812,20 +940,46 @@ SENSOR_STATUS_CWU_MAPPING: dict[int, str] = {
 }
 
 SENSOR_STATUS_CO_MAPPING: dict[int, str] = {
-    0: "off",
-    1: "pause",
-    2: "reload",
-    3: "fire",
-    4: "fire",
-    5: "alert",
-    6: "alert",
-    7: "test_tube",
-    8: "stop_circle",
-    9: "gauge",
-    10: "help_circle",
+    0: "off",  # modeTurnOff - TURNED OFF
+    1: "stop",  # modeStop - STOP
+    2: "fire_up",  # modeKindle - FIRE UP / KINDLING
+    3: "operation",  # modeWork - OPERATION / WORK
+    4: "supervision",  # modeSupervision - SUPERVISION
+    5: "paused",  # modeHalt - HALTED / PAUSED
+    6: "cleaning",  # modeCleaning - CLEANING
+    7: "burning_off",  # modeExtinction - BURNING OFF / EXTINCTION
+    8: "alarm",  # modeAlarm - ALARM
+    9: "manual",  # modeManual - MANUAL
+    10: "unsealing",  # modeUnsealing - UNSEALING
+    11: "other",  # modeOther - OTHER
+    12: "stabilization",  # modeStabilization - STABILIZATION
+    13: "purge",  # modePurge - PURGE
+    14: "check_flame",  # modeCheckFlame - CHECK FLAME
+    15: "flame_losing",  # modeFlameLosing - FLAME LOSING
+    16: "prevention",  # modePrevention - PREVENTION
+    17: "work_grate",  # modeWorkGrate - WORK GRATE
+    18: "supervision_grate",  # modeSupervisionGrate - SUPERVISION GRATE
+    19: "calibration",  # modeCalibration - CALIBRATION
+    20: "maintain",  # modeMaintain - MAINTAIN / MAINTENANCE
+    21: "afterburning",  # modeAfterburning - AFTERBURNING
+    22: "chimney_sweep",  # modeChimneySwep - CHIMNEY SWEEP
+    23: "heating",  # modeHeats - HEATING
+    24: "open_door",  # modeOpenDoor - OPEN DOOR
+    25: "cooling",  # modeCooling - COOLING
+    26: "safe",  # modeSafe - SAFE MODE
 }
 
 SENSOR_THERMOSTAT_MAPPING: dict[int, str] = {
     0: "off",
     1: "on",
+}
+
+# =============================================================================
+# ENUM SENSOR OPTIONS
+# =============================================================================
+# Options for SensorDeviceClass.ENUM sensors - displayed in HA Developer Tools
+SENSOR_ENUM_OPTIONS: dict[str, list[str]] = {
+    "mode": list(OPERATION_MODE_NAMES.values()),
+    "transmission": list(OPERATION_MODE_NAMES.values()),
+    "statusCO": [*SENSOR_STATUS_CO_MAPPING.values(), STATE_UNKNOWN],
 }

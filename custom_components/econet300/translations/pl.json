@@ -1,4 +1,51 @@
 {
+  "exceptions": {
+    "parameter_locked": {
+      "message": "Nie można zmienić wartości: {lock_reason}"
+    },
+    "boiler_control_failed": {
+      "message": "Nie udało się sterować kotłem: {error}"
+    },
+    "switch_turn_on_failed": {
+      "message": "Nie udało się włączyć przełącznika: {error}"
+    },
+    "switch_turn_off_failed": {
+      "message": "Nie udało się wyłączyć przełącznika: {error}"
+    },
+    "heater_mode_change_failed": {
+      "message": "Nie udało się zmienić trybu grzania na {mode}"
+    },
+    "select_change_failed": {
+      "message": "Nie udało się zmienić opcji: {error}"
+    },
+    "number_set_failed": {
+      "message": "Nie udało się ustawić wartości: {error}"
+    },
+    "api_communication_error": {
+      "message": "Błąd komunikacji z urządzeniem: {error}"
+    },
+    "device_unavailable": {
+      "message": "Urządzenie niedostępne: {error}"
+    }
+  },
+  "issues": {
+    "connection_failed": {
+      "title": "Połączenie z urządzeniem ecoNET300 nie powiodło się",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Zaktualizuj ustawienia połączenia",
+            "description": "Nie można połączyć się z urządzeniem ecoNET300 pod adresem **{host}** po {failures} kolejnych próbach.\n\nZaktualizuj ustawienia połączenia, aby przywrócić łączność.",
+            "data": {
+              "host": "Host",
+              "username": "Nazwa użytkownika",
+              "password": "Hasło"
+            }
+          }
+        }
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
@@ -28,15 +75,140 @@
       "reconfigure_failed": "Rekonfiguracja nie powiodła się. Spróbuj ponownie."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opcje ecoNET300",
+        "description": "Zaktualizuj ustawienia połączenia ecoNET300",
+        "data": {
+          "host": "Host",
+          "username": "Nazwa użytkownika",
+          "password": "Hasło"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Błąd połączenia",
+      "invalid_auth": "Błąd autoryzacji",
+      "unknown": "Niespodziewany błąd"
+    }
+  },
   "entity": {
     "switch": {
       "boiler_control": {
         "name": "Kocioł Wł/Wył"
+      },
+      "buffer_support": {
+        "name": "Obsługa bufora"
       }
     },
     "select": {
       "heater_mode": {
         "name": "Tryb grzania"
+      },
+      "parametr_a_fuzzylogic": {
+        "name": "Parametr A FuzzyLogic"
+      },
+      "exchanger": {
+        "name": "Wymiennik"
+      },
+      "mixer1_support": {
+        "name": "Obsługa mieszacza 1"
+      },
+      "off_by_thermostat": {
+        "name": "Wyłączenie termostatem"
+      },
+      "thermostat_lock": {
+        "name": "Blokada termostatu"
+      },
+      "boiler_pump_lock": {
+        "name": "Blokada pompy kotła"
+      },
+      "output_h1": {
+        "name": "Wyjście H1"
+      },
+      "output_h2_and_h3": {
+        "name": "Wyjście H2 i H3"
+      },
+      "alarms": {
+        "name": "Alarmy"
+      }
+    },
+    "number": {
+      "parametr_b_fuzzylogic": {
+        "name": "Parametr B FuzzyLogic"
+      },
+      "parametr_c_fuzzylogic": {
+        "name": "Parametr C FuzzyLogic"
+      },
+      "minimum_airflow_output": {
+        "name": "Minimalna moc nadmuchu"
+      },
+      "min_boiler_temperature": {
+        "name": "Min. temperatura kotła"
+      },
+      "max_boiler_temperature": {
+        "name": "Maks. temperatura kotła"
+      },
+      "minimum_huw_temperature": {
+        "name": "Min. temperatura CWU"
+      },
+      "maximum_huw_temperature": {
+        "name": "Maks. temperatura CWU"
+      },
+      "ch_pump_activation_temperature": {
+        "name": "Temp. załączenia pompy CO"
+      },
+      "ch_pump_standstill_when_loading_huw": {
+        "name": "Postój pompy CO przy ładowaniu CWU"
+      },
+      "boiler_inc_by_huw_mixer": {
+        "name": "Podniesienie kotła przez CWU, Mieszacz"
+      },
+      "extending_huw_pump_operation_time": {
+        "name": "Przedłużenie pracy pompy CWU"
+      },
+      "min_mixer1_temp": {
+        "name": "Min. temp. mieszacza 1"
+      },
+      "max_mixer1_temp": {
+        "name": "Maks. temp. mieszacza 1"
+      },
+      "proportional_range": {
+        "name": "Zakres proporcjonalny"
+      },
+      "integration_time_constant": {
+        "name": "Stała czasowa całkowania"
+      },
+      "valve_full_opening_time": {
+        "name": "Czas pełnego otwarcia zaworu"
+      },
+      "mixer1_input_dead_zone": {
+        "name": "Strefa martwa wejścia mieszacza 1"
+      },
+      "boiler_cooling_temperature": {
+        "name": "Temperatura chłodzenia kotła"
+      },
+      "poker_cycle_time": {
+        "name": "Czas cyklu rusztu"
+      },
+      "no_fuel_detection_time": {
+        "name": "Czas wykrywania braku paliwa"
+      },
+      "feeder_operat_time_2": {
+        "name": "Czas pracy podajnika 2"
+      },
+      "feeder_interval_2": {
+        "name": "Interwał podajnika 2"
+      },
+      "reserve_boiler": {
+        "name": "Kocioł rezerwowy"
+      },
+      "maxburner_temp": {
+        "name": "Maks. temp. palnika"
+      },
+      "extempwno_fuel": {
+        "name": "Temp. zewn. bez paliwa"
       }
     },
     "binary_sensor": {
@@ -187,20 +359,64 @@
       "lambda_level": {
         "name": "Czujnik Lambda"
       },
+      "parameter_a_lambda": {
+        "name": "Parametr A Lambda"
+      },
+      "parameter_b_lambda": {
+        "name": "Parametr B Lambda"
+      },
+      "parameter_c_lambda": {
+        "name": "Parametr C Lambda"
+      },
+      "100percent_oxygen": {
+        "name": "100% Tlen"
+      },
+      "50percent_oxygen": {
+        "name": "50% Tlen"
+      },
+      "30percent_oxygen": {
+        "name": "30% Tlen"
+      },
+      "fl_oxygen_correction": {
+        "name": "Korekta tlenu FL"
+      },
+      "operation_with_lambda_sensor": {
+        "name": "Praca z czujnikiem Lambda"
+      },
+      "fuel_detection_oxygen": {
+        "name": "Wykrywanie paliwa: tlen"
+      },
       "status_co": {
         "name": "Status ogrzewania",
         "state": {
           "off": "Wyłączone",
-          "pause": "Pauza",
-          "reload": "Przeładowanie",
-          "fire": "Ogień",
-          "alert": "Alert",
-          "test_tube": "Rurka testowa",
-          "stop_circle": "Zatrzymanie",
-          "gauge": "Wskaźnik",
-          "help_circle": "Pomoc",
-          "error": "Błąd",
-          "maintenance": "Konserwacja"
+          "stop": "Stop",
+          "fire_up": "Rozpalanie",
+          "operation": "Praca",
+          "supervision": "Nadzór",
+          "paused": "Postój",
+          "cleaning": "Czyszczenie",
+          "burning_off": "Wygaszanie",
+          "alarm": "Alarm",
+          "manual": "Ręczny",
+          "unsealing": "Rozszczelnienie",
+          "other": "Inny",
+          "stabilization": "Stabilizacja",
+          "purge": "Przedmuch",
+          "check_flame": "Sprawdzanie płomienia",
+          "flame_losing": "Płomień zgaszony",
+          "prevention": "Zapobieganie",
+          "work_grate": "Praca - ruszt",
+          "supervision_grate": "Nadzór - ruszt",
+          "calibration": "Kalibracja",
+          "maintain": "Podtrzymanie",
+          "afterburning": "Dopalanie",
+          "chimney_sweep": "Kominiarz",
+          "heating": "Podgrzewanie",
+          "open_door": "Otwarte drzwi",
+          "cooling": "Chłodzenie",
+          "safe": "Bezpieczny",
+          "unknown": "Nieznany"
         }
       },
       "soft_ver": {
@@ -274,20 +490,21 @@
       "mode": {
         "name": "Tryb pracy",
         "state": {
-          "off": "Off",
-          "fire_up": "Fire up",
-          "work": "Work",
-          "supervision": "Supervision",
-          "halted": "Halted",
-          "stop": "Stop",
-          "burning_off": "Burning off",
-          "manual": "Manual",
-          "alarm": "Alarm",
-          "unsealing": "Unsealing",
-          "chimney": "Chimney",
-          "stabilization": "Stabilization",
-          "no_transmission": "No transmission",
-          "unknown": "Unknown"
+          "off": "Wyłączony",
+          "fire_up": "Rozpalanie",
+          "operation": "Praca",
+          "work": "Praca",
+          "supervision": "Nadzór",
+          "paused": "Wstrzymany",
+          "stop": "Zatrzymany",
+          "burning_off": "Wygaszanie",
+          "manual": "Ręczny",
+          "problem": "Alarm",
+          "unsealing": "Rozszczelnienie",
+          "chimney": "Kominiarz",
+          "stabilization": "Stabilizacja",
+          "no_transmission": "Brak transmisji",
+          "unknown": "Nieznany"
         }
       },
       "valve_mixer1": {
@@ -342,7 +559,24 @@
         "name": "Temperatura powrotu"
       },
       "transmission": {
-        "name": "Transmisja"
+        "name": "Transmisja",
+        "state": {
+          "off": "Wyłączony",
+          "fire_up": "Rozpalanie",
+          "operation": "Praca",
+          "work": "Praca",
+          "supervision": "Nadzór",
+          "paused": "Wstrzymany",
+          "stop": "Zatrzymany",
+          "burning_off": "Wygaszanie",
+          "manual": "Ręczny",
+          "problem": "Alarm",
+          "unsealing": "Rozszczelnienie",
+          "chimney": "Kominiarz",
+          "stabilization": "Stabilizacja",
+          "no_transmission": "Brak transmisji",
+          "unknown": "Nieznany"
+        }
       },
       "ecoster_temp1": {
         "name": "Temperatura pokojowa 1"

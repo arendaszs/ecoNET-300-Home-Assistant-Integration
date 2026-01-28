@@ -1,3 +1,6 @@
+---
+alwaysApply: true
+---
 
 # 🚨 MANDATORY: Code Style with Ruff
 
@@ -138,7 +141,7 @@ ruff check custom_components/econet300/
 
 - **Faster** than Black + isort + flake8 combined
 - **Unified tool** for formatting, linting, and import sorting
-- **Python 3.12+ optimized** with modern syntax support
+- **Python 3.13+ optimized** with modern syntax support
 - **Consistent rules** across the entire project
 
 ## **Import Sorting Priority:**
@@ -176,8 +179,5 @@ Before writing any Python code, ensure:
 
 - Ruff configuration is already set up
 - Includes Home Assistant import conventions
-- Disables conflicting rules automatically
-- Optimized for this project's needs
-
 - Disables conflicting rules automatically
 - Optimized for this project's needs

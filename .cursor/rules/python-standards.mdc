@@ -1,14 +1,24 @@
+---
+description: Python 3.13 standards and Home Assistant integration development guidelines
+globs: 
+alwaysApply: true
+---
+
 # Python Standards for ecoNET-300
+
+*Based on: <https://developers.home-assistant.io/docs/development_guidelines>*
 
 ## 🚨 MANDATORY: Code Style with Ruff
 
 ### **Code Formatting: Ruff (replaces `black`, `isort`, `flake8`)**
+
 - **ALWAYS use Ruff** for code formatting and linting
 - **NEVER use Black, isort, or flake8** - they are replaced by Ruff
 - **Ruff configuration** is in `pyproject.toml`
 - **Run Ruff** before committing: `ruff check .` and `ruff format .`
 
 ### **Ruff Commands:**
+
 ```bash
 # Check code quality
 ruff check .
@@ -23,44 +33,374 @@ ruff check --fix .
 ruff check custom_components/econet300/
 ```
 
+## 🎯 Fundamental Coding Principles
+
+### DRY - Don't Repeat Yourself
+
+- **Avoid duplicate code** - Extract common functionality into reusable functions or classes
+- **Single source of truth** - Each piece of knowledge should exist in one place
+- **Refactor repeated patterns** - If you copy-paste code more than once, extract it
+
+**Examples:**
+
+```python
+# ❌ BAD - Repeated code
+def process_sensor_a(value):
+    if value is not None:
+        return float(value) * 10
+    return None
+
+def process_sensor_b(value):
+    if value is not None:
+        return float(value) * 10
+    return None
+
+# ✅ GOOD - DRY principle
+def process_sensor_value(value: float | None, multiplier: float = 10) -> float | None:
+    """Process sensor value with multiplier."""
+    return float(value) * multiplier if value is not None else None
+```
+
+### KISS - Keep It Simple, Stupid
+
+- **Prefer simple solutions** over complex ones
+- **Write clear, readable code** that others can understand
+- **Avoid unnecessary abstractions** - Don't over-engineer
+- **One function, one purpose** - Keep functions focused
+
+**Examples:**
+
+```python
+# ❌ BAD - Overly complex
+def process_data(data):
+    result = []
+    for item in data:
+        if isinstance(item, dict):
+            if "value" in item:
+                if item["value"] is not None:
+                    result.append({"processed": float(item["value"]) * 10})
+    return result
+
+# ✅ GOOD - Simple and clear
+def process_data(data: list[dict]) -> list[dict]:
+    """Process data items with non-null values."""
+    return [
+        {"processed": float(item["value"]) * 10}
+        for item in data
+        if isinstance(item, dict) and item.get("value") is not None
+    ]
+```
+
+**When to Apply:**
+
+- ✅ Choose straightforward solutions over clever tricks
+- ✅ Break complex logic into smaller, named functions
+- ✅ Use descriptive variable names instead of comments
+- ✅ Favor readability over brevity
+- ❌ Don't create unnecessary abstraction layers
+- ❌ Don't optimize prematurely - optimize when needed
+- ❌ Don't use obscure language features without good reason
+
+## PEP 8 & PEP 257 Compliance
+
+Home Assistant enforces strict **PEP 8** (Python style) and **PEP 257** (Docstring Conventions) compliance.
+
+### Summary of Most Relevant Points
+
+- **Comments** should be full sentences and end with a period.
+- **Imports** should be ordered: standard library → third-party → local; alphabetically within sections.
+- **Constants** and the content of lists and dictionaries should be in alphabetical order.
+
 ## Core Standards
-- Use Python 3.12 features and syntax
+
+- Use Python 3.13 features and syntax (Home Assistant 2024.12+)
 - Follow PEP 8 style guidelines
 - Use type hints for all function parameters and return values
-- Prefer f-strings over % formatting or str.format() for string formatting
+- Prefer f-strings over `%` or `str.format()` for string formatting
 - Use async/await patterns for I/O operations
 - Use dataclasses or attrs for data structures
 
-## Code Quality Tools
-- **Ruff**: Primary linting and formatting tool (replaces black, isort, flake8)
-- **MyPy**: Type checking
-- **Pylint**: Additional static analysis (with specific rules disabled)
-- **Autotyping**: Automatic type annotation
+## File Headers & Docstrings
+
+### File Headers
+
+The docstring in the file header should describe what the file is about.
+
+```python
+"""Support for ecoNET300 sensors."""
+```
+
+### Docstring Style
+
+- Use **Google style** for docstrings when explaining parameters, return values, exceptions.
+- Type annotations should already cover type info, so omit those from docstrings.
+
+```python
+def process_data(value: float, multiplier: int) -> float:
+    """Process and scale the data value.
+
+    Args:
+        value: The raw value to process.
+        multiplier: Scale factor to apply.
+
+    Returns:
+        The processed and scaled value.
+
+    Raises:
+        ValueError: If value is negative.
+    """
+```
+
+## Logging Guidelines
+
+### Log Message Format
+
+- **Don't include** component or platform names; these are added automatically.
+- Log messages do **NOT** end with a period.
+- **Never log** sensitive data like API keys, passwords, or tokens.
+
+```python
+# CORRECT - no period at end, no component name
+_LOGGER.error("No route to device: %s", self._resource)
+
+# WRONG - has period, includes component name
+_LOGGER.error("econet300: No route to device.")
+```
+
+### Log Levels
+
+- `_LOGGER.debug` - Verbose details for debugging
+- `_LOGGER.info` - Notable but non-problematic messages (use sparingly)
+- `_LOGGER.warning` - Potential issues that don't prevent operation
+- `_LOGGER.error` - Serious issues that affect functionality
+
+### String Formatting in Logs
+
+**ALWAYS use `%`-style formatting in logs** to avoid unnecessary string formatting when log level filters them out.
+
+```python
+# CORRECT - percentage formatting for logging
+_LOGGER.info("Can't connect to the webservice %s at %s", string1, string2)
+_LOGGER.debug("Processing entity %s with value %s", entity_id, value)
+
+# WRONG - f-string in logging (formats even when suppressed)
+_LOGGER.info(f"Can't connect to the webservice {string1} at {string2}")
+```
+
+## String Formatting in Code
+
+**Prefer f-strings** in regular code (not logging).
+
+```python
+# CORRECT - f-string in regular code
+message = f"{some_value} {some_other_value}"
+entity_id = f"sensor.{device_name}_{sensor_type}"
+
+# WRONG - old style formatting in code
+message = "{} {}".format("New", "style")
+message = "%s %s" % ("Old", "style")
+```
+
+## Typing & Type Hints
+
+### Requirements
+
+- Use **full type hints** throughout where possible.
+- Static type checking is part of CI.
+- For fully typed modules, enable strict checking via `.strict-typing` file.
+
+```python
+from typing import Any
+
+def get_value(data: dict[str, Any], key: str) -> float | None:
+    """Get a float value from data dictionary."""
+    value = data.get(key)
+    return float(value) if value is not None else None
+```
+
+### Common Type Patterns
+
+```python
+from collections.abc import Callable
+from typing import Any
+
+# Function types
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the sensor platform."""
+
+# Optional values
+def process(value: str | None = None) -> str:
+    """Process optional value."""
+
+# Dictionary types
+data: dict[str, Any] = {}
+
+# List types
+entities: list[Entity] = []
+```
 
 ## Import Conventions
-- Use standard Home Assistant import aliases:
-  - `homeassistant.helpers.config_validation` as `cv`
-  - `homeassistant.helpers.entity_registry` as `er`
-  - `homeassistant.helpers.device_registry` as `dr`
-  - `homeassistant.util.dt` as `dt_util`
-  - `voluptuous` as `vol`
 
-## Error Handling
-- Use proper exception handling with specific exception types
-- Log errors with appropriate log levels
-- Use `raise from` for exception chaining
-- Handle network timeouts and connection errors gracefully
+### Import Order
+
+1. Standard library imports (alphabetically)
+2. Blank line
+3. Third-party imports (alphabetically)
+4. Blank line
+5. Local imports (alphabetically)
+
+### Standard Home Assistant Aliases
+
+```python
+import homeassistant.helpers.config_validation as cv
+import homeassistant.helpers.device_registry as dr
+import homeassistant.helpers.entity_registry as er
+import homeassistant.util.dt as dt_util
+import voluptuous as vol
+```
 
 ## Async Programming
-- Use async/await for all I/O operations
+
+### Requirements
+
+- Use async/await for **all I/O operations**
 - Avoid blocking operations in async functions
-- Use asyncio.timeout instead of async_timeout
+- Use `asyncio.timeout` instead of deprecated `async_timeout`
 - Properly handle task cancellation
 
+### Async Patterns
+
+```python
+import asyncio
+
+# CORRECT - using asyncio.timeout
+async def fetch_data(self) -> dict[str, Any]:
+    """Fetch data with timeout."""
+    async with asyncio.timeout(10):
+        return await self._api.get_data()
+
+# Entity property - NO I/O in getters
+@property
+def native_value(self) -> float | None:
+    """Return the current value."""
+    # Return cached value, don't fetch here
+    return self._cached_value
+```
+
+## Entity Development Best Practices
+
+### Entity Properties
+
+- **Do NOT** perform I/O (network, disk) in property getters.
+- Use `update()` or `async_update()` to fetch/calculate and cache values.
+- Avoid calling `update()` in constructors.
+
+```python
+class EconetSensor(CoordinatorEntity, SensorEntity):
+    """Sensor entity for ecoNET300."""
+
+    @property
+    def native_value(self) -> float | None:
+        """Return the sensor value."""
+        # Just return cached data, no I/O here
+        return self.coordinator.data.get(self._key)
+
+    async def async_update(self) -> None:
+        """Update the entity."""
+        # Fetch new data here if needed
+        await self.coordinator.async_request_refresh()
+```
+
+### Entity Setup
+
+- Group calls to `add_entities` when possible.
+- Use `add_entities(..., update_before_add=True)` if initial update is needed.
+
+```python
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up sensors from config entry."""
+    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    
+    entities: list[EconetSensor] = []
+    for key in SENSOR_KEYS:
+        entities.append(EconetSensor(coordinator, key))
+    
+    # Add all entities at once
+    async_add_entities(entities, update_before_add=True)
+```
+
+## Configuration Validation
+
+- Use **voluptuous schemas** for configuration validation.
+- Default parameters should be in the schema, not in `setup()`.
+- Use existing constants from `homeassistant.const` where possible.
+
+```python
+import voluptuous as vol
+from homeassistant.const import CONF_HOST, CONF_PORT
+import homeassistant.helpers.config_validation as cv
+
+CONFIG_SCHEMA = vol.Schema({
+    vol.Required(CONF_HOST): cv.string,
+    vol.Optional(CONF_PORT, default=80): cv.port,
+})
+```
+
+## Error Handling
+
+- Use proper exception handling with specific exception types.
+- Log errors with appropriate log levels.
+- Use `raise from` for exception chaining.
+- Handle network timeouts and connection errors gracefully.
+
+```python
+try:
+    data = await self._api.fetch_data()
+except TimeoutError as err:
+    _LOGGER.error("Timeout connecting to device: %s", err)
+    raise UpdateFailed("Timeout connecting to device") from err
+except ConnectionError as err:
+    _LOGGER.warning("Connection failed: %s", err)
+    raise ConfigEntryNotReady("Connection failed") from err
+```
+
+## Code Quality Tools
+
+- **Ruff**: Primary linting and formatting tool (replaces black, isort, flake8)
+- **MyPy**: Type checking
+- **Codespell**: Spelling checks
+- **Pytest**: Testing framework
+
 ## Avoid
-- Blocking operations in async functions
-- Hardcoded values (use constants)
-- Duplicate code (extract common functionality)
-- Overly complex functions (keep under 25 complexity)
-- Unnecessary imports
-- Debug print statements in production code
+
+- ❌ **Violating DRY** - Duplicate code (extract common functionality)
+- ❌ **Violating KISS** - Overly complex functions (keep under 25 complexity)
+- ❌ **Violating KISS** - Unnecessary abstractions or over-engineering
+- ❌ Blocking operations in async functions
+- ❌ Hardcoded values (use constants)
+- ❌ Unnecessary imports
+- ❌ Debug print statements in production code
+- ❌ I/O in property getters
+- ❌ f-strings in logging (use `%`-style)
+- ❌ Periods at end of log messages
+- ❌ Logging sensitive information (API keys, tokens, passwords)
+- ❌ Old-style string formatting (`%` or `.format()`) in regular code
+
+## Pre-Commit Checklist
+
+Before committing:
+
+1. Run `ruff format .` to format code
+2. Run `ruff check .` to check for issues
+3. Run `ruff check --fix .` to auto-fix issues
+4. Run `pytest` to verify tests pass
+5. Verify no sensitive data in logs
+6. Verify type hints are complete

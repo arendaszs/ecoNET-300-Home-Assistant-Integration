@@ -1,14 +1,14 @@
 {
-    "remoteMenuAlarmsNamesVer": "37750",
-    "data": {
-        "0": "Power outage",
-        "1": "Boiler temperature sensor damage.",
-        "2": "Maximum boiler temperature exceeded.",
-        "3": "Feeder temperature sensor damage.",
-        "4": "Maximum feeder temperature exceeded.",
-        "5": "Emission temp. sensor damage.",
-        "7": "Unsuccessful boiler firing-up attempt.\nEmpty the ashtray.",
-        "11": "Fan failure!",
-        "255": "Alarm continues!"
+    "remoteMenuAlarmsNamesVer":"37750_1",
+    "data":{
+       "0":"Power outage",
+       "1":"Boiler temperature sensor damage.",
+       "2":"Maximum boiler temperature exceeded.",
+       "3":"Feeder temperature sensor damage.",
+       "4":"Maximum feeder temperature exceeded.",
+       "5":"Emission temp. sensor damage.",
+       "7":"Unsuccessful boiler firing-up attempt.\nEmpty the ashtray.",
+       "11":"Fan failure!",
+       "255":"Alarm continues!"
     }
-}
+ }

@@ -1,4 +1,4 @@
-"""Config flow for ecoNET300 Integration."""
+"""Config flow for ecoNET300 integration."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ import logging
 from typing import Any
 
 from homeassistant import config_entries
-from homeassistant.config_entries import ConfigFlowResult
-from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry, ConfigFlowResult, OptionsFlow
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 import voluptuous as vol
 
@@ -29,7 +29,6 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
-
     cache = MemCache()
     info = {}
 
@@ -45,9 +44,15 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for ecoNET300 Integration."""
+    """Handle a config flow for ecoNET300 integration."""
 
     VERSION = 1
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
+        """Get the options flow for this handler."""
+        return EconetOptionsFlowHandler()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -150,6 +155,64 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             ),
             errors=errors,
             description_placeholders={"device_name": entry.title},
+        )
+
+
+class EconetOptionsFlowHandler(OptionsFlow):
+    """Handle options flow for ecoNET300."""
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Manage the options."""
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            # Validate the new configuration
+            try:
+                await validate_input(self.hass, user_input)
+            except CannotConnect:
+                errors["base"] = "cannot_connect"
+            except InvalidAuth:
+                errors["base"] = "invalid_auth"
+            except Exception:
+                _LOGGER.exception("Unexpected exception during reconfiguration")
+                errors["base"] = "unknown"
+            else:
+                # Update the config entry with new data, preserving uid
+                new_data = {
+                    **self.config_entry.data,
+                    "host": user_input["host"],
+                    "username": user_input["username"],
+                    "password": user_input["password"],
+                }
+                self.hass.config_entries.async_update_entry(
+                    self.config_entry,
+                    data=new_data,
+                )
+                # Schedule reload as background task to avoid blocking the flow
+                self.hass.async_create_task(
+                    self.hass.config_entries.async_reload(self.config_entry.entry_id)
+                )
+                return self.async_create_entry(title="", data={})
+
+        # Show form with current values as defaults
+        options_schema = vol.Schema(
+            {
+                vol.Required(
+                    "host", default=self.config_entry.data.get("host", "")
+                ): str,
+                vol.Required(
+                    "username", default=self.config_entry.data.get("username", "")
+                ): str,
+                vol.Required("password"): str,
+            }
+        )
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=options_schema,
+            errors=errors,
         )
 
 

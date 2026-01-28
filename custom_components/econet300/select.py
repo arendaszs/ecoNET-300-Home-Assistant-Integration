@@ -5,32 +5,52 @@ Uses Home Assistant icon translation system via icons.json.
 """
 
 import logging
+import re
 from typing import Any
 
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import Econet300Api
 from .common import EconetDataCoordinator
-from .common_functions import camel_to_snake
+from .common_functions import (
+    camel_to_snake,
+    ecoster_exists,
+    get_duplicate_display_name,
+    get_duplicate_entity_key,
+    get_validated_entity_component,
+    is_ecoster_related,
+    mixer_exists,
+)
 from .const import (
     DOMAIN,
+    MIXER_RELATED_KEYWORDS,
     SELECT_KEY_GET_INDEX,
     SELECT_KEY_POST_INDEX,
     SELECT_KEY_VALUES,
     SERVICE_API,
     SERVICE_COORDINATOR,
 )
-from .entity import EconetEntity
+from .entity import EconetEntity, get_device_info_for_component
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class HeaterModeSelectError(HomeAssistantError):
     """Raised when heater mode selection fails."""
+
+    def __init__(self, mode: str) -> None:
+        """Initialize the error."""
+        super().__init__(
+            translation_domain=DOMAIN,
+            translation_key="heater_mode_change_failed",
+            translation_placeholders={"mode": mode},
+        )
 
 
 class EconetSelect(EconetEntity, SelectEntity):
@@ -124,7 +144,9 @@ class EconetSelect(EconetEntity, SelectEntity):
             _LOGGER.debug("🔥 Processing heater_mode in async_added_to_hass")
             # For heater mode, get current state from regParamsData parameter 2049
             if self.coordinator.data is not None:
-                reg_params_data = self.coordinator.data.get("regParamsData", {})
+                reg_params_data = self.coordinator.data.get("regParamsData")
+                if reg_params_data is None:
+                    reg_params_data = {}
 
                 heater_mode_value = reg_params_data.get(
                     SELECT_KEY_GET_INDEX.get(self.select_key, "unknown")
@@ -279,14 +301,352 @@ class EconetSelect(EconetEntity, SelectEntity):
 
         except Exception as e:
             _LOGGER.error("Failed to change heater mode to %s: %s", option, e)
-            raise HeaterModeSelectError(
-                f"Failed to change heater mode to {option}"
+            raise HeaterModeSelectError(option) from e
+
+    @staticmethod
+    def _raise_heater_mode_error(mode: str) -> None:
+        """Raise a HeaterModeSelectError with the given mode."""
+        raise HeaterModeSelectError(mode)
+
+
+class EconetDynamicSelect(EconetEntity, SelectEntity):
+    """Represents a dynamic ecoNET select entity from mergedData."""
+
+    _attr_has_entity_name = True
+
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if entity should be enabled by default.
+
+        CONFIG category entities are disabled by default.
+        Selects without category are also disabled (they are config controls).
+        """
+        entity_category = getattr(self.entity_description, "entity_category", None)
+        # Selects are disabled by default unless explicitly not CONFIG
+        return entity_category is not None and entity_category != EntityCategory.CONFIG
+
+    def __init__(
+        self,
+        entity_description: SelectEntityDescription,
+        coordinator: EconetDataCoordinator,
+        api: Econet300Api,
+        param_id: str,
+        param: dict,
+        sequence_num: int | None = None,
+    ):
+        """Initialize a new dynamic ecoNET select entity."""
+        super().__init__(coordinator, api)
+        self.entity_description = entity_description
+        self._param_id = param_id
+        self._param = param
+        self._attr_current_option = None
+
+        # Get enum values
+        enum_data = param.get("enum", {})
+        self._enum_values = enum_data.get("values", [])
+        self._first_index = enum_data.get("first", 0)
+
+        # Set unique ID
+        self._attr_unique_id = f"econet300_select_{param_id}"
+
+        # Determine which component this entity belongs to (with hardware validation)
+        param_name = param.get("name", "")
+        param_key = param.get("key", "")
+        description = param.get("description", "")
+        self._component = get_validated_entity_component(
+            param_name, param_key, description, sequence_num, coordinator.data
+        )
+
+        # Set initial state
+        self._update_state_from_param()
+
+    @property
+    def options(self) -> list[str]:
+        """Return the available options."""
+        return [v for v in self._enum_values if v]
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device info based on entity component."""
+        return get_device_info_for_component(self._component, self.api)
+
+    @property
+    def available(self) -> bool:
+        """Return if entity is available."""
+        return self.coordinator.last_update_success
+
+    @property
+    def icon(self) -> str | None:
+        """Return icon for entity."""
+        if self._is_parameter_locked():
+            return "mdi:lock"
+        return None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra state attributes."""
+        attrs: dict[str, Any] = {
+            "param_id": self._param_id,
+            "options": self._enum_values,
+        }
+        # Add description from API to help users understand the parameter
+        description = self._param.get("description")
+        if description:
+            attrs["description"] = description
+        if self._is_parameter_locked():
+            attrs["locked"] = True
+            lock_reason = self._get_lock_reason()
+            if lock_reason:
+                attrs["lock_reason"] = lock_reason
+        return attrs
+
+    def _update_state_from_param(self) -> None:
+        """Update state from parameter value."""
+        if self.coordinator.data is None:
+            return
+
+        merged_data = self.coordinator.data.get("mergedData")
+        if not merged_data:
+            return
+
+        parameters = merged_data.get("parameters", {})
+        param_data = parameters.get(self._param_id)
+        if param_data:
+            value = param_data.get("value")
+            if value is not None:
+                # Convert numeric value to option string
+                index = int(value) - self._first_index
+                if 0 <= index < len(self._enum_values):
+                    self._attr_current_option = self._enum_values[index]
+
+    async def async_added_to_hass(self) -> None:
+        """Handle entity added to Home Assistant."""
+        self._update_state_from_param()
+        self.async_on_remove(
+            self.coordinator.async_add_listener(self._handle_coordinator_update)
+        )
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from coordinator."""
+        self._update_state_from_param()
+        self.async_write_ha_state()
+
+    async def async_select_option(self, option: str) -> None:
+        """Change the selected option."""
+        if self._is_parameter_locked():
+            lock_reason = self._get_lock_reason() or "Parameter is locked"
+            _LOGGER.warning(
+                "Cannot change locked select %s: %s",
+                self.entity_description.key,
+                lock_reason,
+            )
+            self._raise_select_error(f"Select is locked: {lock_reason}")
+
+        try:
+            # Convert option to numeric value
+            if option in self._enum_values:
+                value = self._enum_values.index(option) + self._first_index
+            else:
+                self._raise_select_error(f"Invalid option: {option}")
+
+            success = await self.api.set_param(self._param_id, value)
+            if success:
+                self._attr_current_option = option
+                self.async_write_ha_state()
+                _LOGGER.info(
+                    "Select %s changed to %s",
+                    self.entity_description.key,
+                    option,
+                )
+            else:
+                self._raise_select_error(
+                    f"Failed to set {self.entity_description.name}"
+                )
+        except HomeAssistantError:
+            raise
+        except Exception as e:
+            _LOGGER.error(
+                "Failed to change select %s: %s", self.entity_description.key, e
+            )
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="select_change_failed",
+                translation_placeholders={"error": str(e)},
             ) from e
 
     @staticmethod
-    def _raise_heater_mode_error(message: str) -> None:
-        """Raise a HeaterModeSelectError with the given message."""
-        raise HeaterModeSelectError(message)
+    def _raise_select_error(error: str) -> None:
+        """Raise a HomeAssistantError with a translated message."""
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="select_change_failed",
+            translation_placeholders={"error": error},
+        )
+
+
+def should_be_select_entity(param: dict) -> bool:
+    """Check if a parameter should be a select entity.
+
+    Select entities are parameters with 3+ enum values,
+    or 2 values that are NOT On/Off type.
+    """
+    if "enum" not in param:
+        return False
+
+    enum_data = param.get("enum", {})
+    values = enum_data.get("values", [])
+
+    # Filter out empty values
+    non_empty_values = [v for v in values if v]
+
+    # Must have at least 2 options
+    if len(non_empty_values) < 2:
+        return False
+
+    # If 3+ options, it's definitely a select
+    if len(non_empty_values) >= 3:
+        return True
+
+    # If exactly 2 options, check if NOT On/Off type (those are switches)
+    if len(non_empty_values) == 2:
+        values_upper = [v.upper() for v in non_empty_values]
+        on_off_patterns = [
+            {"OFF", "ON"},
+            {"0", "1"},
+            {"FALSE", "TRUE"},
+            {"NO", "YES"},
+            {"DISABLED", "ENABLED"},
+        ]
+
+        for pattern in on_off_patterns:
+            if set(values_upper) == pattern:
+                return False  # It's a switch, not a select
+
+        # Check for empty + something pattern (calibration toggle = switch)
+        if values[0] == "" and values[1]:
+            return False
+
+        # 2 options that are not On/Off = select
+        return True
+
+    return False
+
+
+def create_dynamic_selects(
+    coordinator: EconetDataCoordinator,
+    api: Econet300Api,
+) -> list[SelectEntity]:
+    """Create dynamic select entities from mergedData."""
+    entities: list[SelectEntity] = []
+    key_counts: dict[str, int] = {}  # Track how many times each key has been used
+
+    if coordinator.data is None:
+        _LOGGER.debug("No coordinator data for dynamic selects")
+        return entities
+
+    merged_data = coordinator.data.get("mergedData")
+    if not merged_data:
+        _LOGGER.debug("No mergedData for dynamic selects")
+        return entities
+
+    parameters = merged_data.get("parameters", {})
+    _LOGGER.debug("Creating dynamic selects from %d parameters", len(parameters))
+
+    # First pass: count duplicates to know which keys need numbering
+    key_totals: dict[str, int] = {}
+    for param_id, param in parameters.items():
+        if not should_be_select_entity(param):
+            continue
+        param_name = param.get("name", f"Parameter {param_id}")
+        base_key = param.get("key") or camel_to_snake(param_name)
+        key_totals[base_key] = key_totals.get(base_key, 0) + 1
+
+    for param_id, param in parameters.items():
+        if not should_be_select_entity(param):
+            continue
+
+        # Check for mixer-related entities and skip non-existent mixers
+        param_name = param.get("name", f"Parameter {param_id}")
+        param_key = param.get("key", f"param_{param_id}")
+
+        # Check if mixer-related and if mixer exists
+        if "mixer" in param_name.lower() or "mixer" in param_key.lower():
+            mixer_match = re.search(r"mixer\s*(\d+)", param_name.lower())
+            if mixer_match:
+                mixer_num = int(mixer_match.group(1))
+                if not mixer_exists(coordinator.data, mixer_num):
+                    _LOGGER.debug(
+                        "Skipping select %s - mixer %d not connected",
+                        param_name,
+                        mixer_num,
+                    )
+                    continue
+
+        # Check if ecoSTER-related and if ecoSTER panel is connected
+        if is_ecoster_related(param):
+            if not ecoster_exists(coordinator.data):
+                _LOGGER.debug(
+                    "Skipping select %s - ecoSTER panel not connected",
+                    param_name,
+                )
+                continue
+
+        # Create entity key - handle duplicates with meaningful suffixes
+        base_key = param.get("key") or camel_to_snake(param_name)
+        description = param.get("description", "")
+
+        # Only add suffixes if there are duplicates
+        if key_totals.get(base_key, 1) > 1:
+            key_counts[base_key] = key_counts.get(base_key, 0) + 1
+            sequence_num = key_counts[base_key]
+
+            # For mixer-related duplicates, validate mixer exists before creating
+            # Check for keywords that indicate mixer-related parameters
+            desc_lower = description.lower() if description else ""
+            is_mixer_related = any(kw in desc_lower for kw in MIXER_RELATED_KEYWORDS)
+            if is_mixer_related:
+                if not mixer_exists(coordinator.data, sequence_num):
+                    _LOGGER.debug(
+                        "Skipping select %s (Mixer %d) - mixer not connected",
+                        param_name,
+                        sequence_num,
+                    )
+                    continue
+
+            entity_key = get_duplicate_entity_key(base_key, sequence_num, description)
+            display_name = get_duplicate_display_name(
+                param_name, sequence_num, description
+            )
+        else:
+            sequence_num = None
+            entity_key = base_key
+            display_name = param_name
+
+        entity_description = SelectEntityDescription(
+            key=entity_key,
+            name=display_name,
+            translation_key=entity_key,
+        )
+
+        entity = EconetDynamicSelect(
+            entity_description,
+            coordinator,
+            api,
+            param_id,
+            param,
+            sequence_num,
+        )
+
+        entities.append(entity)
+        _LOGGER.debug(
+            "Created dynamic select: %s (param_id=%s, values=%s)",
+            display_name,
+            param_id,
+            param.get("enum", {}).get("values", []),
+        )
+
+    return entities
 
 
 def get_select_option_name(select_key: str, numeric_value: int) -> str | None:
@@ -352,8 +712,9 @@ async def async_setup_entry(
     _LOGGER.debug("Successfully retrieved coordinator and API")
 
     # Create select entities based on available configurations
-    entities = []
+    entities: list[SelectEntity] = []
 
+    # Create static select entities (heaterMode, etc.)
     for select_key in SELECT_KEY_POST_INDEX:
         _LOGGER.debug("Creating select entity: %s", select_key)
         # Convert camelCase to snake_case for entity key
@@ -369,5 +730,12 @@ async def async_setup_entry(
         entities.append(entity)
         _LOGGER.debug("Created select entity: %s", select_key)
 
-    _LOGGER.info("Adding %d select entities", len(entities))
+    _LOGGER.info("Created %d static select entities", len(entities))
+
+    # Create dynamic select entities from mergedData
+    dynamic_selects = create_dynamic_selects(coordinator, api)
+    entities.extend(dynamic_selects)
+    _LOGGER.info("Created %d dynamic select entities", len(dynamic_selects))
+
+    _LOGGER.info("Adding %d total select entities", len(entities))
     async_add_entities(entities)

@@ -1,6 +1,7 @@
 """Base econet entity class."""
 
 import logging
+from typing import Any
 
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -10,33 +11,79 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .api import Econet300Api
 from .common import EconetDataCoordinator
 from .const import (
+    COMPONENT_BOILER,
+    COMPONENT_BUFFER,
+    COMPONENT_HUW,
+    COMPONENT_LAMBDA,
+    COMPONENT_SOLAR,
+    DEVICE_INFO_BUFFER_NAME,
     DEVICE_INFO_CONTROLLER_NAME,
     DEVICE_INFO_ECOSTER_NAME,
+    DEVICE_INFO_HUW_NAME,
     DEVICE_INFO_LAMBDA_NAME,
     DEVICE_INFO_MANUFACTURER,
     DEVICE_INFO_MIXER_NAME,
     DEVICE_INFO_MODEL,
+    DEVICE_INFO_SOLAR_NAME,
     DOMAIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 
+def _create_base_device_info(
+    api: Econet300Api,
+    identifier: str,
+    name: str,
+    parent_device_id: str | None = None,
+    include_model_id: bool = False,
+    include_hw_version: bool = False,
+) -> DeviceInfo:
+    """Create base DeviceInfo with common fields.
+
+    Args:
+        api: Econet300Api instance
+        identifier: Unique device identifier
+        name: Device display name
+        parent_device_id: Parent device identifier for via_device
+        include_model_id: Whether to include model_id
+        include_hw_version: Whether to include hw_version
+
+    Returns:
+        DeviceInfo with common fields populated
+
+    """
+    # Build base device info - always present fields
+    info = DeviceInfo(
+        identifiers={(DOMAIN, identifier)},
+        name=name,
+        manufacturer=DEVICE_INFO_MANUFACTURER,
+        model=DEVICE_INFO_MODEL,
+        configuration_url=api.host,
+        sw_version=api.sw_rev,
+    )
+    # Add optional fields only when they have values
+    if parent_device_id:
+        info["via_device"] = (DOMAIN, parent_device_id)
+    if include_model_id:
+        info["model_id"] = api.model_id
+    if include_hw_version:
+        info["hw_version"] = api.hw_ver
+    return info
+
+
 class EconetEntity(CoordinatorEntity):
     """Represents EconetEntity."""
 
     api: Econet300Api
-    entity_description: EntityDescription
+    _attr_has_entity_name = True  # Required for icon translations from icons.json
+    # Note: entity_description type is defined by child classes (NumberEntity, SensorEntity, etc.)
+    # to avoid MRO conflicts when multiple inheritance is used
 
     def __init__(self, coordinator: EconetDataCoordinator, api: Econet300Api):
         """Initialize the EconetEntity."""
         super().__init__(coordinator)
         self.api = api
-
-    @property
-    def has_entity_name(self):
-        """Return if the name of the entity is describing only the entity itself."""
-        return True
 
     @property
     def unique_id(self) -> str | None:
@@ -46,157 +93,135 @@ class EconetEntity(CoordinatorEntity):
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device info of the entity."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, self.api.uid)},
+        return _create_base_device_info(
+            api=self.api,
+            identifier=self.api.uid,
             name=DEVICE_INFO_CONTROLLER_NAME,
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            model_id=self.api.model_id,
-            configuration_url=self.api.host,
-            sw_version=self.api.sw_rev,
-            hw_version=self.api.hw_ver,
+            include_model_id=True,
+            include_hw_version=True,
         )
+
+    def _get_param_data(self) -> dict | None:
+        """Get parameter data from mergedData for this entity.
+
+        Looks up parameter data using either self._param_id (instance attribute)
+        or self.entity_description.param_id, handling both string and int keys.
+
+        Returns:
+            Parameter data dict if found, None otherwise
+
+        """
+        if self.coordinator.data is None:
+            return None
+        merged_data = self.coordinator.data.get("mergedData", {})
+        if not merged_data:
+            return None
+        merged_parameters = merged_data.get("parameters", {})
+        if not merged_parameters:
+            return None
+
+        # Try instance _param_id first, then entity_description.param_id
+        param_id = getattr(self, "_param_id", None) or getattr(
+            self.entity_description, "param_id", None
+        )
+        if not param_id:
+            return None
+
+        # Try direct lookup, then string/int conversion
+        if param_id in merged_parameters:
+            return merged_parameters[param_id]
+        if str(param_id).isdigit():
+            return merged_parameters.get(str(param_id)) or merged_parameters.get(
+                int(param_id)
+            )
+        return None
+
+    def _is_parameter_locked(self) -> bool:
+        """Check if the parameter is locked."""
+        param_data = self._get_param_data()
+        return param_data.get("locked", False) if param_data else False
+
+    def _get_lock_reason(self) -> str | None:
+        """Get the lock reason for the parameter."""
+        param_data = self._get_param_data()
+        return param_data.get("lock_reason") if param_data else None
+
+    def _get_description(self) -> str | None:
+        """Get the description for the parameter."""
+        param_data = self._get_param_data()
+        return param_data.get("description") if param_data else None
+
+    def _get_data_sources(self) -> tuple[dict, dict, dict, dict]:
+        """Get all data sources with safe defaults."""
+        data = self.coordinator.data or {}
+        return (
+            data.get("sysParams") or {},
+            data.get("regParams") or {},
+            data.get("paramsEdits") or {},
+            data.get("mergedData") or {},
+        )
+
+    def _lookup_value(self) -> Any:
+        """Look up value from appropriate data source.
+
+        For dynamic entities (with param_id), looks up in mergedData.
+        For legacy entities, looks up in sysParams, regParams, or paramsEdits.
+
+        Returns:
+            The value if found, None otherwise.
+
+        """
+        sys_params, reg_params, params_edits, merged_data = self._get_data_sources()
+        param_id = getattr(self.entity_description, "param_id", None)
+
+        if param_id:
+            # Dynamic entity lookup in mergedData
+            params = merged_data.get("parameters", {})
+            param_data = params.get(param_id) or params.get(str(param_id))
+            return param_data.get("value") if param_data else None
+
+        # Legacy entity lookup - check each source in order
+        key = self.entity_description.key
+        if key in sys_params:
+            return sys_params[key]
+        if key in reg_params:
+            return reg_params[key]
+        if key in params_edits:
+            return params_edits[key]
+        return None
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        _LOGGER.debug(
-            "Update EconetEntity, entity name: %s", self.entity_description.name
-        )
-
-        # Safety check: ensure coordinator data exists
         if self.coordinator.data is None:
-            _LOGGER.info("Coordinator data is None, skipping update")
             return
 
-        # Debug: Check what's available in each data source
-        sys_params = self.coordinator.data.get("sysParams", {})
-        reg_params = self.coordinator.data.get("regParams", {})
-        params_edits = self.coordinator.data.get("paramsEdits", {})
-
-        # Safety check: ensure all data sources are always dicts
-        if sys_params is None:
-            sys_params = {}
-            _LOGGER.info("sysParams was None, defaulting to empty dict")
-        if reg_params is None:
-            reg_params = {}
-            _LOGGER.info("regParams was None, defaulting to empty dict")
-        if params_edits is None:
-            params_edits = {}
-            _LOGGER.info("paramsEdits was None, defaulting to empty dict")
-
-        _LOGGER.debug(
-            "DEBUG: Looking for key '%s' in data sources - sysParams: %s, regParams: %s, paramsEdits: %s",
-            self.entity_description.key,
-            self.entity_description.key in sys_params,
-            self.entity_description.key in reg_params,
-            self.entity_description.key in params_edits,
-        )
-
-        value = None
-        if self.entity_description.key in sys_params:
-            value = sys_params[self.entity_description.key]
-            _LOGGER.debug("DEBUG: Found in sysParams: %s", value)
-        elif self.entity_description.key in reg_params:
-            value = reg_params[self.entity_description.key]
-            _LOGGER.debug("DEBUG: Found in regParams: %s", value)
-        elif self.entity_description.key in params_edits:
-            value = params_edits[self.entity_description.key]
-            _LOGGER.debug("DEBUG: Found in paramsEdits: %s", value)
-
+        value = self._lookup_value()
         if value is None:
-            _LOGGER.debug("Value for key %s is None", self.entity_description.key)
+            _LOGGER.debug(
+                "No value for key %s, skipping update", self.entity_description.key
+            )
             return
 
-        _LOGGER.debug(
-            "Updating state for key: %s with value: %s",
-            self.entity_description.key,
-            value,
-        )
-        # Call _sync_state to update entity state
         self._sync_state(value)
 
-    async def async_added_to_hass(self):
-        """Handle added to hass."""
-        _LOGGER.debug("Entering async_added_to_hass method")
-        _LOGGER.debug("Added to HASS: %s", self.entity_description)
-        _LOGGER.debug("Coordinator: %s", self.coordinator)
-
-        # IMPORTANT: Always call super first to register with coordinator for updates
-        # This ensures the entity receives _handle_coordinator_update callbacks
-        # Fix for #187: sensors not refreshing automatically
+    async def async_added_to_hass(self) -> None:
+        """Handle entity added to Home Assistant."""
+        # Always register for coordinator updates first
         await super().async_added_to_hass()
 
-        # Check if the coordinator has a 'data' attribute
-        if "data" not in dir(self.coordinator):
-            _LOGGER.error("Coordinator object does not have a 'data' attribute")
-            return
-
-        # Safety check: ensure coordinator data exists for initial sync
+        # Skip initial sync if no data available yet
         if self.coordinator.data is None:
-            _LOGGER.info("Coordinator data is None, skipping initial sync")
+            _LOGGER.debug(
+                "No coordinator data for %s, will update on next refresh",
+                self.entity_description.key,
+            )
             return
 
-        # Retrieve sysParams and regParams paramsEdits data
-        sys_params = self.coordinator.data.get("sysParams", {})
-        reg_params = self.coordinator.data.get("regParams", {})
-        params_edits = self.coordinator.data.get("paramsEdits", {})
-
-        # Safety check: ensure all data sources are always dicts
-        if sys_params is None:
-            sys_params = {}
-            _LOGGER.info(
-                "async_added_to_hass: sysParams was None, defaulting to empty dict"
-            )
-        if reg_params is None:
-            reg_params = {}
-            _LOGGER.info(
-                "async_added_to_hass: regParams was None, defaulting to empty dict"
-            )
-        if params_edits is None:
-            params_edits = {}
-            _LOGGER.info(
-                "async_added_to_hass: paramsEdits was None, defaulting to empty dict"
-            )
-        _LOGGER.debug("async_sysParams: %s", sys_params)
-        _LOGGER.debug("async_regParams: %s", reg_params)
-        _LOGGER.debug("async_paramsEdits: %s", params_edits)
-
-        # Check the available keys in all sources
-        sys_keys = sys_params.keys() if sys_params is not None else []
-        reg_keys = reg_params.keys() if reg_params is not None else []
-        edit_keys = params_edits.keys() if params_edits is not None else []
-        _LOGGER.debug("Available keys in sysParams: %s", sys_keys)
-        _LOGGER.debug("Available keys in regParams: %s", reg_keys)
-        _LOGGER.debug("Available keys in paramsEdits: %s", edit_keys)
-
-        # Expected key from entity_description
-        expected_key = self.entity_description.key
-        _LOGGER.debug("Expected key: %s", expected_key)
-
-        # Retrieve the value from sysParams or regParams or paramsEdits
-        value = (
-            sys_params.get(expected_key)
-            if sys_params.get(expected_key) is not None
-            else (
-                reg_params.get(expected_key)
-                if reg_params.get(expected_key) is not None
-                else params_edits.get(expected_key)
-            )
-        )
-
+        # Sync initial value if available
+        value = self._lookup_value()
         if value is not None:
-            _LOGGER.debug("Found key '%s' with value: %s", expected_key, value)
-            # Call _sync_state to update entity state with initial value
             self._sync_state(value)
-        else:
-            _LOGGER.info(
-                "Data key: %s not found during initial sync. Available sysParams keys: %s, regParams keys: %s, paramsEdits keys: %s",
-                expected_key,
-                sys_keys,
-                reg_keys,
-                edit_keys,
-            )
 
     def _sync_state(self, value) -> None:
         """Update entity state with the provided value.
@@ -226,15 +251,12 @@ class MixerEntity(EconetEntity):
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device info of the entity."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{self.api.uid}-mixer-{self._idx}")},
+        return _create_base_device_info(
+            api=self.api,
+            identifier=f"{self.api.uid}-mixer-{self._idx}",
             name=f"{DEVICE_INFO_MIXER_NAME}{self._idx}",
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            model_id=self.api.model_id,
-            configuration_url=self.api.host,
-            sw_version=self.api.sw_rev,
-            via_device=(DOMAIN, self.api.uid),
+            parent_device_id=self.api.uid,
+            include_model_id=True,
         )
 
 
@@ -255,14 +277,11 @@ class LambdaEntity(EconetEntity):
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device info of the entity."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{self.api.uid}lambda")},
-            name=f"{DEVICE_INFO_LAMBDA_NAME}",
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            configuration_url=self.api.host,
-            sw_version=self.api.sw_rev,
-            via_device=(DOMAIN, self.api.uid),
+        return _create_base_device_info(
+            api=self.api,
+            identifier=f"{self.api.uid}-lambda",
+            name=DEVICE_INFO_LAMBDA_NAME,
+            parent_device_id=self.api.uid,
         )
 
 
@@ -285,13 +304,78 @@ class EcoSterEntity(EconetEntity):
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device info of the entity."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{self.api.uid}-ecoster-{self._idx}")},
+        return _create_base_device_info(
+            api=self.api,
+            identifier=f"{self.api.uid}-ecoster-{self._idx}",
             name=f"{DEVICE_INFO_ECOSTER_NAME} {self._idx}",
-            manufacturer=DEVICE_INFO_MANUFACTURER,
-            model=DEVICE_INFO_MODEL,
-            model_id=self.api.model_id,
-            configuration_url=self.api.host,
-            sw_version=self.api.sw_rev,
-            via_device=(DOMAIN, self.api.uid),
+            parent_device_id=self.api.uid,
+            include_model_id=True,
         )
+
+
+# Component configuration for device info creation
+_COMPONENT_CONFIG: dict[str, dict[str, Any]] = {
+    COMPONENT_BOILER: {
+        "suffix": "",
+        "name": DEVICE_INFO_CONTROLLER_NAME,
+        "include_model_id": True,
+        "include_hw_version": True,
+    },
+    COMPONENT_HUW: {
+        "suffix": "-huw",
+        "name": DEVICE_INFO_HUW_NAME,
+    },
+    COMPONENT_LAMBDA: {
+        "suffix": "-lambda",
+        "name": DEVICE_INFO_LAMBDA_NAME,
+    },
+    COMPONENT_BUFFER: {
+        "suffix": "-buffer",
+        "name": DEVICE_INFO_BUFFER_NAME,
+    },
+    COMPONENT_SOLAR: {
+        "suffix": "-solar",
+        "name": DEVICE_INFO_SOLAR_NAME,
+    },
+}
+
+
+def get_device_info_for_component(
+    component: str, api: Econet300Api, mixer_idx: int | None = None
+) -> DeviceInfo:
+    """Return DeviceInfo for a specific component.
+
+    Args:
+        component: Component identifier (COMPONENT_BOILER, COMPONENT_HUW, etc.)
+        api: Econet300Api instance for device information
+        mixer_idx: Optional mixer index (1-4) for mixer components
+
+    Returns:
+        DeviceInfo for the specified component
+
+    """
+    # Handle mixer special case
+    if component.startswith("mixer_"):
+        idx = mixer_idx or int(component.split("_")[1])
+        return _create_base_device_info(
+            api,
+            f"{api.uid}-mixer-{idx}",
+            f"{DEVICE_INFO_MIXER_NAME}{idx}",
+            parent_device_id=api.uid,
+            include_model_id=True,
+        )
+
+    # Use mapping for standard components, default to boiler config
+    config = _COMPONENT_CONFIG.get(component, _COMPONENT_CONFIG[COMPONENT_BOILER])
+    suffix = config.get("suffix", "")
+    identifier = f"{api.uid}{suffix}" if suffix else api.uid
+    parent = api.uid if suffix else None
+
+    return _create_base_device_info(
+        api,
+        identifier,
+        config["name"],
+        parent_device_id=parent,
+        include_model_id=config.get("include_model_id", False),
+        include_hw_version=config.get("include_hw_version", False),
+    )
