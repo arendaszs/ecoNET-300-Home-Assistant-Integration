@@ -823,6 +823,8 @@ ENTITY_PRECISION = {
     "moduleCSoftVer": None,
     "moduleLambdaSoftVer": None,
     "modulePanelSoftVer": None,
+    "moduleEcoSTERSoftVer": None,
+    "ecosrvSoftVer": None,
     # ecoMAX360i
     "PS": None,
     "TempBuforDown": 1,
@@ -862,7 +864,6 @@ ENTITY_PRECISION = {
     "ecosrvAddr": None,
     "routerType": None,
     "protocolType": None,
-    "ecosrvSoftVer": None,
 }
 
 NO_CWU_TEMP_SET_STATUS_CODE = 128

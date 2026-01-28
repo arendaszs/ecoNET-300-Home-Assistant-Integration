@@ -54,6 +54,15 @@
           "username": "Username",
           "password": "Password"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigure ecoNET300",
+        "description": "Update connection settings for your ecoNET300 device. This is useful if your device IP address has changed.",
+        "data": {
+          "host": "Host",
+          "username": "Username",
+          "password": "Password"
+        }
       }
     },
     "error": {
@@ -62,7 +71,8 @@
       "unknown": "Unexpected error"
     },
     "abort": {
-      "already_configured": "Device is already configured"
+      "already_configured": "Device is already configured",
+      "reconfigure_failed": "Reconfiguration failed. Please try again."
     }
   },
   "options": {

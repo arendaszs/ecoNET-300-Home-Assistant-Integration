@@ -53,12 +53,17 @@ body:
         - "Medium - Annoying but usable"
         - "Low - Minor issue"
 
-  - type: textarea
-    id: steps_to_reproduce
+  - type: markdown
     attributes:
-      label: How to reproduce? 📋
-      description: Step-by-step instructions to see the bug
-      placeholder: "1. Restart Home Assistant\n2. Check the sensor\n3. See wrong value"
+      value: |
+        ### Diagnostics (recommended)
+        Please attach **ecoNET300 diagnostics** from Home Assistant (these are automatically redacted):
+
+        **Settings → Devices & Services → ecoNET300 → ⋮ → Download diagnostics**
+
+        Docs: https://www.home-assistant.io/integrations/diagnostics/
+
+        (You can drag & drop the downloaded file into this issue.)
 
   - type: textarea
     id: screenshots

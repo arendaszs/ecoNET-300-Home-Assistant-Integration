@@ -90,6 +90,73 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle reconfiguration of the integration."""
+        entry_id = self.context.get("entry_id")
+        if entry_id is None:
+            return self.async_abort(reason="reconfigure_failed")
+        entry = self.hass.config_entries.async_get_entry(entry_id)
+        if entry is None:
+            return self.async_abort(reason="reconfigure_failed")
+
+        if user_input is None:
+            # Pre-fill the form with current values (password not shown for security)
+            return self.async_show_form(
+                step_id="reconfigure",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required("host", default=entry.data.get("host", "")): str,
+                        vol.Required(
+                            "username", default=entry.data.get("username", "")
+                        ): str,
+                        vol.Required("password"): str,
+                    }
+                ),
+                description_placeholders={"device_name": entry.title},
+            )
+
+        errors = {}
+
+        try:
+            info = await validate_input(self.hass, user_input)
+        except CannotConnect:
+            errors["base"] = "cannot_connect"
+        except InvalidAuth:
+            errors["base"] = "invalid_auth"
+        except Exception:
+            _LOGGER.exception("Unexpected exception during reconfigure")
+            errors["base"] = "unknown"
+        else:
+            # Update the config entry with new data
+            return self.async_update_reload_and_abort(
+                entry,
+                data={
+                    **entry.data,
+                    "host": user_input["host"],
+                    "username": user_input["username"],
+                    "password": user_input["password"],
+                    "uid": info["uid"],
+                },
+            )
+
+        # Show form again with errors
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("host", default=user_input.get("host", "")): str,
+                    vol.Required(
+                        "username", default=user_input.get("username", "")
+                    ): str,
+                    vol.Required("password"): str,
+                }
+            ),
+            errors=errors,
+            description_placeholders={"device_name": entry.title},
+        )
+
 
 class EconetOptionsFlowHandler(OptionsFlow):
     """Handle options flow for ecoNET300."""
