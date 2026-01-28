@@ -26,10 +26,13 @@ The **ecoNET300 Home Assistant Integration** allows local control and monitoring
 
 - **Local Operation**: No dependency on econet24.com cloud services
 - **Easy Configuration**: Integrate directly via Home Assistant UI
+- **Dynamic Entity Creation**: 165+ entities auto-discovered from your boiler's menu (v1.2.0+)
 - **Boiler Control**: Turn your boiler ON/OFF directly from Home Assistant
 - **Real-time Monitoring**: Monitor temperatures, fuel levels, and system status
-- **Comprehensive API Access**: Access to 48 different API endpoints
-- **Multiple Entity Types**: Sensors, Binary Sensors, Switches, and Number entities
+- **Comprehensive API Access**: Access to 80+ API endpoints
+- **Multiple Entity Types**: Sensors, Binary Sensors, Switches, Select, and Number entities
+- **Parameter Locking**: Device-side locks reflected in Home Assistant UI
+- **Repair Issues**: Automatic connection failure detection with one-click fix
 - **Diagnostics Support**: Download comprehensive diagnostics for troubleshooting
 
 ### 🌐 Language Support
@@ -171,15 +174,18 @@ The integration provides multiple entity types:
 | Sensors        | 50+   | Temperature, status, system info |
 | Binary Sensors | 25+   | Pumps, fans, connections         |
 | Switches       | 1     | Boiler ON/OFF control            |
-| Select         | 1     | Heater mode (Winter/Summer/Auto) |
+| Select         | 1+    | Heater mode, dynamic parameters  |
 | Number         | 15+   | Temperature setpoints            |
 
-**Key Features:**
+### Dynamic Entities (v1.2.0+)
 
-- **Boiler Control**: Turn boiler ON/OFF directly from Home Assistant
-- **Temperature Setpoints**: Control heating and hot water temperatures
-- **Heater Mode**: Switch between Winter, Summer, and Auto modes
-- **Real-time Monitoring**: All sensors update in real-time from your device
+Starting with v1.2.0, the integration automatically discovers **165+ additional entities** from your boiler's remote menu via the `mergedData` API endpoint:
+
+- **Automatic Type Detection**: Parameters become Number, Switch, Select, or Sensor entities
+- **Category Grouping**: CONFIG entities disabled by default, enable as needed
+- **Parameter Locking**: Locked parameters show lock icon and become unavailable
+- **Mixer Support**: Entities correctly assigned to Mixer 1-4 devices
+- **ecoSTER Detection**: Entities only created when ecoSTER panel is connected
 
 **📖 [Complete Entity Reference](docs/ENTITIES.md)** - Full list of all entities with descriptions
 
@@ -230,7 +236,8 @@ ecoNET-300-Home-Assistant-Integration/
 - **[ENTITIES.md](docs/ENTITIES.md)** - Complete entity reference (sensors, switches, numbers)
 - **[MIGRATION.md](docs/MIGRATION.md)** - Migration guide for upgrading between versions
 - **[DIAGNOSTICS.md](docs/DIAGNOSTICS.md)** - Diagnostics documentation and troubleshooting
-- **[API_V1_DOCUMENTATION.md](docs/API_V1_DOCUMENTATION.md)** - Complete API documentation
+- **[DYNAMIC_ENTITY_VALIDATION.md](docs/DYNAMIC_ENTITY_VALIDATION.md)** - Dynamic entity system (v1.2.0+)
+- **[API_V1_DOCUMENTATION.md](docs/API_V1_DOCUMENTATION.md)** - Complete API documentation (80+ endpoints)
 - **[devices/](docs/devices/)** - Device-specific documentation (ecoMAX, ecoSOL)
 
 ---
@@ -239,18 +246,24 @@ ecoNET-300-Home-Assistant-Integration/
 
 For detailed version information and changelog, see [CHANGELOG.md](CHANGELOG.md).
 
-### Latest Features
+### What's New in v1.2.0
 
-- **Complete Boiler Status Codes**: All 27 operation status codes supported (including prevention, calibration, maintenance, etc.)
-- **Repair Issues System**: Automatic detection of connection failures with easy one-click fix in Settings → System → Repairs
-- **Reconfiguration Flow**: Update connection settings (host, username, password) after initial setup via integration options
-- **Diagnostics Support**: Comprehensive diagnostics for troubleshooting issues
+- **Dynamic Entity System**: 165+ entities auto-discovered from `mergedData` API endpoint
+- **80+ API Endpoints**: Comprehensive access to all boiler parameters
+- **Parameter Locking**: Device-side locks reflected with lock icons in Home Assistant
+- **Complete Boiler Status Codes**: All 27 operation status codes supported
+- **Repair Issues System**: Automatic connection failure detection with one-click fix
+- **Reconfiguration Flow**: Update connection settings after initial setup
+
+### Core Features
+
 - **Boiler Control**: Turn boiler ON/OFF directly from Home Assistant
 - **Temperature Setpoints**: Full control over heating and hot water temperatures
 - **Mixer Support**: Smart entity creation for up to 6 mixer temperature setpoints
 - **ecoSTER Integration**: Support for 8 room thermostats
 - **ecoSOL 500 Support**: Solar collector system integration
 - **Multi-language**: 6 language support (English, Polish, Czech, French, Ukrainian)
+- **Diagnostics Support**: Comprehensive diagnostics for troubleshooting
 
 ---
 
@@ -298,5 +311,4 @@ If you encounter any issues or have questions:
 
 ---
 
-_This README was last updated on 2025-01-28 with v1.2.0 release._
 _This README was last updated on 2025-01-28 with v1.2.0 release._
