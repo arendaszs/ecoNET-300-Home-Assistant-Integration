@@ -55,6 +55,15 @@ from .mem_cache import MemCache
 _LOGGER = logging.getLogger(__name__)
 
 
+def _sanitize_url_for_logging(url: str) -> str:
+    """Remove sensitive parameters from URL before logging.
+
+    Removes password parameter from URLs to prevent sensitive data exposure in logs.
+    """
+    # Remove password parameter from URL query string
+    return re.sub(r"([&?])password=[^&]*", r"\1password=***REDACTED***", url)
+
+
 class AuthError(Exception):
     """Raised when authentication fails."""
 
@@ -110,14 +119,14 @@ class EconetClient:
 
         while attempt <= max_attempts:
             try:
-                _LOGGER.debug("Fetching data from URL: %s (Attempt %d)", url, attempt)
+                _LOGGER.debug("Fetching data from URL: %s (Attempt %d)", _sanitize_url_for_logging(url), attempt)
 
                 async with await self._session.get(
                     url, auth=self._auth, timeout=ClientTimeout(total=15)
                 ) as resp:
                     _LOGGER.debug("Received response with status: %s", resp.status)
                     if resp.status == HTTPStatus.UNAUTHORIZED:
-                        _LOGGER.error("Unauthorized access to URL: %s", url)
+                        _LOGGER.error("Unauthorized access to URL: %s", _sanitize_url_for_logging(url))
                         raise AuthError
 
                     if resp.status != HTTPStatus.OK:
@@ -128,7 +137,7 @@ class EconetClient:
 
                         _LOGGER.error(
                             "Failed to fetch data from URL: %s (Status: %s) - Response: %s",
-                            url,
+                            _sanitize_url_for_logging(url),
                             resp.status,
                             error_message,
                         )
@@ -153,7 +162,7 @@ class EconetClient:
                 await asyncio.sleep(1)
             attempt += 1
         _LOGGER.error(
-            "Failed to fetch data from %s after %d attempts", url, max_attempts
+            "Failed to fetch data from %s after %d attempts", _sanitize_url_for_logging(url), max_attempts
         )
         return None
 
@@ -187,7 +196,7 @@ class EconetClient:
                 ) as resp:
                     _LOGGER.debug("Received response with status: %s", resp.status)
                     if resp.status == HTTPStatus.UNAUTHORIZED:
-                        _LOGGER.error("Unauthorized access to URL: %s", url)
+                        _LOGGER.error("Unauthorized access to URL: %s", _sanitize_url_for_logging(url))
                         raise AuthError
 
                     if resp.status != HTTPStatus.OK:
@@ -198,7 +207,7 @@ class EconetClient:
 
                         _LOGGER.error(
                             "Failed to fetch data from URL: %s (Status: %s) - Response: %s",
-                            url,
+                            _sanitize_url_for_logging(url),
                             resp.status,
                             error_message,
                         )
@@ -225,7 +234,7 @@ class EconetClient:
                         try:
                             return json.loads(raw_text)
                         except json.JSONDecodeError:
-                            _LOGGER.error("Failed to parse JSON from URL: %s", url)
+                            _LOGGER.error("Failed to parse JSON from URL: %s", _sanitize_url_for_logging(url))
                             return None
                     else:
                         _LOGGER.debug("Fetched and fixed data successfully")
@@ -236,7 +245,7 @@ class EconetClient:
                 await asyncio.sleep(1)
             attempt += 1
         _LOGGER.error(
-            "Failed to fetch data from %s after %d attempts", url, max_attempts
+            "Failed to fetch data from %s after %d attempts", _sanitize_url_for_logging(url), max_attempts
         )
         return None
 
@@ -746,9 +755,10 @@ class Econet300Api:
         """
         try:
             url = f"{self.host}/econet/{API_RM_PARAMS_DATA_URI}?uid={self.uid}"
+            log_url = url  # Safe URL for logging (without password)
             if password:
                 url = f"{url}&password={password}"
-            _LOGGER.debug("Fetching parameter data from: %s", url)
+            _LOGGER.debug("Fetching parameter data from: %s", log_url)
 
             data = await self._client.get(url)
             if data is None:
@@ -945,9 +955,10 @@ class Econet300Api:
             url = (
                 f"{self.host}/econet/{API_RM_STRUCTURE_URI}?uid={self.uid}&lang={lang}"
             )
+            log_url = url  # Safe URL for logging (without password)
             if password:
                 url = f"{url}&password={password}"
-            _LOGGER.debug("Fetching menu structure from: %s", url)
+            _LOGGER.debug("Fetching menu structure from: %s", log_url)
 
             data = await self._client.get(url)
             if data is None:
