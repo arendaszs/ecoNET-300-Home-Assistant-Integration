@@ -1,107 +1,22 @@
 # Changelog
 
-## [v1.2.0a5] - 2025-01-16
-
-### 🚀 New Features
-
-- **Expanded Boiler Status Codes**: Complete support for all 27 known boiler operation status codes
-  - **Problem**: `sensor.central_heating_status` showed "unknown" for status code 16 and other undocumented values
-  - **Solution**: Added all status codes from ecoNET cloud JavaScript to `SENSOR_STATUS_CO_MAPPING`
-  - **New Status Codes Added**:
-    - `prevention` (16) - Boiler in prevention/protection mode
-    - `work_grate` (17) - Work grate operation
-    - `supervision_grate` (18) - Supervision grate mode
-    - `calibration` (19) - Calibration mode
-    - `maintain` (20) - Maintenance mode
-    - `afterburning` (21) - Afterburning phase
-    - `chimney_sweep` (22) - Chimney sweep mode
-    - `heating` (23) - Heating mode
-    - `open_door` (24) - Open door status
-    - `cooling` (25) - Cooling mode
-    - `safe` (26) - Safe mode
-  - **Files Modified**: `const.py`, `strings.json`, all translation files
-
-### 🌐 Translation Updates
-
-- **Status Code Translations**: Added translations for all 27 status codes in 5 languages
-  - English, Polish, French, Ukrainian, Czech
-  - Files Modified: `strings.json`, `translations/en.json`, `translations/pl.json`, `translations/fr.json`, `translations/uk.json`, `translations/cz.json`
-
----
-
-## [v1.2.0a4] - 2025-01-03
-
-### 🚀 New Features
-
-- **Repair Issues System** (Gold tier `repair-issues` rule)
-
-  - **Connection Failure Detection**: Automatically detects persistent connection failures (after 5 consecutive failures)
-  - **User-Friendly Repairs**: Repair issues appear in **Settings → System → Repairs** with clear descriptions
-  - **One-Click Fix**: Users can update connection settings directly from the Repairs UI
-  - **Auto-Resolution**: Repair issues automatically removed when connection is restored
-  - **Files Added**: `custom_components/econet300/repairs.py`
-
-- **Reconfiguration Flow** (Gold tier `reconfiguration-flow` rule)
-  - **Options Flow**: Added ability to reconfigure host, username, and password after initial setup
-  - **Easy Access**: Available via integration options (gear icon) in Settings → Devices & Services
-  - **Validation**: Connection is validated before applying changes
-  - **Files Modified**: `custom_components/econet300/config_flow.py`
-
-### 🌐 Translation Updates
-
-- **Repair Issue Translations**: Added translations for repair issues in all 5 languages
-  - English, Polish, French, Ukrainian, Czech
-  - Clear error descriptions and resolution steps
-  - Files Modified: `strings.json`, all translation files
-
-### 🔧 Technical Improvements
-
-- **Failure Tracking**: Coordinator now tracks consecutive connection failures
-- **Issue Registry Integration**: Uses Home Assistant's native issue registry for repairs
-- **Entry Cleanup**: Repair issues automatically cleaned up when integration is removed
-- **PARALLEL_UPDATES**: Added constant for polling integration compliance
-
-### 🧪 Testing
-
-- **New Tests**: Added tests for `async_remove_entry` and repair issue cleanup
-- **Updated Tests**: Fixed switch exception handling tests for translation keys
-- **Updated Tests**: Fixed dynamic number entity tests for entity key generation
-
----
-
-## [v1.2.0a3] - 2025-01-03
-
-### 🔧 Improvements
-
-- **Number Entity Input Mode**: Changed basic NUMBER_MAP entities from slider to input box
-  - **Problem**: Temperature setpoints and other number entities displayed as sliders, making precise input difficult
-  - **Solution**: Changed `NumberMode.AUTO` to `NumberMode.BOX` in `create_number_entity_description()`
-  - **Impact**: Boiler temperature and other number entities now show as input boxes for easier value entry
-  - **Files Modified**: `custom_components/econet300/number.py`
-
----
-
-## [v1.2.0a2] - 2025-01-03
+## [v1.2.0] - 2025-01-28
 
 ### 🚀 New Features
 
 - **Dynamic Entity System**: Complete rewrite of entity creation from `mergedData` API
-
   - 165+ dynamic parameters from boiler's remote menu
   - Automatic entity type detection (Number, Switch, Select, Sensor)
   - Category-based entity grouping with smart defaults (CONFIG entities disabled by default)
 
 - **Mixer Device Support**: Entities correctly assigned to mixer devices (Mixer 1-4)
-
   - Keyword-based detection for mixer-related entities (`MIXER_RELATED_KEYWORDS`)
   - Hardware validation to prevent phantom mixer devices
 
 - **ecoSTER Panel Detection**: Smart filtering for ecoSTER-related entities
-
   - Entities only created when ecoSTER panel is connected (`ecoster_exists()`)
 
 - **Parameter Locking**: Device-side parameter locks reflected in Home Assistant
-
   - Lock icon (`mdi:lock`) displayed for locked parameters
   - Lock reason shown in entity attributes
 
@@ -109,6 +24,21 @@
   - 14 boiler operation modes with proper state mappings
   - Multi-language translations (EN, PL, FR) for all modes
   - Icons and state translations in `icons.json`
+
+- **Expanded Boiler Status Codes**: Complete support for all 27 known boiler operation status codes
+  - Added all status codes from ecoNET cloud JavaScript to `SENSOR_STATUS_CO_MAPPING`
+  - New status codes: `prevention` (16), `work_grate` (17), `supervision_grate` (18), `calibration` (19), `maintain` (20), `afterburning` (21), `chimney_sweep` (22), `heating` (23), `open_door` (24), `cooling` (25), `safe` (26)
+
+- **Repair Issues System** (Gold tier `repair-issues` rule)
+  - Connection Failure Detection: Automatically detects persistent connection failures (after 5 consecutive failures)
+  - User-Friendly Repairs: Repair issues appear in **Settings → System → Repairs** with clear descriptions
+  - One-Click Fix: Users can update connection settings directly from the Repairs UI
+  - Auto-Resolution: Repair issues automatically removed when connection is restored
+
+- **Reconfiguration Flow** (Gold tier `reconfiguration-flow` rule)
+  - Options Flow: Added ability to reconfigure host, username, and password after initial setup
+  - Easy Access: Available via integration options (gear icon) in Settings → Devices & Services
+  - Validation: Connection is validated before applying changes
 
 ### 🐛 Bug Fixes
 
@@ -121,6 +51,10 @@
 - **moduleEcoSTERSoftVer**: Fixed incorrect treatment as numeric sensor (#189)
 - **Dynamic Entity Limits**: Skip API limits lookup for entities with pre-set limits from mergedData (reduces log spam)
 
+### 🔧 Improvements
+
+- **Number Entity Input Mode**: Changed basic NUMBER_MAP entities from slider to input box for easier value entry
+
 ### ⚙️ Technical Improvements
 
 - **API Enhancement**: New `set_param_by_index()` method for dynamic parameter editing
@@ -131,16 +65,29 @@
   - `should_be_number_entity()`, `should_be_switch_entity()`, `should_be_select_entity()`
 - **Component Detection**: `get_validated_entity_component()` with hardware validation
 - **Entity Setup**: Enhanced setup process to ensure registration for updates even when coordinator data unavailable
+- **Failure Tracking**: Coordinator now tracks consecutive connection failures
+- **Issue Registry Integration**: Uses Home Assistant's native issue registry for repairs
+- **Entry Cleanup**: Repair issues automatically cleaned up when integration is removed
+- **PARALLEL_UPDATES**: Added constant for polling integration compliance
+- **CI Updates**: Updated `actions/checkout` from v4 to v6 in GitHub workflows
+
+### 🌐 Translation Updates
+
+- **Status Code Translations**: Added translations for all 27 status codes in 5 languages (English, Polish, French, Ukrainian, Czech)
+- **Repair Issue Translations**: Added translations for repair issues in all 5 languages
+
+### 🧪 Testing
+
+- New tests for `async_remove_entry` and repair issue cleanup
+- Updated tests for switch exception handling and dynamic number entity key generation
 
 ### 📚 Documentation
 
 - Added `docs/DYNAMIC_ENTITY_VALIDATION.md` for dynamic entity system
 - **Boiler Operation Mode Reference**: Complete mapping table with 14 operation modes
-  - Value mappings, HA states, cloud translation keys
-  - English and Polish translations
-  - Extended mode keys reference
 - Updated API documentation with 80+ discovered endpoints
 - Enhanced cursor rules for dynamic entity changes
+- Improved bug report template with dropdown device selection
 
 ---
 
